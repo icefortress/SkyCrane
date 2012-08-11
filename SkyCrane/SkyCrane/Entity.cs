@@ -75,17 +75,21 @@ namespace SkyCrane
             return sc;
         }
 
-        public Entity(GameplayScreen g)
-        {
-            this.context = g;
-            id = next_id;
-            next_id++;
-        }
-
         public Entity(GameplayScreen g, int posX, int posY, int frameWidth, String textureName, String animationName)
         {
+            this.context = g;
+
+            id = next_id;
+            next_id++;
+
             worldPosBack= new Vector2(posX, posY);
-            Texture2D chara = g.textureDict[textureName];
+
+            changeAnimation(frameWidth, textureName, animationName, true);
+        }
+
+        public void changeAnimation(int frameWidth, String textureName, String animationName, bool constructor)
+        {
+            Texture2D chara = context.textureDict[textureName];
 
             List<int> animationFrames = new List<int>(); // TODO: some way of loading animation
             for (int i = 0; i < chara.Width / frameWidth; i++)

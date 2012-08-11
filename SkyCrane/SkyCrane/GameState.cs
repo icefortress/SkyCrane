@@ -91,6 +91,8 @@ namespace SkyCrane
             removeEntity(entities[eid]);
         }
 
+
+        // This should never create a state change
         public void applyStateChange(StateChange s)
         {
             int entity = s.intProperties[StateProperties.ENTITY_ID];
@@ -121,6 +123,14 @@ namespace SkyCrane
             else if (s.type == StateChangeType.DELETE_ENTITY)
             {
                 removeEntity(entity);
+            }
+            else if (s.type == StateChangeType.CHANGE_SPRITE)
+            {
+                int frame_width = s.intProperties[StateProperties.FRAME_WIDTH];
+                String texture_name = s.stringProperties[StateProperties.SPRITE_NAME];
+                String animation_name = s.stringProperties[StateProperties.ANIMATION_NAME];
+
+
             }
         }
         
