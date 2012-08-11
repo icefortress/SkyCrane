@@ -55,8 +55,8 @@ namespace SkyCrane.Screens
         /// </summary>
         public MessageBoxScreen(string message, bool includeUsageText)
         {
-            const string usageText = "\nA button, Space, Enter = ok" +
-                                     "\nB button, Esc = cancel"; 
+            const string usageText = "\nOk: Enter, Space, A" +
+                                     "\nCancel: Esc, B"; 
             
             if (includeUsageText)
                 this.message = message + usageText;
@@ -67,6 +67,7 @@ namespace SkyCrane.Screens
 
             TransitionOnTime = TimeSpan.FromSeconds(0.2);
             TransitionOffTime = TimeSpan.FromSeconds(0.2);
+            return;
         }
 
 

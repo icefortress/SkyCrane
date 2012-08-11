@@ -75,7 +75,7 @@ namespace SkyCrane.Screens
         /// </summary>
         protected override void OnCancel(PlayerIndex playerIndex)
         {
-            const string message = "Are you sure you want to exit this sample?";
+            const string message = "Return to desktop?";
             MessageBoxScreen confirmExitMessageBox = new MessageBoxScreen(message);
             confirmExitMessageBox.Accepted += ConfirmExitMessageBoxAccepted;
             ScreenManager.AddScreen(confirmExitMessageBox, playerIndex);

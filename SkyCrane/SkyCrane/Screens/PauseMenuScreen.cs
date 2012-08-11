@@ -21,7 +21,6 @@ namespace SkyCrane.Screens
     {
         #region Initialization
 
-
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -30,35 +29,35 @@ namespace SkyCrane.Screens
         {
             // Create our menu entries.
             MenuEntry resumeGameMenuEntry = new MenuEntry("Resume Game");
+            MenuEntry optionsMenuEntry = new MenuEntry("Options");
             MenuEntry quitGameMenuEntry = new MenuEntry("Quit Game");
             
             // Hook up menu event handlers.
             resumeGameMenuEntry.Selected += OnCancel;
+            optionsMenuEntry.Selected += OptionsMenuEntrySelected;
             quitGameMenuEntry.Selected += QuitGameMenuEntrySelected;
 
             // Add entries to the menu.
             MenuEntries.Add(resumeGameMenuEntry);
+            MenuEntries.Add(optionsMenuEntry);
             MenuEntries.Add(quitGameMenuEntry);
+            return;
         }
-
 
         #endregion
 
         #region Handle Input
-
 
         /// <summary>
         /// Event handler for when the Quit Game menu entry is selected.
         /// </summary>
         void QuitGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            const string message = "Are you sure you want to quit this game?";
-
+            const string message = "Quit to main menu?";
             MessageBoxScreen confirmQuitMessageBox = new MessageBoxScreen(message);
-
             confirmQuitMessageBox.Accepted += ConfirmQuitMessageBoxAccepted;
-
             ScreenManager.AddScreen(confirmQuitMessageBox, ControllingPlayer);
+            return;
         }
 
 
@@ -71,8 +70,19 @@ namespace SkyCrane.Screens
         {
             LoadingScreen.Load(ScreenManager, false, null, new BackgroundScreen(),
                                                            new MainMenuScreen());
+            return;
         }
 
+        /// <summary>
+        /// Open the options menu from inside the game environment.
+        /// </summary>
+        /// <param name="sender">The object sender (menu object that was selected).</param>
+        /// <param name="e">The player indices involved with picking the option.</param>
+        void OptionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        {
+            ScreenManager.AddScreen(new OptionsMenuScreen(), e.PlayerIndex);
+            return;
+        }
 
         #endregion
     }
