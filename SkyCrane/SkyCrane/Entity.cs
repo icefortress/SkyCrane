@@ -13,10 +13,32 @@ namespace SkyCrane
         public static int next_id = 0;
 
         public int id;
-        public Vector2 worldPosition;
+
+        public Vector2 worldPosBack;
+
+        public Vector2 worldPosition
+        {
+            get
+            {
+                return worldPosBack;
+            }
+
+            set
+            {
+                worldPosBack = value;
+
+                StateChange sc = new StateChange();
+                sc.entity_id = id;
+                sc.new_position = value;
+
+                notifyStateChangeListeners(sc);
+            }
+        }
         public Vector2 drawingPosition;
         public Vector2 velocity;
         public Vector2 size; // This is the sprite size, not necessarily the physical form
+
+        public List<StateChangeListener> slListeners = new List<StateChangeListener>();
 
         public GameplayScreen context;
 
@@ -42,6 +64,14 @@ namespace SkyCrane
             this.context = g;
             id = next_id;
             next_id++;
+        }
+
+        public void notifyStateChangeListeners(StateChange sc)
+        {
+            foreach (StateChangeListener l in slListeners)
+            {
+                l.handleStateChange(sc);
+            }
         }
 
         public void InitDrawable(Texture2D texture,
