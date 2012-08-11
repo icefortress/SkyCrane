@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
+using SkyCrane.GameStateManager;
+using SkyCrane.Screens;
 
 namespace SkyCrane
 {
@@ -17,7 +14,7 @@ namespace SkyCrane
     public class ProjectSkyCrane : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        ScreenManager screenManager;
 
         /// <summary>
         /// Create the main instance of the project and run.
@@ -26,9 +23,17 @@ namespace SkyCrane
         {
             Content.RootDirectory = "Content";
 
+            // Initialize the graphics manager
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
+
+            // Initialize the screen manager
+            //screenManager = new ScreenManager(this);
+            //Components.Add(screenManager);
+
+            // Activate a few initial screens
+            //screenManager.AddScreen(new BackgroundScreen(), null);
 
             return;
         }
@@ -53,9 +58,6 @@ namespace SkyCrane
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-
             // TODO: use this.Content to load your game content here
             return;
         }
@@ -77,25 +79,10 @@ namespace SkyCrane
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            UpdateGameControls(gameTime);
-
             // TODO: Add your update logic here
 
+            // Note: The vast majority of this will be captured on-screen
             base.Update(gameTime);
-            return;
-        }
-
-        /// <summary>
-        /// Update control-related information for all players.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        private void UpdateGameControls(GameTime gameTime)
-        {
-            // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-            {
-                this.Exit();
-            }
             return;
         }
 
