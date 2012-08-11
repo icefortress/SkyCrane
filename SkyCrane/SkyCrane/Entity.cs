@@ -109,7 +109,7 @@ namespace SkyCrane
             {
                 animationFrames.Add(i);
             }
-            InitDrawable(chara, frameWidth, chara.Height, animationFrames, 200, Color.White, 1, true);
+            InitDrawable(chara, frameWidth, chara.Height, animationFrames, 200, Color.White, this.scale, true);
             active = true;
         }
 

@@ -61,9 +61,7 @@ namespace SkyCrane.Screens
 
         public override void setVelocity(Vector2 val)
         {
-            /*int frame_width = s.intProperties[StateProperties.FRAME_WIDTH];
-                String texture_name = s.stringProperties[StateProperties.SPRITE_NAME];
-                String animation_name = s.stringProperties[StateProperties.ANIMATION_NAME];*/
+            base.setVelocity(val);
 
             if (val.X < 0 && !facingLeft)
             {
@@ -71,6 +69,7 @@ namespace SkyCrane.Screens
                 StateChange sc = new StateChange();
                 sc.type = StateChangeType.CHANGE_SPRITE;
                 sc.intProperties.Add(StateProperties.ENTITY_ID, id);
+                sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
                 sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureLeft);
                 sc.stringProperties.Add(StateProperties.ANIMATION_NAME, "poop");
 
@@ -82,6 +81,7 @@ namespace SkyCrane.Screens
                 StateChange sc = new StateChange();
                 sc.type = StateChangeType.CHANGE_SPRITE;
                 sc.intProperties.Add(StateProperties.ENTITY_ID, id);
+                sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
                 sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureRight);
                 sc.stringProperties.Add(StateProperties.ANIMATION_NAME, "poop");
 

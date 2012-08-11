@@ -25,6 +25,7 @@ namespace SkyCrane
 
         public PlayerCharacter(GameplayScreen g, int posX, int posY, int frameWidth, String textureLeft, String textureRight, String animationName) : base(g, posX, posY, frameWidth, textureLeft, textureRight, animationName)
         {
+            scale = 2;
         }
 
         public override void HandleCollision(CollisionDirection cd, PhysicsAble entity)
