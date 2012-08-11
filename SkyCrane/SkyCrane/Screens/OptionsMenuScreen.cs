@@ -8,7 +8,10 @@
 #endregion
 
 #region Using Statements
+
 using Microsoft.Xna.Framework;
+using System.Windows.Forms;
+using System.Drawing;
 #endregion
 
 namespace SkyCrane.Screens
@@ -22,6 +25,9 @@ namespace SkyCrane.Screens
     {
         #region Fields
 
+        MenuEntry fullScreenOnMenuEntry;
+        MenuEntry resolutionMenuEntry;
+        MenuEntry borderlessMenuEntry;
         MenuEntry musicOnMenuEntry;
         MenuEntry musicVolumeMenuEntry;
         MenuEntry soundFXOnMenuEntry;
@@ -36,18 +42,28 @@ namespace SkyCrane.Screens
             On
         }
 
-        // Current music options
+        // Display options
+        static readonly string[] resolutions = { "800x600", "1024x768", 
+            "1152x864", "1280x720", "1280x800", "1280x960", "1920x1080" };
+        static readonly char[] resolutionDelimiters = { 'x' };
+
+        // Current display settings options
+        static OnOff fullScreenOn = OnOff.Off;
+        static int resolution = 0;
+        static OnOff borderlessOn = OnOff.Off;
+
+        // Volume level options
+        const int MIN_VOLUME = 0;
+        const int MAX_VOLUME = 10;
+        const int VOLUME_DELTA = 1;
+
+        // Current music settings
         static OnOff musicOn = OnOff.On;
         static int musicVolume = MAX_VOLUME;
 
-        // Current sound FX options
+        // Current sound FX settings
         static OnOff soundFXOn = OnOff.On;
         static int soundFXVolume = MAX_VOLUME;
-
-        // Volume level properties
-        const int MIN_VOLUME = 0;
-        const int MAX_VOLUME = 11;
-        const int VOLUME_DELTA = 1;
 
         #endregion
 
@@ -59,17 +75,23 @@ namespace SkyCrane.Screens
         public OptionsMenuScreen()
             : base("Options")
         {
-            // Create our menu entries.
+
+            // Create our menu entries
+            fullScreenOnMenuEntry = new MenuEntry(string.Empty, true);
+            resolutionMenuEntry = new MenuEntry(string.Empty, false, fullScreenOn == OnOff.Off);
+            borderlessMenuEntry = new MenuEntry(string.Empty, true, fullScreenOn == OnOff.Off);
             musicOnMenuEntry = new MenuEntry(string.Empty, true);
-            musicVolumeMenuEntry = new MenuEntry(string.Empty, true);
+            musicVolumeMenuEntry = new MenuEntry(string.Empty, true, musicOn == OnOff.On);
             soundFXOnMenuEntry = new MenuEntry(string.Empty, true);
-            soundFXVolumeMenuEntry = new MenuEntry(string.Empty, true);
+            soundFXVolumeMenuEntry = new MenuEntry(string.Empty, true, soundFXOn == OnOff.On);
 
             SetMenuEntryText();
-
             MenuEntry back = new MenuEntry("Back");
 
             // Hook up menu event handlers.
+            fullScreenOnMenuEntry.Selected += FullScreenOnMenuEntrySelected;
+            resolutionMenuEntry.Selected += ResolutionMenuEntrySelected;
+            borderlessMenuEntry.Selected += BorderlessMenuEntrySelected;
             musicOnMenuEntry.Selected += MusicOnMenuEntrySelected;
             musicVolumeMenuEntry.Selected += MusicVolumeMenuEntrySelected;
             soundFXOnMenuEntry.Selected += SoundFXOnEntrySelected;
@@ -77,6 +99,9 @@ namespace SkyCrane.Screens
             back.Selected += OnCancel;
             
             // Add entries to the menu.
+            MenuEntries.Add(fullScreenOnMenuEntry);
+            MenuEntries.Add(borderlessMenuEntry);
+            MenuEntries.Add(resolutionMenuEntry);
             MenuEntries.Add(musicOnMenuEntry);
             MenuEntries.Add(musicVolumeMenuEntry);
             MenuEntries.Add(soundFXOnMenuEntry);
@@ -90,6 +115,9 @@ namespace SkyCrane.Screens
         /// </summary>
         void SetMenuEntryText()
         {
+            fullScreenOnMenuEntry.Text = "Fullscreen: " + fullScreenOn;
+            borderlessMenuEntry.Text = "Borderless: " + borderlessOn;
+            resolutionMenuEntry.Text = "Pick Resolution";
             musicOnMenuEntry.Text = "Music: " + musicOn;
             musicVolumeMenuEntry.Text = "Music Volume: " + musicVolume;
             soundFXOnMenuEntry.Text = "SoundFX: " + soundFXOn;
@@ -102,78 +130,158 @@ namespace SkyCrane.Screens
         #region Handle Input
 
         /// <summary>
-        /// Event handler for when the Ungulate menu entry is selected.
+        /// Event handler for when the fullscreen setting is toggled.
+        /// </summary>
+        /// <param name="sender">Sender object.</param>
+        /// <param name="e">Event arguments.</param>
+        void FullScreenOnMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        {
+            if (e.ToggleDirection != 0)
+            {
+                ((ProjectSkyCrane)ScreenManager.Game).GraphicsDeviceManager.ToggleFullScreen();
+                fullScreenOn += e.ToggleDirection;
+                if (fullScreenOn < OnOff.Off)
+                {
+                    fullScreenOn = OnOff.On;
+                }
+                else if (fullScreenOn > OnOff.On)
+                {
+                    fullScreenOn = OnOff.Off;
+                }
+                resolutionMenuEntry.Enabled = fullScreenOn == OnOff.Off;
+                borderlessMenuEntry.Enabled = fullScreenOn == OnOff.Off;
+                SetMenuEntryText();
+            }
+            return;
+        }
+
+        /// <summary>
+        /// Event handler for when the resolution setting is toggled.
+        /// </summary>
+        /// <param name="sender">Sender object.</param>
+        /// <param name="e">Event arguments.</param>
+        void ResolutionMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        {
+            ScreenManager.AddScreen(new ResolutionsMenuScreen(), e.PlayerIndex);
+            return;
+        }
+
+        /// <summary>
+        /// Event handler for when the borderless setting is toggled.
+        /// </summary>
+        /// <param name="sender">Sender object.</param>
+        /// <param name="e">Event arguments.</param>
+        void BorderlessMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        {
+            if (e.ToggleDirection != 0)
+            {
+                borderlessOn += e.ToggleDirection;
+                if (borderlessOn < OnOff.Off)
+                {
+                    borderlessOn = OnOff.On;
+                }
+                else if (borderlessOn > OnOff.On)
+                {
+                    borderlessOn = OnOff.Off;
+                }
+
+                Form gameWindow = Form.FromHandle(((ProjectSkyCrane)ScreenManager.Game).Window.Handle).FindForm();
+                if (borderlessOn == OnOff.On) // Sneakily adjust the border through the handle
+                {
+                    gameWindow.FormBorderStyle = FormBorderStyle.None;
+                }
+                else
+                {
+                    gameWindow.FormBorderStyle = FormBorderStyle.FixedSingle;
+                }
+                SetMenuEntryText();
+            }
+            return;
+        }
+
+        /// <summary>
+        /// Event handler for when the music is turned on or off.
         /// </summary>
         void MusicOnMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-
-            // Toggle the music on or off
-            musicOn += e.ToggleDirection;
-            if (musicOn < OnOff.Off)
+            if (e.ToggleDirection != 0)
             {
-                musicOn = OnOff.On;
+                musicOn += e.ToggleDirection;
+                if (musicOn < OnOff.Off)
+                {
+                    musicOn = OnOff.On;
+                }
+                else if (musicOn > OnOff.On)
+                {
+                    musicOn = OnOff.Off;
+                }
+                musicVolumeMenuEntry.Enabled = musicOn == OnOff.On;
+                SetMenuEntryText();
             }
-            else if (musicOn > OnOff.On)
-            {
-                musicOn = OnOff.Off;
-            }
-
-            // Toggle music on and off
-            musicVolumeMenuEntry.Enabled = musicOn == OnOff.On;
-
-            SetMenuEntryText();
+            return;
         }
 
         /// <summary>
-        /// Event handler for when the Language menu entry is selected.
+        /// Event handler for when the music volume is turned up or down.
         /// </summary>
         void MusicVolumeMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            musicVolume += e.ToggleDirection * VOLUME_DELTA;
-            if (musicVolume > MAX_VOLUME)
+            if (e.ToggleDirection != 0)
             {
-                musicVolume = MIN_VOLUME;
+                musicVolume += e.ToggleDirection * VOLUME_DELTA;
+                if (musicVolume > MAX_VOLUME)
+                {
+                    musicVolume = MIN_VOLUME;
+                }
+                else if (musicVolume < MIN_VOLUME)
+                {
+                    musicVolume = MAX_VOLUME;
+                }
+                SetMenuEntryText();
             }
-
-            SetMenuEntryText();
             return;
         }
 
         /// <summary>
-        /// Event handler for when the Frobnicate menu entry is selected.
+        /// Event handler for when the SFX are turned on or off.
         /// </summary>
         void SoundFXOnEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            // Toggle the music on or off
-            soundFXOn += e.ToggleDirection;
-            if (soundFXOn < OnOff.Off)
+            if (e.ToggleDirection != 0)
             {
-                soundFXOn = OnOff.On;
+                soundFXOn += e.ToggleDirection;
+                if (soundFXOn < OnOff.Off)
+                {
+                    soundFXOn = OnOff.On;
+                }
+                else if (soundFXOn > OnOff.On)
+                {
+                    soundFXOn = OnOff.Off;
+                }
+                soundFXVolumeMenuEntry.Enabled = soundFXOn == OnOff.On;
+                SetMenuEntryText();
             }
-            else if (soundFXOn > OnOff.On)
-            {
-                soundFXOn = OnOff.Off;
-            }
-
-            // Toggle music on and off
-            soundFXVolumeMenuEntry.Enabled = soundFXOn == OnOff.On;
-
-            SetMenuEntryText();
             return;
         }
 
         /// <summary>
-        /// Event handler for when the Elf menu entry is selected.
+        /// Event handler for when the SFX volume is turned up or down.
         /// </summary>
         void SoundFXVolumeMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            soundFXVolume += e.ToggleDirection * VOLUME_DELTA;
-            if (soundFXVolume > MAX_VOLUME)
+            if (e.ToggleDirection != 0)
             {
-                soundFXVolume = MIN_VOLUME;
+                soundFXVolume += e.ToggleDirection * VOLUME_DELTA;
+                if (soundFXVolume > MAX_VOLUME)
+                {
+                    soundFXVolume = MIN_VOLUME;
+                }
+                else if (soundFXVolume < MIN_VOLUME)
+                {
+                    soundFXVolume = MAX_VOLUME;
+                }
+                SetMenuEntryText();
             }
-
-            SetMenuEntryText();
             return;
         }
 

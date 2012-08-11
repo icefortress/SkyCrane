@@ -16,15 +16,19 @@ namespace SkyCrane
     {
 
         ScreenManager screenManager;
+
+        /// <summary>
+        /// The GraphicsDeviceManager currently associated with the game.
+        /// </summary>
+        public GraphicsDeviceManager GraphicsDeviceManager
+        {
+            get { return graphics; }
+        }
         GraphicsDeviceManager graphics;
 
         /// <summary>
         /// Create the main instance of the project and run.
         /// </summary>
-
-        public Level activeLevel;
-        public Vector2 viewPosition;
-
         public ProjectSkyCrane()
         {
             Content.RootDirectory = "Content";
@@ -65,14 +69,8 @@ namespace SkyCrane
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            //spriteBatch = new SpriteBatch(GraphicsDevice);
-
             // TODO: use this.Content to load your game content here
-            //Texture2D testLevel = this.Content.Load<Texture2D>("testlevel");
-            //textureDict.Add("testlevel", testLevel);
-
-            //activeLevel = Level.generateLevel(spriteBatch, this);
+            return;
         }
 
         /// <summary>
