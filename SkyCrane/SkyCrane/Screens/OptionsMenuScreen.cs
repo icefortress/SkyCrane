@@ -26,8 +26,9 @@ namespace SkyCrane.Screens
         #region Fields
 
         MenuEntry fullScreenOnMenuEntry;
+        MenuEntry borderlessOnMenuEntry;
         MenuEntry resolutionMenuEntry;
-        MenuEntry borderlessMenuEntry;
+        MenuEntry vsyncOnMenuEntry;
         MenuEntry musicOnMenuEntry;
         MenuEntry musicVolumeMenuEntry;
         MenuEntry soundFXOnMenuEntry;
@@ -42,15 +43,10 @@ namespace SkyCrane.Screens
             On
         }
 
-        // Display options
-        static readonly string[] resolutions = { "800x600", "1024x768", 
-            "1152x864", "1280x720", "1280x800", "1280x960", "1920x1080" };
-        static readonly char[] resolutionDelimiters = { 'x' };
-
         // Current display settings options
         static OnOff fullScreenOn = OnOff.Off;
-        static int resolution = 0;
         static OnOff borderlessOn = OnOff.Off;
+        static OnOff vsyncOn = OnOff.Off;
 
         // Volume level options
         const int MIN_VOLUME = 0;
@@ -78,8 +74,9 @@ namespace SkyCrane.Screens
 
             // Create our menu entries
             fullScreenOnMenuEntry = new MenuEntry(string.Empty, true);
+            borderlessOnMenuEntry = new MenuEntry(string.Empty, true, fullScreenOn == OnOff.Off);
             resolutionMenuEntry = new MenuEntry(string.Empty, false, fullScreenOn == OnOff.Off);
-            borderlessMenuEntry = new MenuEntry(string.Empty, true, fullScreenOn == OnOff.Off);
+            vsyncOnMenuEntry = new MenuEntry(string.Empty, true);
             musicOnMenuEntry = new MenuEntry(string.Empty, true);
             musicVolumeMenuEntry = new MenuEntry(string.Empty, true, musicOn == OnOff.On);
             soundFXOnMenuEntry = new MenuEntry(string.Empty, true);
@@ -90,8 +87,9 @@ namespace SkyCrane.Screens
 
             // Hook up menu event handlers.
             fullScreenOnMenuEntry.Selected += FullScreenOnMenuEntrySelected;
+            borderlessOnMenuEntry.Selected += BorderlessOnMenuEntrySelected;
             resolutionMenuEntry.Selected += ResolutionMenuEntrySelected;
-            borderlessMenuEntry.Selected += BorderlessMenuEntrySelected;
+            vsyncOnMenuEntry.Selected += VsyncOnMenuEntrySelected;
             musicOnMenuEntry.Selected += MusicOnMenuEntrySelected;
             musicVolumeMenuEntry.Selected += MusicVolumeMenuEntrySelected;
             soundFXOnMenuEntry.Selected += SoundFXOnEntrySelected;
@@ -100,8 +98,9 @@ namespace SkyCrane.Screens
             
             // Add entries to the menu.
             MenuEntries.Add(fullScreenOnMenuEntry);
-            MenuEntries.Add(borderlessMenuEntry);
+            MenuEntries.Add(borderlessOnMenuEntry);
             MenuEntries.Add(resolutionMenuEntry);
+            MenuEntries.Add(vsyncOnMenuEntry);
             MenuEntries.Add(musicOnMenuEntry);
             MenuEntries.Add(musicVolumeMenuEntry);
             MenuEntries.Add(soundFXOnMenuEntry);
@@ -116,8 +115,9 @@ namespace SkyCrane.Screens
         void SetMenuEntryText()
         {
             fullScreenOnMenuEntry.Text = "Fullscreen: " + fullScreenOn;
-            borderlessMenuEntry.Text = "Borderless: " + borderlessOn;
+            borderlessOnMenuEntry.Text = "Borderless: " + borderlessOn;
             resolutionMenuEntry.Text = "Pick Resolution";
+            vsyncOnMenuEntry.Text = "Vertical Sync: " + vsyncOn;
             musicOnMenuEntry.Text = "Music: " + musicOn;
             musicVolumeMenuEntry.Text = "Music Volume: " + musicVolume;
             soundFXOnMenuEntry.Text = "SoundFX: " + soundFXOn;
@@ -149,7 +149,38 @@ namespace SkyCrane.Screens
                     fullScreenOn = OnOff.Off;
                 }
                 resolutionMenuEntry.Enabled = fullScreenOn == OnOff.Off;
-                borderlessMenuEntry.Enabled = fullScreenOn == OnOff.Off;
+                borderlessOnMenuEntry.Enabled = fullScreenOn == OnOff.Off;
+                SetMenuEntryText();
+            }
+            return;
+        }
+
+        /// <summary>
+        /// Event handler for when the borderless setting is toggled.
+        /// </summary>
+        /// <param name="sender">Sender object.</param>
+        /// <param name="e">Event arguments.</param>
+        void BorderlessOnMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        {
+            if (e.ToggleDirection != 0)
+            {
+                borderlessOn += e.ToggleDirection;
+                if (borderlessOn < OnOff.Off)
+                {
+                    borderlessOn = OnOff.On;
+                }
+                else if (borderlessOn > OnOff.On)
+                {
+                    borderlessOn = OnOff.Off;
+                }
+                if (borderlessOn == OnOff.On) // Sneakily adjust the border through the handle
+                {
+                    Form.FromHandle(((ProjectSkyCrane)ScreenManager.Game).Window.Handle).FindForm().FormBorderStyle = FormBorderStyle.None;
+                }
+                else
+                {
+                    Form.FromHandle(((ProjectSkyCrane)ScreenManager.Game).Window.Handle).FindForm().FormBorderStyle = FormBorderStyle.FixedSingle;
+                }
                 SetMenuEntryText();
             }
             return;
@@ -167,37 +198,29 @@ namespace SkyCrane.Screens
         }
 
         /// <summary>
-        /// Event handler for when the borderless setting is toggled.
+        /// Event handler for when the vsync setting is toggled.
         /// </summary>
         /// <param name="sender">Sender object.</param>
         /// <param name="e">Event arguments.</param>
-        void BorderlessMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void VsyncOnMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
             if (e.ToggleDirection != 0)
             {
-                borderlessOn += e.ToggleDirection;
-                if (borderlessOn < OnOff.Off)
+                vsyncOn += e.ToggleDirection;
+                if (vsyncOn < OnOff.Off)
                 {
-                    borderlessOn = OnOff.On;
+                    vsyncOn = OnOff.On;
                 }
-                else if (borderlessOn > OnOff.On)
+                else if (vsyncOn > OnOff.On)
                 {
-                    borderlessOn = OnOff.Off;
+                    vsyncOn = OnOff.Off;
                 }
-
-                Form gameWindow = Form.FromHandle(((ProjectSkyCrane)ScreenManager.Game).Window.Handle).FindForm();
-                if (borderlessOn == OnOff.On) // Sneakily adjust the border through the handle
-                {
-                    gameWindow.FormBorderStyle = FormBorderStyle.None;
-                }
-                else
-                {
-                    gameWindow.FormBorderStyle = FormBorderStyle.FixedSingle;
-                }
+                ((ProjectSkyCrane)ScreenManager.Game).GraphicsDeviceManager.SynchronizeWithVerticalRetrace = vsyncOn == OnOff.On;
                 SetMenuEntryText();
             }
             return;
         }
+
 
         /// <summary>
         /// Event handler for when the music is turned on or off.

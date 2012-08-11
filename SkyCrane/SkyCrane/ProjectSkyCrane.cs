@@ -35,8 +35,9 @@ namespace SkyCrane
 
             // Initialize the graphics manager
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = 1280;
+            graphics.PreferredBackBufferWidth = 1280; // 1280x720 is the XBox 360 default
             graphics.PreferredBackBufferHeight = 720;
+            graphics.SynchronizeWithVerticalRetrace = false; // Turn off vsync by default
 
             // Initialize the screen manager
             screenManager = new ScreenManager(this);
