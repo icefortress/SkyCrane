@@ -9,12 +9,12 @@ namespace SkyCrane.Screens
 {
     class Bullet : Dude
     {
-        public static String textureName = "testchar";
+        public static String textureName = "bullet";
         public static String animationName = "animationName";
         public new static int frameWidth = 30;
 
         public Bullet(GameplayScreen g, Vector2 position, Vector2 velocity) :
-            base (g, (int)position.X, (int)position.Y, frameWidth, textureName, textureName, animationName)
+            base (g, (int)position.X, (int)position.Y, frameWidth, textureName, textureName)
         {
             this.worldPosBack = position; // Set position without sending update
             this.velocity = velocity;

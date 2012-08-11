@@ -94,11 +94,15 @@ namespace SkyCrane.Screens
             Texture2D testMap = content.Load<Texture2D>("Levels/room3-collision_map");
             Texture2D tankl = content.Load<Texture2D>("Sprites/Tank_Animated");
             Texture2D tankr = content.Load<Texture2D>("Sprites/Tank_Animated_Right");
+            Texture2D tankal = content.Load<Texture2D>("Sprites/Tank_Attack");
+            Texture2D tankar = content.Load<Texture2D>("Sprites/Tank_Attack");
             
             textureDict.Add("room2", testLevel);
             textureDict.Add("room2-collision-map", testMap);
             textureDict.Add("tankl", tankl);
             textureDict.Add("tankr", tankr);
+            textureDict.Add("tankal", tankal);
+            textureDict.Add("tankar", tankar);
 
             Level l = Level.generateLevel(this);
             gameState.currentLevel = l;
@@ -137,7 +141,7 @@ namespace SkyCrane.Screens
 
         public void serverStartGame()
         {
-            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, 45, "tankl", "tankr", "poop");
+            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, 45, "tankl", "tankr", "tankal", "tankar");
 
             if (isMultiplayer)
             {
@@ -145,7 +149,7 @@ namespace SkyCrane.Screens
                 List<int> playerIds = new List<int>();
                 for (int i = 1; i < numPlayers; i++)
                 {
-                    PlayerCharacter pc = gameState.createPlayer(1280 / 2 + 20 * i, 720 / 2 + 50, 45, "tankl", "tankr", "poop");
+                    PlayerCharacter pc = gameState.createPlayer(1280 / 2 + 20 * i, 720 / 2 + 50, 45, "tankl", "tankr", "tankal", "tankar");
                     playerIds.Add(pc.id);
                 }
             }
@@ -214,6 +218,11 @@ namespace SkyCrane.Screens
                         Vector2 velocity = c.direction * 8;
 
                         gameState.createBullet((int)pos.X, (int)pos.Y, velocity);
+                    }
+                    else if (c.ct == CommandType.ATTACK)
+                    {
+                        PlayerCharacter attacker = (PlayerCharacter)gameState.entities[c.entity_id];
+                        attacker.startAttack(gameTime);
                     }
                 }
                 commandBuffer.Clear(); // Important!
@@ -362,6 +371,14 @@ namespace SkyCrane.Screens
                     c.direction = movement;
                     c.ct = CommandType.SHOOT;
                     c.position = gameState.usersPlayer.worldPosition;
+                    commandBuffer.Add(c);
+                }
+
+                if (keyboardState.IsKeyDown(Keys.X))
+                {
+                    Command c = new Command();
+                    c.entity_id = gameState.usersPlayer.id;
+                    c.ct = CommandType.ATTACK;
                     commandBuffer.Add(c);
                 }
 
