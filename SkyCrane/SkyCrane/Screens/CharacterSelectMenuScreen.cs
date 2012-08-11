@@ -35,22 +35,15 @@ namespace SkyCrane.Screens
         /// <param name="host">Whether or not this player is the host.</param>
         /// <param name="multiplayer">Whether or not this game is multiplayer.</param>
         public CharacterSelectMenuScreen(bool host, bool multiplayer)
-            : base("Character Select")
+            : base("Character Select", true)
         {
             this.host = host;
-            this.multiplayer = true;
+            this.multiplayer = multiplayer;
 
-            // Create our menu entries.
-            MenuEntry startGameMenuEntry = new MenuEntry("Start Game");
-            MenuEntry backMenuEntry = new MenuEntry("Back");
-
-            // Hook up menu event handlers.
+            // Create the single invisible menu entry
+            MenuEntry startGameMenuEntry = new MenuEntry(string.Empty);
             startGameMenuEntry.Selected += StartGameMenuEntrySelected;
-            backMenuEntry.Selected += OnCancel;
-
-            // Add entries to the menu.
             MenuEntries.Add(startGameMenuEntry);
-            MenuEntries.Add(backMenuEntry);
             return;
         }
 

@@ -33,6 +33,7 @@ namespace SkyCrane.Screens
         string menuTitle;
         SoundEffect menuBleepEffect;
         bool typingInput;
+        bool graphicalSelect;
 
         #endregion
 
@@ -56,21 +57,29 @@ namespace SkyCrane.Screens
             get { return menuEntries; }
         }
 
+        /// <summary>
+        /// Whether or not the current menu is a graphical selection menu.
+        /// </summary>
+        protected bool GraphicalSelect
+        {
+            get { return graphicalSelect; }
+        }
+
 
         #endregion
 
         #region Initialization
 
-
         /// <summary>
         /// Constructor.
         /// </summary>
-        public MenuScreen(string menuTitle)
+        public MenuScreen(string menuTitle, bool graphicalSelect = false)
         {
             this.menuTitle = menuTitle;
-
+            this.graphicalSelect = graphicalSelect;
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
+            return;
         }
 
         /// <summary>
@@ -217,32 +226,39 @@ namespace SkyCrane.Screens
         /// </summary>
         protected virtual void UpdateMenuEntryLocations()
         {
-            // Make the menu slide into place during transitions, using a
-            // power curve to make things look more interesting (this makes
-            // the movement slow down as it nears the end).
-            float transitionOffset = (float)Math.Pow(TransitionPosition, 2);
-
-            // start at Y = 175; each X value is generated per entry
-            Vector2 position = new Vector2(0f, 175f);
-
-            // update each menu entry's location in turn
-            for (int i = 0; i < menuEntries.Count; i++)
+            if (!graphicalSelect)
             {
-                MenuEntry menuEntry = menuEntries[i];
-                
-                // each entry is to be centered horizontally
-                position.X = ScreenManager.GraphicsDevice.Viewport.Width / 2 - menuEntry.GetWidth(this) / 2;
+                // Make the menu slide into place during transitions, using a
+                // power curve to make things look more interesting (this makes
+                // the movement slow down as it nears the end).
+                float transitionOffset = (float)Math.Pow(TransitionPosition, 2);
 
-                if (ScreenState == ScreenState.TransitionOn)
-                    position.X -= transitionOffset * 256;
-                else
-                    position.X += transitionOffset * 512;
+                // start at Y = 175; each X value is generated per entry
+                Vector2 position = new Vector2(0f, 175f);
 
-                // set the entry's position
-                menuEntry.Position = position;
+                // update each menu entry's location in turn
+                for (int i = 0; i < menuEntries.Count; i++)
+                {
+                    MenuEntry menuEntry = menuEntries[i];
 
-                // move down for the next entry the size of this entry
-                position.Y += menuEntry.GetHeight(this);
+                    // each entry is to be centered horizontally
+                    position.X = ScreenManager.GraphicsDevice.Viewport.Width / 2 - menuEntry.GetWidth(this) / 2;
+
+                    if (ScreenState == ScreenState.TransitionOn)
+                    {
+                        position.X -= transitionOffset * 256;
+                    }
+                    else
+                    {
+                        position.X += transitionOffset * 512;
+                    }
+
+                    // set the entry's position
+                    menuEntry.Position = position;
+
+                    // move down for the next entry the size of this entry
+                    position.Y += menuEntry.GetHeight(this);
+                }
             }
             return;
         }
@@ -282,13 +298,14 @@ namespace SkyCrane.Screens
             spriteBatch.Begin();
 
             // Draw each menu entry in turn.
-            for (int i = 0; i < menuEntries.Count; i++)
+            if (!graphicalSelect)
             {
-                MenuEntry menuEntry = menuEntries[i];
-
-                bool isSelected = IsActive && (i == selectedEntry);
-
-                menuEntry.Draw(this, isSelected, gameTime);
+                for (int i = 0; i < menuEntries.Count; i++)
+                {
+                    MenuEntry menuEntry = menuEntries[i];
+                    bool isSelected = IsActive && (i == selectedEntry);
+                    menuEntry.Draw(this, isSelected, gameTime);
+                }
             }
 
             // Make the menu slide into place during transitions, using a
