@@ -28,16 +28,19 @@ namespace SkyCrane.Screens
         {
             // Create our menu entries.
             MenuEntry playGameMenuEntry = new MenuEntry("New Game");
+            MenuEntry multiplayerMenuEntry = new MenuEntry("Multiplayer");
             MenuEntry optionsMenuEntry = new MenuEntry("Options");
             MenuEntry exitMenuEntry = new MenuEntry("Exit");
 
             // Hook up menu event handlers.
             playGameMenuEntry.Selected += PlayGameMenuEntrySelected;
+            multiplayerMenuEntry.Selected += MultiplayerMenuEntrySelected;
             optionsMenuEntry.Selected += OptionsMenuEntrySelected;
             exitMenuEntry.Selected += OnCancel;
 
             // Add entries to the menu.
             MenuEntries.Add(playGameMenuEntry);
+            MenuEntries.Add(multiplayerMenuEntry);
             MenuEntries.Add(optionsMenuEntry);
             MenuEntries.Add(exitMenuEntry);
             return;
@@ -50,18 +53,26 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Event handler for when the Play Game menu entry is selected.
         /// </summary>
-        void PlayGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void PlayGameMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
             LoadingScreen.Load(ScreenManager, false, e.PlayerIndex,
                                new GameplayScreen());
             return;
         }
 
+        /// <summary>
+        /// Event handler for when the Play Game menu entry is selected.
+        /// </summary>
+        void MultiplayerMenuEntrySelected(object sender, PlayerInputEventArgs e)
+        {
+            ScreenManager.AddScreen(new MultiplayerMenuScreen(), e.PlayerIndex);
+            return;
+        }
 
         /// <summary>
         /// Event handler for when the Options menu entry is selected.
         /// </summary>
-        void OptionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void OptionsMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
             ScreenManager.AddScreen(new OptionsMenuScreen(), e.PlayerIndex);
             return;
@@ -85,7 +96,7 @@ namespace SkyCrane.Screens
         /// Event handler for when the user selects ok on the "are you sure
         /// you want to exit" message box.
         /// </summary>
-        void ConfirmExitMessageBoxAccepted(object sender, PlayerIndexEventArgs e)
+        void ConfirmExitMessageBoxAccepted(object sender, PlayerInputEventArgs e)
         {
             ScreenManager.Game.Exit();
             return;

@@ -101,12 +101,15 @@ namespace SkyCrane.Screens
 
         #region Events
 
-
         /// <summary>
         /// Event raised when the menu entry is selected.
         /// </summary>
-        public event EventHandler<PlayerIndexEventArgs> Selected;
+        public event EventHandler<PlayerInputEventArgs> Selected;
 
+        /// <summary>
+        /// Event raised when input gets typed;
+        /// </summary>
+        public event EventHandler<PlayerInputEventArgs> Typed;
 
         /// <summary>
         /// Method for raising the Selected event.
@@ -115,7 +118,19 @@ namespace SkyCrane.Screens
         {
             if (Selected != null)
             {
-                Selected(this, new PlayerIndexEventArgs(playerIndex, toggleDirection));
+                Selected(this, new PlayerInputEventArgs(playerIndex, toggleDirection));
+            }
+            return;
+        }
+
+        /// <summary>
+        /// Method for raising the Typed event.
+        /// </summary>
+        protected internal virtual void OnInputTyped(PlayerIndex playerIndex, bool inputAccepted, bool inputCancelled, bool inputBackspace, String keysTyped)
+        {
+            if (Typed != null)
+            {
+                Typed(this, new PlayerInputEventArgs(playerIndex, 0, inputAccepted, inputCancelled, inputBackspace, keysTyped));
             }
             return;
         }

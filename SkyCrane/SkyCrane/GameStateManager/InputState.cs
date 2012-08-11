@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using System.Text;
 
 namespace SkyCrane.GameStateManager
 {
@@ -29,6 +30,25 @@ namespace SkyCrane.GameStateManager
         public readonly GamePadState[] currentGamePadStates;
         public readonly GamePadState[] lastGamePadStates;
         public readonly bool[] gamePadWasConnected;
+
+        /// <summary>
+        /// Typeable keys.
+        /// </summary>
+        public static readonly Keys[] TYPEABLE_KEYS = { Keys.A, Keys.B, Keys.C,
+            Keys.D, Keys.E, Keys.F, Keys.G, Keys.H, Keys.I, Keys.J,
+            Keys.K, Keys.L, Keys.M, Keys.N, Keys.O, Keys.P, Keys.Q,
+            Keys.R, Keys.S, Keys.T, Keys.U, Keys.V, Keys.W, Keys.X,
+            Keys.Y, Keys.Z, Keys.NumPad0, Keys.NumPad1, Keys.NumPad2,
+            Keys.NumPad3, Keys.NumPad4, Keys.NumPad5, Keys.NumPad6,
+            Keys.NumPad7, Keys.NumPad8, Keys.NumPad9, Keys.D0, Keys.D1,
+            Keys.D2, Keys.D3, Keys.D4, Keys.D5, Keys.D6, Keys.D7, Keys.D8,
+            Keys.D9, Keys.OemPeriod, Keys.Decimal, Keys.Divide, Keys.OemQuestion,
+            Keys.OemMinus, Keys.Subtract };
+        
+        /// <summary>
+        /// CharacteDivider mappings for the above array.
+        /// </summary>
+        public static readonly String TYPEABLE_CHARS = "abcdefghijklmnopqrstuvwxyz01234567890123456789..//--";
 
         /// <summary>
         /// Constructs a new input state.
@@ -218,6 +238,32 @@ namespace SkyCrane.GameStateManager
             return IsNewKeyPress(Keys.Escape, controllingPlayer, out playerIndex) ||
                    //IsNewButtonPress(Buttons.Back, controllingPlayer, out playerIndex) ||
                    IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex);
+        }
+
+        /// <summary>
+        /// Check to see if the backspace was pressed.
+        /// </summary>
+        public bool IsBackspace(PlayerIndex? controllingPlayer, out PlayerIndex playerIndex)
+        {
+            return IsNewKeyPress(Keys.Back, controllingPlayer, out playerIndex);
+        }
+
+        /// <summary>
+        /// Check to see if any typable input was given.
+        /// </summary>
+        public String TypeableInput(PlayerIndex? controllingPlayer, out PlayerIndex playerIndex)
+        {
+            playerIndex = controllingPlayer.Value;
+            StringBuilder returnString = new StringBuilder();
+            for (int i = 0; i < TYPEABLE_KEYS.Length; i += 1)
+            {
+                if (IsNewKeyPress(TYPEABLE_KEYS[i], controllingPlayer, out playerIndex))
+                {
+                    returnString.Append(TYPEABLE_CHARS[i]);
+                }
+            }
+
+            return returnString.ToString();
         }
 
     }

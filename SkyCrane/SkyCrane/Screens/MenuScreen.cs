@@ -32,11 +32,20 @@ namespace SkyCrane.Screens
         int selectedEntry = 0;
         string menuTitle;
         SoundEffect menuBleepEffect;
+        bool typingInput;
 
         #endregion
 
         #region Properties
 
+        /// <summary>
+        /// Whether or not the screen is currently capturing typed input.
+        /// </summary>
+        protected bool TypingInput
+        {
+            get { return typingInput; }
+            set { typingInput = value; }
+        }
 
         /// <summary>
         /// Gets the list of menu entries, so derived classes can add
@@ -87,57 +96,76 @@ namespace SkyCrane.Screens
         /// </summary>
         public override void HandleInput(InputState input)
         {
-            // Move to the previous menu entry?
-            if (input.IsMenuUp(ControllingPlayer))
-            {
-                menuBleepEffect.Play();
-                do
-                {
-                    selectedEntry--;
-                    if (selectedEntry < 0)
-                    {
-                        selectedEntry = menuEntries.Count - 1;
-                    }
-                } while (!menuEntries[selectedEntry].Enabled);
-            }
-
-            // Move to the next menu entry?
-            if (input.IsMenuDown(ControllingPlayer))
-            {
-                menuBleepEffect.Play();
-                do
-                {
-                    selectedEntry++;
-                    if (selectedEntry >= menuEntries.Count)
-                    {
-                        selectedEntry = 0;
-                    }
-                } while (!menuEntries[selectedEntry].Enabled);
-            }
-
-            // Accept or cancel the menu? We pass in our ControllingPlayer, which may
-            // either be null (to accept input from any player) or a specific index.
-            // If we pass a null controlling player, the InputState helper returns to
-            // us which player actually provided the input. We pass that through to
-            // OnSelectEntry and OnCancel, so they can tell which player triggered them.
+            // Variables that will be set during input checking
             PlayerIndex playerIndex;
             int toggleDirection;
 
-            if (menuEntries[selectedEntry].Toggleable && input.IsMenuToggle(ControllingPlayer, out playerIndex, out toggleDirection))
+            if (typingInput) // The user is typing input
             {
-                OnSelectEntry(selectedEntry, playerIndex, toggleDirection);
+                bool inputAccepted = input.IsMenuSelect(ControllingPlayer, out playerIndex);
+                bool inputCancelled = input.IsMenuCancel(ControllingPlayer, out playerIndex);
+                bool inputBackspace = input.IsBackspace(ControllingPlayer, out playerIndex);
+                String keysTyped = input.TypeableInput(ControllingPlayer, out playerIndex);
+
+                if (inputAccepted || inputCancelled)
+                {
+                    typingInput = false;
+                }
+                if (inputAccepted || inputCancelled || inputBackspace || keysTyped != String.Empty)
+                {
+                    OnTyped(selectedEntry, playerIndex, inputAccepted, inputCancelled, inputBackspace, keysTyped);
+                }
             }
-            else if (input.IsMenuSelect(ControllingPlayer, out playerIndex))
+            else // The user is performing normal menu input
             {
-                OnSelectEntry(selectedEntry, playerIndex, 0);
-            }
-            else if (input.IsMenuCancel(ControllingPlayer, out playerIndex))
-            {
-                OnCancel(playerIndex);
+                // Move to the previous menu entry?
+                if (input.IsMenuUp(ControllingPlayer))
+                {
+                    menuBleepEffect.Play();
+                    do
+                    {
+                        selectedEntry--;
+                        if (selectedEntry < 0)
+                        {
+                            selectedEntry = menuEntries.Count - 1;
+                        }
+                    } while (!menuEntries[selectedEntry].Enabled);
+                }
+
+                // Move to the next menu entry?
+                if (input.IsMenuDown(ControllingPlayer))
+                {
+                    menuBleepEffect.Play();
+                    do
+                    {
+                        selectedEntry++;
+                        if (selectedEntry >= menuEntries.Count)
+                        {
+                            selectedEntry = 0;
+                        }
+                    } while (!menuEntries[selectedEntry].Enabled);
+                }
+
+                // Accept or cancel the menu? We pass in our ControllingPlayer, which may
+                // either be null (to accept input from any player) or a specific index.
+                // If we pass a null controlling player, the InputState helper returns to
+                // us which player actually provided the input. We pass that through to
+                // OnSelectEntry and OnCancel, so they can tell which player triggered them.
+                if (menuEntries[selectedEntry].Toggleable && input.IsMenuToggle(ControllingPlayer, out playerIndex, out toggleDirection))
+                {
+                    OnSelectEntry(selectedEntry, playerIndex, toggleDirection);
+                }
+                else if (input.IsMenuSelect(ControllingPlayer, out playerIndex))
+                {
+                    OnSelectEntry(selectedEntry, playerIndex, 0);
+                }
+                else if (input.IsMenuCancel(ControllingPlayer, out playerIndex))
+                {
+                    OnCancel(playerIndex);
+                }
             }
             return;
         }
-
 
         /// <summary>
         /// Handler for when the user has chosen a menu entry.
@@ -150,7 +178,6 @@ namespace SkyCrane.Screens
             }
             return;
         }
-
 
         /// <summary>
         /// Handler for when the user has cancelled the menu.
@@ -165,17 +192,24 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Helper overload makes it easy to use OnCancel as a MenuEntry event handler.
         /// </summary>
-        protected virtual void OnCancel(object sender, PlayerIndexEventArgs e)
+        protected virtual void OnCancel(object sender, PlayerInputEventArgs e)
         {
             OnCancel(e.PlayerIndex);
             return;
         }
 
+        /// <summary>
+        /// Handler for when the user types data into a text-accepting menu entry.
+        /// </summary>
+        protected virtual void OnTyped(int entryIndex, PlayerIndex playerIndex, bool inputAccepted, bool inputCancelled, bool inputBackspace, String keysTyped)
+        {
+            menuEntries[entryIndex].OnInputTyped(playerIndex, inputAccepted, inputCancelled, inputBackspace, keysTyped);
+            return;
+        }
 
         #endregion
 
         #region Update and Draw
-
 
         /// <summary>
         /// Allows the screen the chance to position the menu entries. By default

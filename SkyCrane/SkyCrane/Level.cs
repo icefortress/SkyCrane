@@ -20,7 +20,7 @@ namespace SkyCrane
         public static Level generateLevel(GameplayScreen g)
         {
             Level bah = new Level(g, g.textureDict["room2"], g.textureDict["room2-collision-map"], new Vector2(1920, 1800));
-            bah.worldPosition = new Vector2(1280/2, 720/2);
+            bah.worldPosBack = new Vector2(1280/2, 720/2);
             bah.active = true;
 
             return bah;
@@ -121,9 +121,9 @@ namespace SkyCrane
             Vector2 characterInLevel = position - levelPosition;
 
             // Define region of pixels under the bounds
-            int left = (int)Math.Floor((characterInLevel.X - size.X / 2) / levelSize.X * bitmapWidth);
+            int left = Math.Max(0, (int)Math.Floor((characterInLevel.X - size.X / 2) / levelSize.X * bitmapWidth));
             int width = (int)Math.Ceiling(size.X / levelSize.X * bitmapWidth);
-            int top = (int)Math.Floor((characterInLevel.Y - size.Y / 2) / levelSize.Y * bitmapHeight);
+            int top = Math.Max(0, (int)Math.Floor((characterInLevel.Y - size.Y / 2) / levelSize.Y * bitmapHeight));
             int height = (int)Math.Ceiling(size.Y / levelSize.Y * bitmapHeight);
 
             bool hitTop = false;

@@ -161,9 +161,20 @@ namespace SkyCrane.Screens
                 // Apply own commands, and client's commands
                 foreach (Command c in commandBuffer)
                 {
-                    Entity e = gameState.entities[c.entity_id];
-                    e.velocity = c.direction * 3;
+                    if (c.ct == CommandType.MOVE)
+                    {
+                        Entity e = gameState.entities[c.entity_id];
+                        e.velocity = c.direction * 3;
+                    }
+                    else if (c.ct == CommandType.SHOOT)
+                    {
+                        Vector2 pos = c.position;
+                        Vector2 velocity = c.direction * 8;
+
+                        gameState.createBullet((int)pos.X, (int)pos.Y, velocity);
+                    }
                 }
+                commandBuffer.Clear(); // Important!
 
                 // Apply commands from the client
                 /*List<Command> clientCommands = null;
@@ -201,10 +212,19 @@ namespace SkyCrane.Screens
                 // Move objects by their post-check velocity
                 foreach (Entity e in gameState.entities.Values)
                 {
-                    e.worldPosition += e.velocity;
+                    if (e.velocity != Vector2.Zero)
+                    {
+                        Vector2 old = e.worldPosition;
+                        Vector2 newn = e.worldPosition + e.velocity;
+                        e.worldPosition = newn;
+                    } 
                 }
 
                 // Push changes to clients
+
+                // Commit changes locally
+                gameState.commitChanges();
+                gameState.changes.Clear();
             }
             else
             {
@@ -290,12 +310,21 @@ namespace SkyCrane.Screens
                 if (movement.Length() > 1)
                     movement.Normalize();
 
-                Command c = new Command();
-                c.entity_id = gameState.usersPlayer.id;
-                c.direction = movement;
-                c.ct = CommandType.MOVE;
+                if (keyboardState.IsKeyDown(Keys.P))
+                {
+                    Command c = new Command();
+                    c.entity_id = gameState.usersPlayer.id;
+                    c.direction = movement;
+                    c.ct = CommandType.SHOOT;
+                    c.position = gameState.usersPlayer.worldPosition;
+                    commandBuffer.Add(c);
+                }
 
-                commandBuffer.Add(c);
+                Command c2 = new Command();
+                c2.entity_id = gameState.usersPlayer.id;
+                c2.direction = movement;
+                c2.ct = CommandType.MOVE;
+                commandBuffer.Add(c2);
             }
         }
 

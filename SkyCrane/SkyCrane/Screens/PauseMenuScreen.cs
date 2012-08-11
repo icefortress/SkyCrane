@@ -56,7 +56,7 @@ namespace SkyCrane.Screens
         /// </summary>
         /// <param name="sender">Object sender.</param>
         /// <param name="e">Event arguments.</param>
-        protected override void OnCancel(object sender, PlayerIndexEventArgs e)
+        protected override void OnCancel(object sender, PlayerInputEventArgs e)
         {
             MediaPlayer.Resume();
             base.OnCancel(sender, e);
@@ -78,7 +78,7 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Event handler for when the Quit Game menu entry is selected.
         /// </summary>
-        void QuitGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void QuitGameMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
             const string message = "Quit to main menu?";
             MessageBoxScreen confirmQuitMessageBox = new MessageBoxScreen(message);
@@ -92,7 +92,7 @@ namespace SkyCrane.Screens
         /// you want to quit" message box. This uses the loading screen to
         /// transition from the game back to the main menu screen.
         /// </summary>
-        void ConfirmQuitMessageBoxAccepted(object sender, PlayerIndexEventArgs e)
+        void ConfirmQuitMessageBoxAccepted(object sender, PlayerInputEventArgs e)
         {
             LoadingScreen.Load(ScreenManager, false, null, new BackgroundScreen(),
                                                            new MainMenuScreen());
@@ -104,7 +104,7 @@ namespace SkyCrane.Screens
         /// </summary>
         /// <param name="sender">The object sender (menu object that was selected).</param>
         /// <param name="e">The player indices involved with picking the option.</param>
-        void OptionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void OptionsMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
             ScreenManager.AddScreen(new OptionsMenuScreen(), e.PlayerIndex);
             return;

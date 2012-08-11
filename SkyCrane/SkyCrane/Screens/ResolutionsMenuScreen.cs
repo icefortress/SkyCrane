@@ -65,7 +65,7 @@ namespace SkyCrane.Screens
         /// </summary>
         /// <param name="sender">Sender object.</param>
         /// <param name="e">Event arguments.</param>
-        void ResolutionMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void ResolutionMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
             string[] dimensions = ((MenuEntry)(sender)).Text.Split(resolutionDelimiters);
             int width = int.Parse(dimensions[0]), height = int.Parse(dimensions[1]);

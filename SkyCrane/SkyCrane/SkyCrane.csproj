@@ -98,6 +98,10 @@
     <Compile Include="GameStateManager\ScreenManager.cs" />
     <Compile Include="Screens\BackgroundScreen.cs" />
     <Compile Include="Dude.cs" />
+    <Compile Include="Screens\Bullet.cs" />
+    <Compile Include="Screens\CharacterSelectMenuScreen.cs" />
+    <Compile Include="Screens\HostSettingsMenuScreen.cs" />
+    <Compile Include="Screens\MultiplayerMenuScreen.cs" />
     <Compile Include="Screens\ResolutionsMenuScreen.cs" />
     <Compile Include="Screens\GameplayScreen.cs" />
     <Compile Include="Screens\LoadingScreen.cs" />
