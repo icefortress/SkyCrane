@@ -42,6 +42,7 @@ namespace SkyCrane.Screens
         public bool isServer;
         public bool isMultiplayer;
         public int numPlayers;
+        public Dictionary<int, int> serverIDLookup = new Dictionary<int, int>();
 
         bool goodtogo = false;
 
@@ -49,6 +50,9 @@ namespace SkyCrane.Screens
         public Dictionary<String, Texture2D> textureDict = new Dictionary<String, Texture2D>();
 
         float pauseAlpha;
+
+        RawServer serverReference = null;
+        RawClient clientReference = null;
 
         #endregion
 
@@ -88,11 +92,13 @@ namespace SkyCrane.Screens
 
             Texture2D testLevel = content.Load<Texture2D>("Levels/room3");
             Texture2D testMap = content.Load<Texture2D>("Levels/room3-collision_map");
-            Texture2D testChar = content.Load<Texture2D>("Sprites/Tank_Animated");
+            Texture2D tankl = content.Load<Texture2D>("Sprites/Tank_Animated");
+            Texture2D tankr = content.Load<Texture2D>("Sprites/Tank_Animated_Right");
             
             textureDict.Add("room2", testLevel);
             textureDict.Add("room2-collision-map", testMap);
-            textureDict.Add("testchar", testChar);
+            textureDict.Add("tankl", tankl);
+            textureDict.Add("tankr", tankr);
 
             Level l = Level.generateLevel(this);
             gameState.currentLevel = l;
@@ -131,14 +137,17 @@ namespace SkyCrane.Screens
 
         public void serverStartGame()
         {
-            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, 45, "testchar", "poop");
+            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, 45, "tankl", "tankr", "poop");
 
-            // Create players and broadcast to the clients
-            List<int> playerIds = new List<int>();
-            for (int i = 1; i < numPlayers; i++)
+            if (isMultiplayer)
             {
-                PlayerCharacter pc = gameState.createPlayer(1280 / 2 + 20 * i, 720 / 2 + 50, 45, "testchar", "poop");
-                playerIds.Add(pc.id);
+                // Create players and broadcast to the clients
+                List<int> playerIds = new List<int>();
+                for (int i = 1; i < numPlayers; i++)
+                {
+                    PlayerCharacter pc = gameState.createPlayer(1280 / 2 + 20 * i, 720 / 2 + 50, 45, "tankl", "tankr", "poop");
+                    playerIds.Add(pc.id);
+                }
             }
 
             // Get the players from the server and send them each a notification of who the fuck theyare
@@ -150,6 +159,11 @@ namespace SkyCrane.Screens
         public void clientStartGame()
         {
             // Keep pulling statechanges until we have our character set
+            while (gameState.usersPlayer == null)
+            {
+                List<StateChange> changes = clientReference.rcvUPD();
+                gameState.applyAllStatechangs(changes);
+            }
 
             // then enter the game
         }
@@ -205,12 +219,15 @@ namespace SkyCrane.Screens
                 commandBuffer.Clear(); // Important!
 
                 // Apply commands from the client
-                /*List<Command> clientCommands = null;
-                foreach (Command c in clientCommands)
+                if (isMultiplayer)
                 {
-                    Entity e = gameState.entities[c.entity_id];
-                    e.velocity = c.direction * 3;
-                }*/
+                    List<Command> clientCommands = serverReference.getCMD();
+                    foreach (Command c in clientCommands)
+                    {
+                        Entity e = gameState.entities[c.entity_id];
+                        e.velocity = c.direction * 3;
+                    }
+                }
 
                 foreach (Entity e in gameState.entities.Values)
                 {
@@ -249,7 +266,8 @@ namespace SkyCrane.Screens
                 }
 
                 // Push changes to clients
-
+                if(isMultiplayer) serverReference.broadcastSC(gameState.changes);
+                
                 // Commit changes locally
                 gameState.commitChanges();
                 gameState.changes.Clear();
@@ -258,16 +276,13 @@ namespace SkyCrane.Screens
             {
                 
                 // Send our input to the server
-                foreach (Command c in commandBuffer)
-                {
-                    // TODO
-                }
+                clientReference.sendCMD(commandBuffer);
 
                 // Flush our gamestatemanager changes, we don't trust ourselves
                 gameState.changes.Clear();
 
                 // Get changes from server
-                List<StateChange> changes = null; //TODO
+                List<StateChange> changes = clientReference.rcvUPD();
 
                 // Apply all changes on the server
                 foreach(StateChange sc in changes) {

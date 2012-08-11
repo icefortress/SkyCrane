@@ -14,7 +14,7 @@ namespace SkyCrane.Screens
         public new static int frameWidth = 30;
 
         public Bullet(GameplayScreen g, Vector2 position, Vector2 velocity) :
-            base (g, (int)position.X, (int)position.Y, frameWidth, textureName, animationName)
+            base (g, (int)position.X, (int)position.Y, frameWidth, textureName, textureName, animationName)
         {
             this.worldPosBack = position; // Set position without sending update
             this.velocity = velocity;

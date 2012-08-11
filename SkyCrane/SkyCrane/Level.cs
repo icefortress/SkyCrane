@@ -19,11 +19,7 @@ namespace SkyCrane
         // TODO: we can use this to build levels with various params
         public static Level generateLevel(GameplayScreen g)
         {
-            Level bah = new Level(g, "room2", "room2-collision-map", 1920, 1800);
-            bah.worldPosBack = new Vector2(1280/2, 720/2);
-            bah.active = true;
-
-            return bah;
+            return new Level(g, "room2", "room2-collision-map", 1920, 1800);
         }
 
         public Level(GameplayScreen g, String bgKey, String bmKey, int size_x, int size_y)
@@ -32,12 +28,14 @@ namespace SkyCrane
             this.background = g.textureDict["room2"];
             Texture2D bitmap = g.textureDict["room2-collision-map"];
 
+            scale = (float)size_x / (float)background.Width;
+
             this.bitmap = new Color[bitmap.Width * bitmap.Height];
             bitmap.GetData<Color>(this.bitmap);
             bitmapWidth = bitmap.Width;
             bitmapHeight = bitmap.Height;
 
-            this.levelSize = size;
+            this.levelSize = new Vector2(size_x, size_y);
         }
 
         public Vector2 GetPhysicsSize()
@@ -61,7 +59,7 @@ namespace SkyCrane
 
         /* Computes the view position (centred) in world coordinates that things should be drawn off of based on player position
          * This is necessary to deal with the edges of the world */
-        public Vector2 getViewPosition(PlayerCharacter c)
+        public Vector2 getViewPosition(Entity c)
         {
             Vector2 characterPosition = c.worldPosition;
 
