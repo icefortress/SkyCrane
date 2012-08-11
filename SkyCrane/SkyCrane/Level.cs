@@ -29,7 +29,7 @@ namespace SkyCrane
             this.bitmap = bitmap;
             this.size = size;
 
-            InitDrawable(sb, background, background.Width, background.Height, 1, 1, Color.Black, size.X / background.Width, true);
+            InitDrawable(sb, background, background.Width, background.Height, 1, 1, Color.White, size.X / background.Width, true);
 
             this.DrawOrder = 0; // levels should be drawn first
         }
