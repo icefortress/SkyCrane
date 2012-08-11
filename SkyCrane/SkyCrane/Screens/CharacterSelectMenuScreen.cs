@@ -18,6 +18,14 @@ namespace SkyCrane.Screens
     /// </summary>
     class CharacterSelectMenuScreen : MenuScreen
     {
+
+        #region Fields
+
+        bool host;
+        bool multiplayer;
+
+        #endregion
+
         #region Initialization
 
         /// <summary>
@@ -28,6 +36,9 @@ namespace SkyCrane.Screens
         public CharacterSelectMenuScreen(bool host, bool multiplayer)
             : base("Character Select")
         {
+            this.host = host;
+            this.multiplayer = true;
+
             // Create our menu entries.
             MenuEntry back = new MenuEntry("Back");
 
@@ -42,6 +53,15 @@ namespace SkyCrane.Screens
         #endregion
 
         #region Handle Input
+
+        /// <summary>
+        /// Event handler for when the Play Game menu entry is selected.
+        /// </summary>
+        void PlayGameMenuEntrySelected(object sender, PlayerInputEventArgs e)
+        {
+            LoadingScreen.Load(ScreenManager, false, e.PlayerIndex, new GameplayScreen());
+            return;
+        }
 
         #endregion
     }
