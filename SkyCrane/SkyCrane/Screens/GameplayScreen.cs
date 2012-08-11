@@ -54,16 +54,8 @@ namespace SkyCrane.Screens
         /// </summary>
         public GameplayScreen()
         {
-            content.Load<Texture2D>("testlevel");
-
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
-
-            activeLevel = Level.generateLevel(this);
-            usersPlayer = PlayerCharacter.createDefaultPlayerCharacter(this);
-
-            entities.Add(activeLevel);
-            entities.Add(usersPlayer);
         }
 
 
@@ -77,10 +69,19 @@ namespace SkyCrane.Screens
 
             gameFont = content.Load<SpriteFont>("gamefont");
 
+            Texture2D testLevel = content.Load<Texture2D>("testlevel");
+            textureDict.Add("testlevel", testLevel);
+
             // A real game would probably have more content than this sample, so
             // it would take longer to load. We simulate that by delaying for a
             // while, giving you a chance to admire the beautiful loading screen.
             Thread.Sleep(1000);
+
+            activeLevel = Level.generateLevel(this);
+            usersPlayer = PlayerCharacter.createDefaultPlayerCharacter(this);
+
+            entities.Add(activeLevel);
+            entities.Add(usersPlayer);
 
             // once the load has finished, we use ResetElapsedTime to tell the game's
             // timing mechanism that we have just finished a very long frame, and that

@@ -75,7 +75,6 @@ namespace SkyCrane
             //textureDict.Add("testlevel", testLevel);
 
             //activeLevel = Level.generateLevel(spriteBatch, this);
-            Texture2D testLevel = this.Content.Load<Texture2D>("testlevel");
         }
 
         /// <summary>
