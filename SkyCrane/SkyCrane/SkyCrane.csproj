@@ -75,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AIable.cs" />
+    <Compile Include="Command.cs" />
     <Compile Include="Enemy.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="GameState.cs" />
@@ -98,6 +99,8 @@
     <Compile Include="Screens\OptionsMenuScreen.cs" />
     <Compile Include="Screens\PauseMenuScreen.cs" />
     <Compile Include="Screens\PlayerIndexEventArgs.cs" />
+    <Compile Include="StateChange.cs" />
+    <Compile Include="StateChangeListener.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

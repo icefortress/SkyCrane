@@ -42,6 +42,7 @@ namespace SkyCrane.Screens
 
         public bool isServer = true;
 
+        List<Command> commandBuffer = new List<Command>();
 
         public SortedDictionary<int, List<Entity>> drawPriorityEntities = new SortedDictionary<int, List<Entity>>();
 
@@ -63,6 +64,7 @@ namespace SkyCrane.Screens
             }
         }
 
+        // These are the entities you own and update yourself
         public List<AIable> aiAbles = new List<AIable>();
         public List<PhysicsAble> physicsAbles = new List<PhysicsAble>();
         public Dictionary<String, Texture2D> textureDict = new Dictionary<String, Texture2D>();
@@ -109,17 +111,17 @@ namespace SkyCrane.Screens
             Level l = Level.generateLevel(this);
             gameState.currentLevel = l;
             this.addEntity(0, l);
-            gameState.entities.Add(l);
+            gameState.entities.Add(l.id, l);
             physicsAbles.Add(l);
 
             usersPlayer = PlayerCharacter.createDefaultPlayerCharacter(this);
             this.addEntity(100, usersPlayer);
-            gameState.entities.Add(usersPlayer);
+            gameState.entities.Add(usersPlayer.id, usersPlayer);
             physicsAbles.Add(usersPlayer);
 
             Enemy e = Enemy.createDefaultEnemy(this);
             this.addEntity(100, e);
-            gameState.entities.Add(e);
+            gameState.entities.Add(e.id, e);
             physicsAbles.Add(e);
             aiAbles.Add(e);
 
@@ -164,38 +166,73 @@ namespace SkyCrane.Screens
             // TODO: Add your update logic here
             viewPosition = gameState.currentLevel.getViewPosition(usersPlayer);
 
-            // Server has to update AI characters here
             if (isServer)
             {
+                // Apply own commands, and client's commands
+                foreach (Command c in commandBuffer)
+                {
+                    Entity e = gameState.entities[c.entity_id];
+                    e.velocity = c.direction * 3;
+                }
+
+                // Apply commands from the client
+                List<Command> clientCommands = null;
+                foreach (Command c in clientCommands)
+                {
+                    Entity e = gameState.entities[c.entity_id];
+                    e.velocity = c.direction * 3;
+                }
+
                 foreach (AIable a in aiAbles)
                 {
                     a.UpdateAI(gameTime);
                 }
-            }
 
-            foreach (PhysicsAble p in physicsAbles)
-            {
-                p.UpdatePhysics();
-            }
-
-            // Iterate over the physicsAbles to see if they are colliding with eachother
-            foreach (PhysicsAble p in physicsAbles)
-            {
-                foreach(PhysicsAble pp in physicsAbles) {
-                    if(p == pp) continue;
-
-                    // We let the target decide if there's a collision. This will help with things like the Level special case
-                    CollisionDirection cd = pp.CheckCollision(p);
-                    if (cd != CollisionDirection.NONE) p.HandleCollision(cd, pp);
+                foreach (PhysicsAble p in physicsAbles)
+                {
+                    p.UpdatePhysics();
                 }
-            }
 
-            // Move objects by their post-check velocity
-            foreach (Entity e in gameState.entities)
+                // Iterate over the physicsAbles to see if they are colliding with eachother
+                foreach (PhysicsAble p in physicsAbles)
+                {
+                    foreach (PhysicsAble pp in physicsAbles)
+                    {
+                        if (p == pp) continue;
+
+                        // We let the target decide if there's a collision. This will help with things like the Level special case
+                        CollisionDirection cd = pp.CheckCollision(p);
+                        if (cd != CollisionDirection.NONE) p.HandleCollision(cd, pp);
+                    }
+                }
+
+                // Move objects by their post-check velocity
+                foreach (Entity e in gameState.entities.Values)
+                {
+                    e.worldPosition += e.velocity;
+                }
+
+                // Push changes to clients
+            }
+            else
             {
-                e.worldPosition += e.velocity;
-            }
+                // Send our input to the server
+                foreach (Command c in commandBuffer)
+                {
+                    // TODO
+                }
 
+                // Flush our gamestatemanager changes, we don't trust ourselves
+                gameState.changes.Clear();
+
+                // Get changes from server
+                List<StateChange> changes = null; //TODO
+
+                foreach(StateChange sc in changes) {
+                    gameState.applyStateChange(sc);
+                }
+
+            }
 
             // Gradually fade in or out depending on whether we are covered by the pause screen.
             if (coveredByOtherScreen)
@@ -261,7 +298,12 @@ namespace SkyCrane.Screens
                 if (movement.Length() > 1)
                     movement.Normalize();
 
-                usersPlayer.velocity = 3 * movement;
+                Command c = new Command();
+                c.entity_id = usersPlayer.id;
+                c.direction = movement;
+                c.ct = CommandType.MOVE;
+
+                commandBuffer.Add(c);
             }
         }
 

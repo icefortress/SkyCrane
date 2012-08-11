@@ -50,7 +50,15 @@ namespace SkyCrane
 
             // Move towards target
             velocity = (target.worldPosition - worldPosition);
-            velocity.Normalize();
+
+            if (velocity.Length() < 1)
+            {
+                velocity = Vector2.Zero;
+            }
+            else
+            {
+                velocity.Normalize();
+            }
         }
 
         public void HandleCollision(CollisionDirection cd, PhysicsAble entity)
