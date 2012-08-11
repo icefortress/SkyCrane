@@ -9,6 +9,7 @@
 
 #region Using Statements
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Media;
 #endregion
 
 namespace SkyCrane.Screens
@@ -27,15 +28,17 @@ namespace SkyCrane.Screens
         public PauseMenuScreen()
             : base("Paused")
         {
+            MediaPlayer.Pause();
+
             // Create our menu entries.
             MenuEntry resumeGameMenuEntry = new MenuEntry("Resume Game");
             MenuEntry optionsMenuEntry = new MenuEntry("Options");
             MenuEntry quitGameMenuEntry = new MenuEntry("Quit Game");
             
             // Hook up menu event handlers.
-            resumeGameMenuEntry.Selected += OnCancel;
             optionsMenuEntry.Selected += OptionsMenuEntrySelected;
             quitGameMenuEntry.Selected += QuitGameMenuEntrySelected;
+            resumeGameMenuEntry.Selected += OnCancel;
 
             // Add entries to the menu.
             MenuEntries.Add(resumeGameMenuEntry);
@@ -49,6 +52,30 @@ namespace SkyCrane.Screens
         #region Handle Input
 
         /// <summary>
+        /// Resume playback when cancelling.
+        /// </summary>
+        /// <param name="sender">Object sender.</param>
+        /// <param name="e">Event arguments.</param>
+        protected override void OnCancel(object sender, PlayerIndexEventArgs e)
+        {
+            MediaPlayer.Resume();
+            base.OnCancel(sender, e);
+            return;
+        }
+
+        /// <summary>
+        /// Resume playback when cancelling.
+        /// </summary>
+        /// <param name="sender">Object sender.</param>
+        /// <param name="e">Event arguments.</param>
+        protected override void OnCancel(PlayerIndex playerIndex)
+        {
+            MediaPlayer.Resume();
+            base.OnCancel(playerIndex);
+            return;
+        }
+
+        /// <summary>
         /// Event handler for when the Quit Game menu entry is selected.
         /// </summary>
         void QuitGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)
@@ -59,7 +86,6 @@ namespace SkyCrane.Screens
             ScreenManager.AddScreen(confirmQuitMessageBox, ControllingPlayer);
             return;
         }
-
 
         /// <summary>
         /// Event handler for when the user selects ok on the "are you sure

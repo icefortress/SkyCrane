@@ -89,7 +89,6 @@ namespace SkyCrane.Screens
             return;
         }
 
-
         #endregion
 
         #region Handle Input

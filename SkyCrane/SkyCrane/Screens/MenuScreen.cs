@@ -14,6 +14,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SkyCrane.GameStateManager;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Audio;
 #endregion
 
 namespace SkyCrane.Screens
@@ -29,6 +31,7 @@ namespace SkyCrane.Screens
         List<MenuEntry> menuEntries = new List<MenuEntry>();
         int selectedEntry = 0;
         string menuTitle;
+        SoundEffect menuBleepEffect;
 
         #endregion
 
@@ -61,6 +64,18 @@ namespace SkyCrane.Screens
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
         }
 
+        /// <summary>
+        /// Loads graphics content for this screen. This uses the shared ContentManager
+        /// provided by the Game class, so the content will remain loaded forever.
+        /// Whenever a subsequent MessageBoxScreen tries to load this same content,
+        /// it will just get back another reference to the already loaded data.
+        /// </summary>
+        public override void LoadContent()
+        {
+            ContentManager content = ScreenManager.Game.Content;
+            menuBleepEffect = content.Load<SoundEffect>("SoundFX/bleep");
+            return;
+        }
 
         #endregion
 
@@ -75,6 +90,7 @@ namespace SkyCrane.Screens
             // Move to the previous menu entry?
             if (input.IsMenuUp(ControllingPlayer))
             {
+                menuBleepEffect.Play();
                 do
                 {
                     selectedEntry--;
@@ -88,6 +104,7 @@ namespace SkyCrane.Screens
             // Move to the next menu entry?
             if (input.IsMenuDown(ControllingPlayer))
             {
+                menuBleepEffect.Play();
                 do
                 {
                     selectedEntry++;
@@ -141,15 +158,17 @@ namespace SkyCrane.Screens
         protected virtual void OnCancel(PlayerIndex playerIndex)
         {
             ExitScreen();
+            return;
         }
 
 
         /// <summary>
         /// Helper overload makes it easy to use OnCancel as a MenuEntry event handler.
         /// </summary>
-        protected void OnCancel(object sender, PlayerIndexEventArgs e)
+        protected virtual void OnCancel(object sender, PlayerIndexEventArgs e)
         {
             OnCancel(e.PlayerIndex);
+            return;
         }
 
 
@@ -248,13 +267,11 @@ namespace SkyCrane.Screens
             Vector2 titleOrigin = font.MeasureString(menuTitle) / 2;
             Color titleColor = new Color(192, 192, 192) * TransitionAlpha;
             float titleScale = 1.25f;
-
             titlePosition.Y -= transitionOffset * 100;
-
             spriteBatch.DrawString(font, menuTitle, titlePosition, titleColor, 0,
                                    titleOrigin, titleScale, SpriteEffects.None, 0);
-
             spriteBatch.End();
+            return;
         }
 
 

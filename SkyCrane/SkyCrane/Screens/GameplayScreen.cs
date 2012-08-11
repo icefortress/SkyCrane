@@ -69,7 +69,9 @@ namespace SkyCrane.Screens
         public override void LoadContent()
         {
             if (content == null)
+            {
                 content = new ContentManager(ScreenManager.Game.Services, "Content");
+            }
 
             gameFont = content.Load<SpriteFont>("Fonts/gamefont");
 

@@ -43,11 +43,9 @@ namespace SkyCrane.Screens
             return;
         }
 
-
         #endregion
 
         #region Handle Input
-
 
         /// <summary>
         /// Event handler for when the Play Game menu entry is selected.
