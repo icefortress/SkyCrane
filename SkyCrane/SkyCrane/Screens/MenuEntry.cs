@@ -45,6 +45,16 @@ namespace SkyCrane.Screens
         /// </summary>
         Vector2 position;
 
+        /// <summary>
+        /// Whether or not a particular menu entry is a toggleable one.
+        /// </summary>
+        bool toggleable;
+
+        /// <summary>
+        /// Whether or not this menu entry is enabled.
+        /// </summary>
+        bool enabled;
+
         #endregion
 
         #region Properties
@@ -69,6 +79,23 @@ namespace SkyCrane.Screens
             set { position = value; }
         }
 
+        /// <summary>
+        /// Gets or sets whether this menu entry is toggleable.
+        /// </summary>
+        public Boolean Toggleable
+        {
+            get { return toggleable; }
+            set { toggleable = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets whether this menu entry is enabled.
+        /// </summary>
+        public Boolean Enabled
+        {
+            get { return enabled; }
+            set { enabled = value; }
+        }
 
         #endregion
 
@@ -99,9 +126,12 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Constructs a new menu entry with the specified text.
         /// </summary>
-        public MenuEntry(string text)
+        public MenuEntry(string text, bool toggleable = false, bool enabled = true)
         {
             this.text = text;
+            this.toggleable = toggleable;
+            this.enabled = enabled;
+            return;
         }
 
 
@@ -139,8 +169,16 @@ namespace SkyCrane.Screens
             // force isSelected to be false
 
             // Draw the selected entry in yellow, otherwise white.
-            Color color = isSelected ? Color.Yellow : Color.White;
-
+            Color color;
+            if (enabled)
+            {
+                color = isSelected ? Color.Yellow : Color.White;
+            }
+            else
+            {
+                color = Color.Gray;
+            }
+            
             // Pulsate the size of the selected menu entry.
             double time = gameTime.TotalGameTime.TotalSeconds;
             

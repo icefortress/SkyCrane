@@ -29,7 +29,7 @@ namespace SkyCrane.GameStateManager
         public readonly GamePadState[] currentGamePadStates;
         public readonly GamePadState[] lastGamePadStates;
         public readonly bool[] gamePadWasConnected;
-        
+
         /// <summary>
         /// Constructs a new input state.
         /// </summary>
@@ -134,6 +134,36 @@ namespace SkyCrane.GameStateManager
                    IsNewKeyPress(Keys.Enter, controllingPlayer, out playerIndex) ||
                    IsNewButtonPress(Buttons.A, controllingPlayer, out playerIndex) ||
                    IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex);
+        }
+
+        /// <summary>
+        /// Checks to see if a menu option is being toggled.
+        /// </summary>
+        /// <param name="controllingPlayer">The controlling player is checked for input.</param>
+        /// <param name="playerIndex">Returned player that pressed the button (on null input).</param>
+        /// <param name="menuDirection">The returned direction that the option was being toggled in.</param>
+        /// <returns>True an option is being toggled.</returns>
+        public bool IsMenuToggle(PlayerIndex? controllingPlayer, out PlayerIndex playerIndex, out int menuDirection)
+        {
+            menuDirection = 0;
+            if (IsNewKeyPress(Keys.Space, controllingPlayer, out playerIndex) ||
+                    IsNewKeyPress(Keys.Enter, controllingPlayer, out playerIndex) ||
+                    IsNewButtonPress(Buttons.A, controllingPlayer, out playerIndex) ||
+                    IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex) ||
+                    IsNewKeyPress(Keys.Right, controllingPlayer, out playerIndex) ||
+                    IsNewButtonPress(Buttons.LeftThumbstickRight, controllingPlayer, out playerIndex) ||
+                    IsNewButtonPress(Buttons.DPadRight, controllingPlayer, out playerIndex))
+            {
+                menuDirection += 1;
+            }
+            if (IsNewKeyPress(Keys.Left, controllingPlayer, out playerIndex) ||
+                    IsNewButtonPress(Buttons.LeftThumbstickLeft, controllingPlayer, out playerIndex) ||
+                    IsNewButtonPress(Buttons.DPadLeft, controllingPlayer, out playerIndex))
+            {
+                menuDirection -= 1;
+            }
+
+            return menuDirection != 0;
         }
 
 
