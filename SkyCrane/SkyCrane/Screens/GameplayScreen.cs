@@ -33,11 +33,11 @@ namespace SkyCrane.Screens
         SpriteFont gameFont;
 
         // Our game stuff
-        public Level activeLevel;
         public Vector2 viewPosition;
         public PlayerCharacter usersPlayer;
 
-        public List<Entity> entities = new List<Entity>();
+        public GameState gameState;
+
         public List<AIable> aiAbles = new List<AIable>();
         public List<PhysicsAble> physicsAbles = new List<PhysicsAble>();
         public Dictionary<String, Texture2D> textureDict = new Dictionary<String, Texture2D>();
@@ -56,6 +56,8 @@ namespace SkyCrane.Screens
         {
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
+
+            gameState = new GameState();
         }
 
 
@@ -79,8 +81,11 @@ namespace SkyCrane.Screens
             // while, giving you a chance to admire the beautiful loading screen.
             Thread.Sleep(1000);
 
-            activeLevel = Level.generateLevel(this);
+            Level l = Level.generateLevel(this);
+            gameState.currentLevel = l;
+            gameState.addEntity(0, l);
             usersPlayer = PlayerCharacter.createDefaultPlayerCharacter(this);
+            gameState.addEntity(100, usersPlayer);
 
             // once the load has finished, we use ResetElapsedTime to tell the game's
             // timing mechanism that we have just finished a very long frame, and that
@@ -114,7 +119,7 @@ namespace SkyCrane.Screens
             base.Update(gameTime, otherScreenHasFocus, false);
 
             // TODO: Add your update logic here
-            viewPosition = activeLevel.getViewPosition(usersPlayer);
+            viewPosition = gameState.currentLevel.getViewPosition(usersPlayer);
 
             // Gradually fade in or out depending on whether we are covered by the pause screen.
             if (coveredByOtherScreen)
@@ -199,8 +204,12 @@ namespace SkyCrane.Screens
 
             spriteBatch.Begin();
 
-            activeLevel.Draw(gameTime, spriteBatch);
-            usersPlayer.Draw(gameTime, spriteBatch);
+            foreach(int k in gameState.drawPriorityEntities.Keys) {
+                foreach (Entity e in gameState.drawPriorityEntities[k])
+                {
+                    e.Draw(gameTime, spriteBatch);
+                }
+            }
 
             spriteBatch.End();
 

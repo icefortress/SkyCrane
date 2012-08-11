@@ -10,7 +10,6 @@ namespace SkyCrane
 
     public interface PhysicsAble
     {
-        void UpdatePhysics(GameTime time, List<PhysicsAble> others);
         CollisionDirection CheckCollision(Vector2 position, Rectangle bounds);
     }
 }

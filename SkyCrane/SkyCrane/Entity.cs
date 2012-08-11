@@ -10,6 +10,9 @@ namespace SkyCrane
 {
     public class Entity
     {
+        public static int next_id = 0;
+
+        public int id;
         public Vector2 worldPosition;
         public Vector2 drawingPosition;
         public Vector2 velocity;
@@ -36,6 +39,8 @@ namespace SkyCrane
         public Entity(GameplayScreen g)
         {
             this.context = g;
+            id = next_id;
+            next_id++;
         }
 
         public void InitDrawable(Texture2D texture,

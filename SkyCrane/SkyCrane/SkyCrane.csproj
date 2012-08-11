@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="AIable.cs" />
     <Compile Include="Entity.cs" />
+    <Compile Include="GameState.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="PhysicsAble.cs" />
     <Compile Include="PlayerCharacter.cs" />
