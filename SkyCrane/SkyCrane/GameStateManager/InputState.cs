@@ -147,9 +147,9 @@ namespace SkyCrane.GameStateManager
         {
             toggleDirection = 0;
             if (//IsNewKeyPress(Keys.Space, controllingPlayer, out playerIndex) ||
-                    //IsNewKeyPress(Keys.Enter, controllingPlayer, out playerIndex) ||
+                    IsNewKeyPress(Keys.Enter, controllingPlayer, out playerIndex) ||
                     IsNewButtonPress(Buttons.A, controllingPlayer, out playerIndex) ||
-                    //IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex) ||
+                    IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex) ||
                     IsNewKeyPress(Keys.Right, controllingPlayer, out playerIndex) ||
                     IsNewButtonPress(Buttons.LeftThumbstickRight, controllingPlayer, out playerIndex) ||
                     IsNewButtonPress(Buttons.DPadRight, controllingPlayer, out playerIndex))
