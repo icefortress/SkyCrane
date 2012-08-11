@@ -16,6 +16,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SkyCrane.GameStateManager;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 #endregion
 
 namespace SkyCrane.Screens
@@ -73,6 +75,7 @@ namespace SkyCrane.Screens
 
             Texture2D testLevel = content.Load<Texture2D>("Levels/room1");
             Texture2D testChar = content.Load<Texture2D>("Sprites/Wizard");
+            
             textureDict.Add("testlevel", testLevel);
             textureDict.Add("testchar", testChar);
 
@@ -82,10 +85,17 @@ namespace SkyCrane.Screens
             usersPlayer = PlayerCharacter.createDefaultPlayerCharacter(this);
             gameState.addEntity(100, usersPlayer);
 
+            // Some test music
+            MediaPlayer.Stop();
+            Song bgMusic = content.Load<Song>("Music/Nero - Doomsday");
+            MediaPlayer.Volume = 0.3f;
+            MediaPlayer.Play(bgMusic);
+
             // once the load has finished, we use ResetElapsedTime to tell the game's
             // timing mechanism that we have just finished a very long frame, and that
             // it should not try to catch up.
             ScreenManager.Game.ResetElapsedTime();
+            return;
         }
 
 
