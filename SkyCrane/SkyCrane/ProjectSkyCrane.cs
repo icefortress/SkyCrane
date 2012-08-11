@@ -15,10 +15,18 @@ namespace SkyCrane
     {
         GraphicsDeviceManager graphics;
         ScreenManager screenManager;
+        public List<AIable> aiAbles = new List<AIable>();
+        public List<PhysicsAble> physicsAbles = new List<PhysicsAble>();
+        public Dictionary<String, Texture2D> textureDict = new Dictionary<String, Texture2D>();
+
+        SpriteBatch spriteBatch;
 
         /// <summary>
         /// Create the main instance of the project and run.
         /// </summary>
+
+        Level activeLevel;
+
         public ProjectSkyCrane()
         {
             Content.RootDirectory = "Content";
@@ -58,8 +66,14 @@ namespace SkyCrane
         /// </summary>
         protected override void LoadContent()
         {
+            // Create a new SpriteBatch, which can be used to draw textures.
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+
             // TODO: use this.Content to load your game content here
-            return;
+            Texture2D testLevel = this.Content.Load<Texture2D>("testlevel");
+            textureDict.Add("testlevel", testLevel);
+
+            activeLevel = Level.generateLevel(spriteBatch, this);
         }
 
         /// <summary>
@@ -115,5 +129,6 @@ namespace SkyCrane
                 game.Run();
             }
         }
+
     }
 }

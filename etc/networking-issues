@@ -1,0 +1,11 @@
+* whoever starts session is server
+* everyone communicates with authority
+* a representation of the players connected to them
+	* link between those network entities, character entities connected to
+* generic packet taht gets sent client -> server
+* generic packet that gets sent server -> clients
+	update packet
+
+Game code implementation:
+
+
