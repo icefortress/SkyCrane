@@ -15,6 +15,9 @@ namespace SkyCrane
         {
             PlayerCharacter pc = new PlayerCharacter(g);
             pc.worldPosition = new Vector2(1280 / 2, 720 / 2);
+            Texture2D chara = g.textureDict["testchar"];
+            pc.InitDrawable(chara, chara.Width, chara.Height, 1, 1, Color.White, 1, true);
+            pc.active = true;
 
             return pc;
         }

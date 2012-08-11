@@ -39,7 +39,11 @@ namespace SkyCrane
         public Vector2 getViewPosition(PlayerCharacter c)
         {
             Vector2 characterPosition = c.worldPosition;
-            Vector2 levelPosition = this.worldPosition - new Vector2(this.background.Width * scale / 2, this.background.Height * scale / 2); // getting this in terms of top-left coordinate, so we can get player's position in the world
+
+            float half_scaled_bg_w = this.background.Width * scale / 2;
+            float half_scaled_bg_h = this.background.Height * scale / 2;
+
+            Vector2 levelPosition = this.worldPosition - new Vector2(half_scaled_bg_w, half_scaled_bg_h); // getting this in terms of top-left coordinate, so we can get player's position in the world
 
             // Position of the character within the realm of the level
             Vector2 characterInLevel = characterPosition - levelPosition;
@@ -47,11 +51,11 @@ namespace SkyCrane
             Vector2 position;
             if (characterInLevel.X < 1280 / 2)
             {
-                position.X = this.worldPosition.X + 1280/2;
+                position.X = this.worldPosition.X - half_scaled_bg_w + 1280 / 2;
             }
             else if (characterInLevel.X > (this.size.X - 1280 / 2))
             {
-                position.X = this.worldPosition.X + this.size.X - 1280/2;
+                position.X = this.worldPosition.X + half_scaled_bg_w - 1280/2;
             }
             else
             {
@@ -60,11 +64,11 @@ namespace SkyCrane
 
             if (characterInLevel.Y < 720 / 2)
             {
-                position.Y = this.worldPosition.Y + 720 / 2;
+                position.Y = this.worldPosition.Y - half_scaled_bg_h + 720 / 2;
             }
-            else if (characterInLevel.Y > (this.size.X - 720 / 2))
+            else if (characterInLevel.Y > (2 * half_scaled_bg_h - 720 / 2))
             {
-                position.Y = this.worldPosition.Y + this.size.Y - 720 / 2;
+                position.Y = this.worldPosition.Y + half_scaled_bg_h - 720 / 2;
             }
             else
             {

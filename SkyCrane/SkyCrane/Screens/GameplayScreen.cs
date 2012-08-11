@@ -70,7 +70,9 @@ namespace SkyCrane.Screens
             gameFont = content.Load<SpriteFont>("gamefont");
 
             Texture2D testLevel = content.Load<Texture2D>("testlevel");
+            Texture2D testChar = content.Load<Texture2D>("testchar");
             textureDict.Add("testlevel", testLevel);
+            textureDict.Add("testchar", testChar);
 
             // A real game would probably have more content than this sample, so
             // it would take longer to load. We simulate that by delaying for a
@@ -79,9 +81,6 @@ namespace SkyCrane.Screens
 
             activeLevel = Level.generateLevel(this);
             usersPlayer = PlayerCharacter.createDefaultPlayerCharacter(this);
-
-            entities.Add(activeLevel);
-            entities.Add(usersPlayer);
 
             // once the load has finished, we use ResetElapsedTime to tell the game's
             // timing mechanism that we have just finished a very long frame, and that
@@ -180,6 +179,8 @@ namespace SkyCrane.Screens
 
                 if (movement.Length() > 1)
                     movement.Normalize();
+
+                usersPlayer.worldPosition += 3 * movement;
             }
         }
 
@@ -198,10 +199,8 @@ namespace SkyCrane.Screens
 
             spriteBatch.Begin();
 
-            foreach (Entity e in entities)
-            {
-                e.Draw(gameTime, spriteBatch);
-            }
+            activeLevel.Draw(gameTime, spriteBatch);
+            usersPlayer.Draw(gameTime, spriteBatch);
 
             spriteBatch.End();
 
