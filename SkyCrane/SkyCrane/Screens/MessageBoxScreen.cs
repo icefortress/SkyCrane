@@ -26,6 +26,7 @@ namespace SkyCrane.Screens
 
         #region Fields
 
+        bool includeUsageText;
         string message;
         string baseMessage;
         Texture2D gradientTexture;
@@ -57,6 +58,7 @@ namespace SkyCrane.Screens
         /// </summary>
         public MessageBoxScreen(string message, bool includeUsageText)
         {
+            this.includeUsageText = includeUsageText;
             baseMessage = message;
             if (includeUsageText)
             {
@@ -170,12 +172,17 @@ namespace SkyCrane.Screens
             // Draw the message box text.
             spriteBatch.DrawString(font, message, textPosition, color);
 
-            spriteBatch.Draw(aButtonTexture, new Rectangle((int)(textPosition.X + okSize.X) + 2,
-                (int)(textPosition.Y + baseSize.Y), (int)okSize.Y, (int)okSize.Y), color);
-            spriteBatch.Draw(bButtonTexture, new Rectangle((int)(textPosition.X + cancelSize.X) + 2,
-                (int)(textPosition.Y + textSize.Y - cancelSize.Y), (int)cancelSize.Y, (int)cancelSize.Y), color);
+            if (includeUsageText) // If there is usage text, draw accompanying buttons
+            {
+                spriteBatch.Draw(aButtonTexture, new Rectangle((int)(textPosition.X + okSize.X) + 2,
+                    (int)(textPosition.Y + baseSize.Y), (int)okSize.Y, (int)okSize.Y), color);
+                spriteBatch.Draw(bButtonTexture, new Rectangle((int)(textPosition.X + cancelSize.X) + 2,
+                    (int)(textPosition.Y + textSize.Y - cancelSize.Y), (int)cancelSize.Y, (int)cancelSize.Y), color);
+            }
 
             spriteBatch.End();
+
+            return;
         }
 
 
