@@ -37,7 +37,20 @@ namespace SkyCrane
             }
         }
         public Vector2 drawingPosition;
-        public Vector2 velocity;
+
+        private Vector2 velocityBack;
+        public Vector2 velocity
+        {
+            get { return velocityBack; }
+            set { setVelocity(value); }
+        }
+
+        // This can be overriden to do things like change animation on velocity change
+        public virtual void setVelocity(Vector2 val)
+        {
+            velocityBack = val;
+        }
+
         public Vector2 size; // This is the sprite size, not necessarily the physical form
 
         public List<StateChangeListener> slListeners = new List<StateChangeListener>();
@@ -84,10 +97,10 @@ namespace SkyCrane
 
             worldPosBack= new Vector2(posX, posY);
 
-            changeAnimation(frameWidth, textureName, animationName, true);
+            changeAnimation(frameWidth, textureName, animationName);
         }
 
-        public void changeAnimation(int frameWidth, String textureName, String animationName, bool constructor)
+        public void changeAnimation(int frameWidth, String textureName, String animationName)
         {
             Texture2D chara = context.textureDict[textureName];
 
@@ -96,7 +109,7 @@ namespace SkyCrane
             {
                 animationFrames.Add(i);
             }
-            InitDrawable(chara, frameWidth, chara.Height, animationFrames, 200, Color.White, 1, true);
+            InitDrawable(chara, frameWidth, chara.Height, animationFrames, 200, Color.White, this.scale, true);
             active = true;
         }
 
