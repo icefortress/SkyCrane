@@ -40,6 +40,8 @@ namespace SkyCrane.Screens
         public GameState gameState;
 
         public bool isServer = true;
+        public int numPlayers = 4;
+
         bool goodtogo = false;
 
         List<Command> commandBuffer = new List<Command>();
@@ -61,6 +63,10 @@ namespace SkyCrane.Screens
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
 
             gameState = new GameState(this);
+
+            if (isServer)
+            {
+            }
         }
 
 
@@ -87,8 +93,6 @@ namespace SkyCrane.Screens
             Level l = Level.generateLevel(this);
             gameState.currentLevel = l;
             gameState.addEntity(0, l);
-
-            serverStartGame(1);
 
             /*Enemy e = Enemy.createDefaultEnemy(this);
             this.addEntity(100, e);
@@ -121,10 +125,11 @@ namespace SkyCrane.Screens
 
         #endregion
 
-        public void serverStartGame(int numPlayers)
+        public void serverStartGame()
         {
             gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, 45, "testchar", "poop");
 
+            // Create players and broadcast to the clients
             List<int> playerIds = new List<int>();
             for (int i = 1; i < numPlayers; i++)
             {
@@ -136,6 +141,13 @@ namespace SkyCrane.Screens
 
             goodtogo = true;
 
+        }
+
+        public void clientStartGame()
+        {
+            // Keep pulling statechanges until we have our character set
+
+            // then enter the game
         }
 
         #region Update and Draw
@@ -151,13 +163,25 @@ namespace SkyCrane.Screens
         {
             base.Update(gameTime, otherScreenHasFocus, false);
 
-            if (!goodtogo) return;
+            // Make sure character information has been sent/received before doing anything for real
+            if (!goodtogo)
+            {
+                if (isServer)
+                {
+                    serverStartGame();
+                }
+                else
+                {
+                    clientStartGame();
+                }
+            }
 
             // TODO: Add your update logic here
             viewPosition = gameState.currentLevel.getViewPosition(gameState.usersPlayer);
 
             if (isServer)
             {
+
                 // Apply own commands, and client's commands
                 foreach (Command c in commandBuffer)
                 {
@@ -190,7 +214,7 @@ namespace SkyCrane.Screens
                     if (e is PhysicsAble) ((PhysicsAble)e).UpdatePhysics();
                 }
 
-                // Iterate over the physicsAbles to see if they are colliding with eachother
+                // Iterate over the physicsAbles to see if they are colliding with eachther
                 foreach (Entity e in gameState.entities.Values)
                 {
                     if (!(e is PhysicsAble)) continue;
@@ -228,6 +252,7 @@ namespace SkyCrane.Screens
             }
             else
             {
+                
                 // Send our input to the server
                 foreach (Command c in commandBuffer)
                 {
@@ -240,6 +265,7 @@ namespace SkyCrane.Screens
                 // Get changes from server
                 List<StateChange> changes = null; //TODO
 
+                // Apply all changes on the server
                 foreach(StateChange sc in changes) {
                     gameState.applyStateChange(sc);
                 }

@@ -126,7 +126,9 @@ namespace SkyCrane
         {
             using (ProjectSkyCrane game = new ProjectSkyCrane())
             {
+                //NetTest t = new NetTest(9999);
                 game.Run();
+                //t.exit();
             }
         }
 

@@ -9,6 +9,7 @@
 
 #region Using Statements
 using Microsoft.Xna.Framework;
+using System.Text;
 #endregion
 
 namespace SkyCrane.Screens
@@ -24,8 +25,14 @@ namespace SkyCrane.Screens
         MenuEntry hostAddressMenuEntry;
         MenuEntry hostPortMenuEntry;
 
-        static string hostAddress = ""; // Host's address (IP or hostname)
-        static int hostPort = 9999; // Host's port
+        string lastAddress = "";
+        static StringBuilder hostAddress = new StringBuilder(); // Host's address (IP or hostname)
+        const int MAX_ADDRESS_LENGTH = 32;
+        string lastPort = "9999";
+        static StringBuilder hostPort = new StringBuilder("9999"); // Host's port
+        const int MAX_PORT_LENGTH = 5;
+        const int MIN_PORT = 1;
+        const int MAX_PORT = 65535;
 
         /// <summary>
         /// Constructor fills in the menu contents.
@@ -47,15 +54,20 @@ namespace SkyCrane.Screens
 
             // Both the host and the client should specify ports
             hostPortMenuEntry = new MenuEntry(string.Empty);
-            hostPortMenuEntry.Selected += HostPortMenuEntrySelected;            
+            hostPortMenuEntry.Selected += HostPortMenuEntrySelected;
+            hostPortMenuEntry.Typed += HostPortMenuEntryTyped;
             MenuEntries.Add(hostPortMenuEntry);
             
             SetMenuEntryText(); // Set the initial menu text
 
-            // Add the back option
-            MenuEntry back = new MenuEntry("Back");
-            back.Selected += OnCancel;
-            MenuEntries.Add(back);
+            // Add the select and back options
+            MenuEntry continueMenuEntry = new MenuEntry(host ? "Create Game" : "Connect to Game");
+            continueMenuEntry.Selected += ContinueMenuEntrySelected;
+            MenuEntries.Add(continueMenuEntry);
+
+            MenuEntry backMenuEntry = new MenuEntry("Back");
+            backMenuEntry.Selected += OnCancel;
+            MenuEntries.Add(backMenuEntry);
             
             return;
         }
@@ -91,9 +103,30 @@ namespace SkyCrane.Screens
         /// </summary>
         void HostAddressMenuEntryTyped(object sender, PlayerInputEventArgs e)
         {
-            if (e.KeysTyped != string.Empty)
+            bool resetText = false;
+            if (e.KeysTyped != string.Empty && hostAddress.Length < MAX_ADDRESS_LENGTH) // Add a character
             {
-                hostAddress += e.KeysTyped;
+                hostAddress.Append(e.KeysTyped);
+                resetText = true;
+            }
+            if (e.InputBackspace && hostAddress.Length > 0) // Remove a character
+            {
+                hostAddress.Remove(hostAddress.Length - 1, 1);
+                resetText = true;
+            }
+            if (e.InputAccepted) // User has entered a value
+            {
+                lastAddress = hostAddress.ToString();
+            }
+            else if (e.InputCancelled) // User has cancelled their input
+            {
+                hostAddress.Clear();
+                hostAddress.Append(lastAddress);
+                resetText = true;
+            }
+
+            if (resetText) // Update the on-screen text
+            {
                 SetMenuEntryText();
             }
             return;
@@ -105,6 +138,55 @@ namespace SkyCrane.Screens
         void HostPortMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
             TypingInput = true;
+            return;
+        }
+
+        /// <summary>
+        /// Event handler for typing this into the host address.
+        /// </summary>
+        void HostPortMenuEntryTyped(object sender, PlayerInputEventArgs e)
+        {
+            bool resetText = false;
+            if (e.KeysTyped != string.Empty && hostPort.Length < MAX_PORT_LENGTH) // Add a character
+            {
+                for (int i = 0; i < e.KeysTyped.Length; i += 1)
+                {
+                    if (char.IsDigit(e.KeysTyped[i]))
+                    {
+                        hostPort.Append(e.KeysTyped[i]);
+                        resetText = true;
+                    }
+                }
+            }
+            if (e.InputBackspace && hostPort.Length > 0) // Remove a character
+            {
+                hostPort.Remove(hostPort.Length - 1, 1);
+                resetText = true;
+            }
+            if (e.InputAccepted) // User has entered a value
+            {
+                lastPort = hostPort.ToString();
+            }
+            else if (e.InputCancelled) // User has cancelled their input
+            {
+                hostPort.Clear();
+                hostPort.Append(lastPort);
+                resetText = true;
+            }
+            if (resetText) // Update the on-screen text
+            {
+                SetMenuEntryText();
+            }
+            return;
+        }
+
+        /// <summary>
+        /// Event handler for when the Play Game menu entry is selected.
+        /// </summary>
+        void ContinueMenuEntrySelected(object sender, PlayerInputEventArgs e)
+        {
+            // TODO: Connect with the host
+            ScreenManager.AddScreen(new CharacterSelectMenuScreen(host, true), e.PlayerIndex);
             return;
         }
 

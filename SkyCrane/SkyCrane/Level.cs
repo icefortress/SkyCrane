@@ -19,19 +19,18 @@ namespace SkyCrane
         // TODO: we can use this to build levels with various params
         public static Level generateLevel(GameplayScreen g)
         {
-            Level bah = new Level(g, g.textureDict["room2"], g.textureDict["room2-collision-map"], new Vector2(1920, 1800));
+            Level bah = new Level(g, "room2", "room2-collision-map", 1920, 1800);
             bah.worldPosBack = new Vector2(1280/2, 720/2);
             bah.active = true;
 
             return bah;
         }
 
-        public Level(GameplayScreen g, String bgKey, String bmKey, int size_x, int size_y) : this(g, g.textureDict[bgKey], g.textureDict[bmKey], new Vector2(size_x, size_y)) { }
-
-        public Level(GameplayScreen g, Texture2D background, Texture2D bitmap, Vector2 size)
-            : base(g)
+        public Level(GameplayScreen g, String bgKey, String bmKey, int size_x, int size_y)
+            : base(g, 1280/2, 720/2, size_x, bgKey, "poop")
         {
-            this.background = background;
+            this.background = g.textureDict["room2"];
+            Texture2D bitmap = g.textureDict["room2-collision-map"];
 
             this.bitmap = new Color[bitmap.Width * bitmap.Height];
             bitmap.GetData<Color>(this.bitmap);
@@ -39,11 +38,6 @@ namespace SkyCrane
             bitmapHeight = bitmap.Height;
 
             this.levelSize = size;
-
-            List<int> animationFrames = new List<int>();
-            animationFrames.Add(0);
-
-            InitDrawable(background, background.Width, background.Height, animationFrames, 1, Color.White, levelSize.X / background.Width, true);
         }
 
         public Vector2 GetPhysicsSize()

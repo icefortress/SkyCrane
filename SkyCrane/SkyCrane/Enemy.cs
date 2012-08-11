@@ -8,26 +8,8 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace SkyCrane
 {
-    public class Enemy : Dude, AIable
+    /*public class Enemy : Dude, AIable
     {
-
-        public static Enemy createDefaultEnemy(GameplayScreen g)
-        {
-            Enemy pc = new Enemy(g);
-            pc.worldPosition = new Vector2(1280 / 2, 720 / 2 + 200);
-            Texture2D chara = g.textureDict["testchar"];
-            List<int> animationFrames = new List<int>();
-            animationFrames.Add(0);
-            pc.InitDrawable(chara, chara.Width, chara.Height, animationFrames, 1, Color.White, 1, true);
-            pc.active = true;
-
-            return pc;
-        }
-
-        public Enemy(GameplayScreen g)
-            : base(g)
-        {
-        }
 
         public void UpdateAI(GameTime time)
         {
@@ -65,5 +47,5 @@ namespace SkyCrane
         {
             velocity = Vector2.Zero;
         }
-    }
+    }*/
 }

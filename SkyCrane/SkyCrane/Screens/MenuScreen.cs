@@ -104,14 +104,14 @@ namespace SkyCrane.Screens
             {
                 bool inputAccepted = input.IsMenuSelect(ControllingPlayer, out playerIndex);
                 bool inputCancelled = input.IsMenuCancel(ControllingPlayer, out playerIndex);
-                bool inputBackspace = false;// = input.IsBackspace(ControllingPlayer, out playerIndex);
-                String keysTyped = string.Empty;// input.TypeableInput(ControllingPlayer, out playerIndex);
+                bool inputBackspace = input.IsBackspace(ControllingPlayer, out playerIndex);
+                String keysTyped = input.TypeableInput(ControllingPlayer, out playerIndex);
 
                 if (inputAccepted || inputCancelled)
                 {
                     typingInput = false;
                 }
-                if (inputAccepted || inputCancelled || keysTyped != String.Empty)
+                if (inputAccepted || inputCancelled || inputBackspace || keysTyped != String.Empty)
                 {
                     OnTyped(selectedEntry, playerIndex, inputAccepted, inputCancelled, inputBackspace, keysTyped);
                 }

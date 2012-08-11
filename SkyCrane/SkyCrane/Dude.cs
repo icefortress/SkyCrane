@@ -14,8 +14,7 @@ namespace SkyCrane.Screens
         Rectangle topRect;
         Rectangle bottomRect;
 
-        public Dude(GameplayScreen g)
-            : base(g)
+        public Dude(GameplayScreen g, int posX, int posY, int frameWidth, String textureName, String animationName) : base(g, posX, posY, frameWidth, textureName, animationName)
         {
         }
 

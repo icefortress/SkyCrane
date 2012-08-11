@@ -27,19 +27,19 @@ namespace SkyCrane.Screens
             : base("Main Menu")
         {
             // Create our menu entries.
-            MenuEntry playGameMenuEntry = new MenuEntry("New Game");
+            MenuEntry newGameMenuEntry = new MenuEntry("New Game");
             MenuEntry multiplayerMenuEntry = new MenuEntry("Multiplayer");
             MenuEntry optionsMenuEntry = new MenuEntry("Options");
             MenuEntry exitMenuEntry = new MenuEntry("Exit");
 
             // Hook up menu event handlers.
-            playGameMenuEntry.Selected += PlayGameMenuEntrySelected;
+            newGameMenuEntry.Selected += NewGameMenuEntrySelected;
             multiplayerMenuEntry.Selected += MultiplayerMenuEntrySelected;
             optionsMenuEntry.Selected += OptionsMenuEntrySelected;
             exitMenuEntry.Selected += OnCancel;
 
             // Add entries to the menu.
-            MenuEntries.Add(playGameMenuEntry);
+            MenuEntries.Add(newGameMenuEntry);
             MenuEntries.Add(multiplayerMenuEntry);
             MenuEntries.Add(optionsMenuEntry);
             MenuEntries.Add(exitMenuEntry);
@@ -53,10 +53,9 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Event handler for when the Play Game menu entry is selected.
         /// </summary>
-        void PlayGameMenuEntrySelected(object sender, PlayerInputEventArgs e)
+        void NewGameMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
-            LoadingScreen.Load(ScreenManager, false, e.PlayerIndex,
-                               new GameplayScreen());
+            ScreenManager.AddScreen(new CharacterSelectMenuScreen(true, false), e.PlayerIndex);
             return;
         }
 
