@@ -29,6 +29,7 @@ namespace SkyCrane.Screens
             this.toggleDirection = toggleDirection;
             this.inputAccepted = inputAccepted;
             this.inputCancelled = inputCancelled;
+            this.inputBackspace = inputBackspace;
             this.keysTyped = keysTyped;
             return;
         }
