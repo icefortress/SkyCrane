@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SkyCrane.Screens;
 
 namespace SkyCrane
 {
@@ -14,24 +15,63 @@ namespace SkyCrane
         Vector2 size;
 
         // TODO: we can use this to build levels with various params
-        public static Level generateLevel(SpriteBatch sb, ProjectSkyCrane g)
+        public static Level generateLevel(GameplayScreen g)
         {
-            Level bah = new Level(sb, g, g.textureDict["testlevel"], g.textureDict["testlevel"], new Vector2(1000, 1000));
-            bah.position = new Vector2(0, 0);
+            Level bah = new Level(g, g.textureDict["testlevel"], g.textureDict["testlevel"], new Vector2(2000, 2000));
+            bah.worldPosition = new Vector2(1280/2, 720/2);
             bah.active = true;
 
             return bah;
         }
 
-        public Level(SpriteBatch sb, Game g, Texture2D background, Texture2D bitmap, Vector2 size) : base(g)
+        public Level(GameplayScreen g, Texture2D background, Texture2D bitmap, Vector2 size)
+            : base(g)
         {
             this.background = background;
             this.bitmap = bitmap;
             this.size = size;
 
-            InitDrawable(sb, background, background.Width, background.Height, 1, 1, Color.White, size.X / background.Width, true);
+            InitDrawable(background, background.Width, background.Height, 1, 1, Color.White, size.X / background.Width, true);
+        }
 
-            this.DrawOrder = 0; // levels should be drawn first
+        /* Computes the view position (centred) in world coordinates that things should be drawn off of based on player position
+         * This is necessary to deal with the edges of the world */
+        public Vector2 getViewPosition(PlayerCharacter c)
+        {
+            Vector2 characterPosition = c.worldPosition;
+            Vector2 levelPosition = this.worldPosition - new Vector2(this.background.Width * scale / 2, this.background.Height * scale / 2); // getting this in terms of top-left coordinate, so we can get player's position in the world
+
+            // Position of the character within the realm of the level
+            Vector2 characterInLevel = characterPosition - levelPosition;
+
+            Vector2 position;
+            if (characterInLevel.X < 1280 / 2)
+            {
+                position.X = this.worldPosition.X + 1280/2;
+            }
+            else if (characterInLevel.X > (this.size.X - 1280 / 2))
+            {
+                position.X = this.worldPosition.X + this.size.X - 1280/2;
+            }
+            else
+            {
+                position.X = characterPosition.X;
+            }
+
+            if (characterInLevel.Y < 720 / 2)
+            {
+                position.Y = this.worldPosition.Y + 720 / 2;
+            }
+            else if (characterInLevel.Y > (this.size.X - 720 / 2))
+            {
+                position.Y = this.worldPosition.Y + this.size.Y - 720 / 2;
+            }
+            else
+            {
+                position.Y = characterPosition.Y;
+            }
+
+            return position;
         }
 
         public CollisionDirection CheckCollision(Vector2 position, Rectangle bounds)
