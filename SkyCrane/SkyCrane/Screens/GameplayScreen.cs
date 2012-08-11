@@ -71,8 +71,8 @@ namespace SkyCrane.Screens
 
             gameFont = content.Load<SpriteFont>("Fonts/gamefont");
 
-            Texture2D testLevel = content.Load<Texture2D>("Levels/testlevel");
-            Texture2D testChar = content.Load<Texture2D>("Sprites/testchar");
+            Texture2D testLevel = content.Load<Texture2D>("Levels/room1");
+            Texture2D testChar = content.Load<Texture2D>("Sprites/Wizard");
             textureDict.Add("testlevel", testLevel);
             textureDict.Add("testchar", testChar);
 
