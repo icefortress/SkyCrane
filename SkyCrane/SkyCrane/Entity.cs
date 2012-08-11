@@ -61,10 +61,11 @@ namespace SkyCrane
         public bool active = false;
         public bool looping;
 
-        public static StateChange createEntityStateChange(int posX, int posY, int frameWidth, String textureName, String animationName)
+        public static StateChange createEntityStateChange(int entity_id, int posX, int posY, int frameWidth, String textureName, String animationName)
         {
             StateChange sc = new StateChange();
             sc.type = StateChangeType.CREATE_ENTITY;
+            sc.intProperties.Add(StateProperties.ENTITY_ID, entity_id);
             sc.intProperties.Add(StateProperties.POSITION_X, posX);
             sc.intProperties.Add(StateProperties.POSITION_Y, posY);
             sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
@@ -83,7 +84,7 @@ namespace SkyCrane
 
         public Entity(GameplayScreen g, int posX, int posY, int frameWidth, String textureName, String animationName)
         {
-            worldPosition = new Vector2(posX, posY);
+            worldPosBack= new Vector2(posX, posY);
             Texture2D chara = g.textureDict[textureName];
 
             List<int> animationFrames = new List<int>(); // TODO: some way of loading animation

@@ -209,15 +209,22 @@ namespace SkyCrane.Screens
                     }
                 }
 
-                gameState.runDeletions(); // This is a hack to allow anything that was supposed to get deleted as an event to happen later
-
                 // Move objects by their post-check velocity
                 foreach (Entity e in gameState.entities.Values)
                 {
-                    e.worldPosition += e.velocity;
+                    if (e.velocity != Vector2.Zero)
+                    {
+                        Vector2 old = e.worldPosition;
+                        Vector2 newn = e.worldPosition + e.velocity;
+                        e.worldPosition = newn;
+                    } 
                 }
 
                 // Push changes to clients
+
+                // Commit changes locally
+                gameState.commitChanges();
+                gameState.changes.Clear();
             }
             else
             {
@@ -317,7 +324,6 @@ namespace SkyCrane.Screens
                 c2.entity_id = gameState.usersPlayer.id;
                 c2.direction = movement;
                 c2.ct = CommandType.MOVE;
-
                 commandBuffer.Add(c2);
             }
         }

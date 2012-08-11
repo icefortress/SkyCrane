@@ -20,7 +20,7 @@ namespace SkyCrane
         public static Level generateLevel(GameplayScreen g)
         {
             Level bah = new Level(g, g.textureDict["room2"], g.textureDict["room2-collision-map"], new Vector2(1920, 1800));
-            bah.worldPosition = new Vector2(1280/2, 720/2);
+            bah.worldPosBack = new Vector2(1280/2, 720/2);
             bah.active = true;
 
             return bah;

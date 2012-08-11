@@ -14,11 +14,28 @@ namespace SkyCrane
         public GameplayScreen context;
 
         public List<StateChange> changes = new List<StateChange>();
-        private List<StateChange> deletions = new List<StateChange>(); // The whole state change tracking mechanism is unclean now, and this is a hack to do deletion after iteration
 
         public GameState(GameplayScreen g)
         {
             context = g;
+        }
+
+        public void handleStateChange(StateChange s)
+        {
+            changes.Add(s);
+        }
+
+        public void commitChanges()
+        {
+            foreach(StateChange c in changes) {
+                // Skip entity creation, these are recreating local objects elsewhere
+                if (c.type == StateChangeType.CREATE_ENTITY || c.type == StateChangeType.CREATE_PLAYER_CHARACTER)
+                {
+                    continue;
+                }
+
+                applyStateChange(c);
+            }
         }
 
         public Dictionary<int, Entity> entities = new Dictionary<int, Entity>();
@@ -27,22 +44,22 @@ namespace SkyCrane
         // Should be called by the server to create a player entity in the current game state
         public PlayerCharacter createPlayer(int posX, int posY, int frameWidth, String textureName, String animationName)
         {
-            StateChange sc = Entity.createEntityStateChange(posX, posY, frameWidth, textureName, animationName);
-            changes.Add(sc);
-
             PlayerCharacter pc = new PlayerCharacter(context, posX, posY, frameWidth, textureName, animationName);
             addEntity(100, pc);
+
+            StateChange sc = Entity.createEntityStateChange(pc.id, posX, posY, frameWidth, textureName, animationName);
+            changes.Add(sc);
 
             return pc;
         }
 
         public void createBullet(int posX, int posY, Vector2 velocity)
         {
-            StateChange sc = Entity.createEntityStateChange(posX, posY, Bullet.frameWidth, Bullet.textureName, "poop");
-            changes.Add(sc);
-
             Bullet b = new Bullet(context, new Vector2(posX, posY), velocity);
             addEntity(200, b);
+
+            StateChange sc = Entity.createEntityStateChange(b.id, posX, posY, Bullet.frameWidth, Bullet.textureName, "poop");
+            changes.Add(sc);
         }
 
         public void addEntity(int drawPriority, Entity e)
@@ -73,36 +90,18 @@ namespace SkyCrane
             removeEntity(entities[eid]);
         }
 
-        public void handleStateChange(StateChange s)
-        {
-            changes.Add(s);
-
-            // If an entity kills itself, we have to handle that
-            if (s.type == StateChangeType.DELETE_ENTITY)
-            {
-                deletions.Add(s);
-            }
-        }
-
-        public void runDeletions()
-        {
-            foreach (StateChange s in deletions)
-            {
-                applyStateChange(s);
-            }
-        }
-
         public void applyStateChange(StateChange s)
         {
+            int entity = s.intProperties[StateProperties.ENTITY_ID];
+            if (!entities.ContainsKey(entity)) return; // Deal with ordering issues in a hacky way
+
             if(s.type == StateChangeType.MOVED) {
-                int entity = s.intProperties[StateProperties.ENTITY_ID];
                 int pos_x = s.intProperties[StateProperties.POSITION_X];
                 int pos_y = s.intProperties[StateProperties.POSITION_Y];
-                entities[entity].worldPosition += new Vector2(pos_x, pos_y);
+                entities[entity].worldPosBack = new Vector2(pos_x, pos_y); // do a change without triggering a statechange
             }
             else if (s.type == StateChangeType.CREATE_ENTITY)
             {
-                int entity = s.intProperties[StateProperties.ENTITY_ID];
                 int pos_x = s.intProperties[StateProperties.POSITION_X];
                 int pos_y = s.intProperties[StateProperties.POSITION_Y];
                 int frame_width = s.intProperties[StateProperties.FRAME_WIDTH];
@@ -116,12 +115,11 @@ namespace SkyCrane
                 addEntity(draw_priority, e);
             }
             else if (s.type == StateChangeType.SET_PLAYER) {
-                int entity = s.intProperties[StateProperties.ENTITY_ID];
                 usersPlayer = (PlayerCharacter) entities[entity];
             }
             else if (s.type == StateChangeType.DELETE_ENTITY)
             {
-                removeEntity(s.intProperties[StateProperties.ENTITY_ID]);
+                removeEntity(entity);
             }
         }
         

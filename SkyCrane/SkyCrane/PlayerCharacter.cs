@@ -39,7 +39,7 @@ namespace SkyCrane
 
         public PlayerCharacter(GameplayScreen g, int posX, int posY, int frameWidth, String textureName, String animationName) : base(g)
         {
-            worldPosition = new Vector2(posX, posY);
+            worldPosBack = new Vector2(posX, posY);
             Texture2D chara = g.textureDict[textureName];
 
             List<int> animationFrames = new List<int>(); // TODO: some way of loading animation
