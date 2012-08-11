@@ -22,31 +22,31 @@ namespace SkyCrane.Screens
     {
         #region Fields
 
-        MenuEntry ungulateMenuEntry;
-        MenuEntry languageMenuEntry;
-        MenuEntry frobnicateMenuEntry;
-        MenuEntry elfMenuEntry;
+        MenuEntry musicOnMenuEntry;
+        MenuEntry musicVolumeMenuEntry;
+        MenuEntry soundFXOnMenuEntry;
+        MenuEntry soundFXVolumeMenuEntry;
 
-        enum Ungulate
+        /// <summary>
+        /// Enumeration representing on/off options.
+        /// </summary>
+        enum OnOff
         {
-            BactrianCamel,
-            Dromedary,
-            Llama,
+            On,
+            Off
         }
 
-        static Ungulate currentUngulate = Ungulate.Dromedary;
+        // Current music options
+        static OnOff musicOn = OnOff.On;
+        static int musicVolume = 100;
 
-        static string[] languages = { "C#", "French", "Deoxyribonucleic acid" };
-        static int currentLanguage = 0;
-
-        static bool frobnicate = true;
-
-        static int elf = 23;
+        // Current sound FX options
+        static OnOff soundFXOn = OnOff.On;
+        static int soundFXVolume = 100;
 
         #endregion
 
         #region Initialization
-
 
         /// <summary>
         /// Constructor.
@@ -55,94 +55,96 @@ namespace SkyCrane.Screens
             : base("Options")
         {
             // Create our menu entries.
-            ungulateMenuEntry = new MenuEntry(string.Empty);
-            languageMenuEntry = new MenuEntry(string.Empty);
-            frobnicateMenuEntry = new MenuEntry(string.Empty);
-            elfMenuEntry = new MenuEntry(string.Empty);
+            musicOnMenuEntry = new MenuEntry(string.Empty);
+            musicVolumeMenuEntry = new MenuEntry(string.Empty);
+            soundFXOnMenuEntry = new MenuEntry(string.Empty);
+            soundFXVolumeMenuEntry = new MenuEntry(string.Empty);
 
             SetMenuEntryText();
 
             MenuEntry back = new MenuEntry("Back");
 
             // Hook up menu event handlers.
-            ungulateMenuEntry.Selected += UngulateMenuEntrySelected;
-            languageMenuEntry.Selected += LanguageMenuEntrySelected;
-            frobnicateMenuEntry.Selected += FrobnicateMenuEntrySelected;
-            elfMenuEntry.Selected += ElfMenuEntrySelected;
+            musicOnMenuEntry.Selected += MusicOnMenuEntrySelected;
+            musicVolumeMenuEntry.Selected += MusicVolumeMenuEntrySelected;
+            soundFXOnMenuEntry.Selected += SoundFXOnEntrySelected;
+            soundFXVolumeMenuEntry.Selected += SoundFXVolumeMenuEntrySelected;
             back.Selected += OnCancel;
             
             // Add entries to the menu.
-            MenuEntries.Add(ungulateMenuEntry);
-            MenuEntries.Add(languageMenuEntry);
-            MenuEntries.Add(frobnicateMenuEntry);
-            MenuEntries.Add(elfMenuEntry);
+            MenuEntries.Add(musicOnMenuEntry);
+            MenuEntries.Add(musicVolumeMenuEntry);
+            MenuEntries.Add(soundFXOnMenuEntry);
+            MenuEntries.Add(soundFXVolumeMenuEntry);
             MenuEntries.Add(back);
+            return;
         }
-
 
         /// <summary>
         /// Fills in the latest values for the options screen menu text.
         /// </summary>
         void SetMenuEntryText()
         {
-            ungulateMenuEntry.Text = "Preferred ungulate: " + currentUngulate;
-            languageMenuEntry.Text = "Language: " + languages[currentLanguage];
-            frobnicateMenuEntry.Text = "Frobnicate: " + (frobnicate ? "on" : "off");
-            elfMenuEntry.Text = "elf: " + elf;
+            musicOnMenuEntry.Text = "Music: " + musicOn;
+            musicVolumeMenuEntry.Text = "Music Volume: " + musicVolume;
+            soundFXOnMenuEntry.Text = "SoundFX: " + soundFXOn;
+            soundFXVolumeMenuEntry.Text = "SoundFX Volume: " + soundFXVolume;
+            return;
         }
-
 
         #endregion
 
         #region Handle Input
 
-
         /// <summary>
         /// Event handler for when the Ungulate menu entry is selected.
         /// </summary>
-        void UngulateMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void MusicOnMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            currentUngulate++;
+            // Toggle music on and off
+            musicOn++;
 
-            if (currentUngulate > Ungulate.Llama)
-                currentUngulate = 0;
+            if (musicOn > OnOff.On)
+            {
+                musicOn = 0;
+            }
 
             SetMenuEntryText();
         }
-
 
         /// <summary>
         /// Event handler for when the Language menu entry is selected.
         /// </summary>
-        void LanguageMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void MusicVolumeMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            currentLanguage = (currentLanguage + 1) % languages.Length;
-
             SetMenuEntryText();
+            return;
         }
-
 
         /// <summary>
         /// Event handler for when the Frobnicate menu entry is selected.
         /// </summary>
-        void FrobnicateMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void SoundFXOnEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            frobnicate = !frobnicate;
+            // Toggle music on and off
+            soundFXOn++;
+            if (soundFXOn > OnOff.On)
+            {
+                soundFXOn = 0;
+            }
 
             SetMenuEntryText();
+            return;
         }
-
 
         /// <summary>
         /// Event handler for when the Elf menu entry is selected.
         /// </summary>
-        void ElfMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void SoundFXVolumeMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            elf++;
-
             SetMenuEntryText();
+            return;
         }
-
 
         #endregion
     }
