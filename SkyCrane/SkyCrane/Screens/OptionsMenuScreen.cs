@@ -134,7 +134,7 @@ namespace SkyCrane.Screens
         /// </summary>
         /// <param name="sender">Sender object.</param>
         /// <param name="e">Event arguments.</param>
-        void FullScreenOnMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void FullScreenOnMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
             if (e.ToggleDirection != 0)
             {
@@ -160,7 +160,7 @@ namespace SkyCrane.Screens
         /// </summary>
         /// <param name="sender">Sender object.</param>
         /// <param name="e">Event arguments.</param>
-        void BorderlessOnMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void BorderlessOnMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
             if (e.ToggleDirection != 0)
             {
@@ -191,7 +191,7 @@ namespace SkyCrane.Screens
         /// </summary>
         /// <param name="sender">Sender object.</param>
         /// <param name="e">Event arguments.</param>
-        void ResolutionMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void ResolutionMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
             ScreenManager.AddScreen(new ResolutionsMenuScreen(), e.PlayerIndex);
             return;
@@ -202,7 +202,7 @@ namespace SkyCrane.Screens
         /// </summary>
         /// <param name="sender">Sender object.</param>
         /// <param name="e">Event arguments.</param>
-        void VsyncOnMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void VsyncOnMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
             if (e.ToggleDirection != 0)
             {
@@ -225,7 +225,7 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Event handler for when the music is turned on or off.
         /// </summary>
-        void MusicOnMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void MusicOnMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
             if (e.ToggleDirection != 0)
             {
@@ -247,7 +247,7 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Event handler for when the music volume is turned up or down.
         /// </summary>
-        void MusicVolumeMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void MusicVolumeMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
             if (e.ToggleDirection != 0)
             {
@@ -268,7 +268,7 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Event handler for when the SFX are turned on or off.
         /// </summary>
-        void SoundFXOnEntrySelected(object sender, PlayerIndexEventArgs e)
+        void SoundFXOnEntrySelected(object sender, PlayerInputEventArgs e)
         {
             if (e.ToggleDirection != 0)
             {
@@ -290,7 +290,7 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Event handler for when the SFX volume is turned up or down.
         /// </summary>
-        void SoundFXVolumeMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void SoundFXVolumeMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
             if (e.ToggleDirection != 0)
             {

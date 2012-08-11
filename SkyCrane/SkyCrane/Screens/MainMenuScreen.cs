@@ -53,7 +53,7 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Event handler for when the Play Game menu entry is selected.
         /// </summary>
-        void PlayGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void PlayGameMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
             LoadingScreen.Load(ScreenManager, false, e.PlayerIndex,
                                new GameplayScreen());
@@ -63,7 +63,7 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Event handler for when the Play Game menu entry is selected.
         /// </summary>
-        void MultiplayerMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void MultiplayerMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
             ScreenManager.AddScreen(new MultiplayerMenuScreen(), e.PlayerIndex);
             return;
@@ -72,7 +72,7 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Event handler for when the Options menu entry is selected.
         /// </summary>
-        void OptionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void OptionsMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
             ScreenManager.AddScreen(new OptionsMenuScreen(), e.PlayerIndex);
             return;
@@ -96,7 +96,7 @@ namespace SkyCrane.Screens
         /// Event handler for when the user selects ok on the "are you sure
         /// you want to exit" message box.
         /// </summary>
-        void ConfirmExitMessageBoxAccepted(object sender, PlayerIndexEventArgs e)
+        void ConfirmExitMessageBoxAccepted(object sender, PlayerInputEventArgs e)
         {
             ScreenManager.Game.Exit();
             return;
