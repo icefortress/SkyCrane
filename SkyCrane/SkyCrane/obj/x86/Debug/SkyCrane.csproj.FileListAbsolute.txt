@@ -1,0 +1,6 @@
+E:\Documents\Visual Studio 2010\Projects\SkyCrane\SkyCrane\SkyCrane\bin\x86\Debug\SkyCrane.exe
+E:\Documents\Visual Studio 2010\Projects\SkyCrane\SkyCrane\SkyCrane\bin\x86\Debug\SkyCrane.pdb
+E:\Documents\Visual Studio 2010\Projects\SkyCrane\SkyCrane\SkyCrane\obj\x86\Debug\ResolveAssemblyReference.cache
+E:\Documents\Visual Studio 2010\Projects\SkyCrane\SkyCrane\SkyCrane\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
+E:\Documents\Visual Studio 2010\Projects\SkyCrane\SkyCrane\SkyCrane\obj\x86\Debug\SkyCrane.exe
+E:\Documents\Visual Studio 2010\Projects\SkyCrane\SkyCrane\SkyCrane\obj\x86\Debug\SkyCrane.pdb
