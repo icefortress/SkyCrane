@@ -25,6 +25,7 @@ namespace SkyCrane
             changes.Add(s);
         }
 
+        // This should only be called by the server
         public void commitChanges()
         {
             foreach(StateChange c in changes) {
