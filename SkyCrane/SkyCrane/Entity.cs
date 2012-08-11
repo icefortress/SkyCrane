@@ -4,16 +4,19 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SkyCrane.Screens;
 
 namespace SkyCrane
 {
-    public class Entity : DrawableGameComponent
+    public class Entity
     {
-        public Vector2 position;
+        public Vector2 worldPosition;
+        public Vector2 drawingPosition;
         public Vector2 velocity;
 
+        GameplayScreen context;
+
         // Drawable components
-        SpriteBatch spriteBatch;
         public Texture2D spriteStrip;
         public float scale;
         public int frameTime;
@@ -30,16 +33,15 @@ namespace SkyCrane
         public bool active = false;
         public bool looping;
 
-        public Entity(Game g) : base(g)
+        public Entity(GameplayScreen g)
         {
-            g.Components.Add(this);
+            this.context = g;
         }
 
-        public void InitDrawable(SpriteBatch sb, Texture2D texture,
+        public void InitDrawable(Texture2D texture,
             int frameWidth, int frameHeight, int frameCount,
             int frametime, Color color, float scale, bool looping)
         {
-            this.spriteBatch = sb;
             this.spriteStrip = texture;
             this.scale = scale;
             this.frameWidth = frameWidth;
@@ -55,6 +57,8 @@ namespace SkyCrane
             // Do not update the game if we are not active
             if (active == false)
                 return;
+
+            drawingPosition = worldPosition - context.viewPosition + new Vector2(1280/2, 720/2);
 
             // Update the elapsed time
             elapsedTime += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
@@ -83,24 +87,18 @@ namespace SkyCrane
             sourceRect = new Rectangle(currentFrame * frameWidth, 0, frameWidth, frameHeight);
 
             // Grab the correct frame in the image strip by multiplying the currentFrame index by the frame width
-            destinationRect = new Rectangle((int)position.X - (int)(frameWidth * scale) / 2,
-            (int)position.Y - (int)(frameHeight * scale) / 2,
+            destinationRect = new Rectangle((int)drawingPosition.X - (int)(frameWidth * scale) / 2,
+            (int)drawingPosition.Y - (int)(frameHeight * scale) / 2,
             (int)(frameWidth * scale),
             (int)(frameHeight * scale));
         }
 
-        public override void Draw(GameTime gameTime)
+        public void Draw(GameTime gameTime, SpriteBatch sb)
         {
             if (active)
             {
                 UpdateSprite(gameTime);
-
-                spriteBatch.Begin();
-                spriteBatch.Draw(spriteStrip, destinationRect, sourceRect, color);
-
-                Console.WriteLine(destinationRect.Top);
-
-                spriteBatch.End();
+                sb.Draw(spriteStrip, destinationRect, sourceRect, color);
             }
         }
     }

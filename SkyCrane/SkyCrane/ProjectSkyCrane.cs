@@ -14,18 +14,19 @@ namespace SkyCrane
     /// </summary>
     public class ProjectSkyCrane : Microsoft.Xna.Framework.Game
     {
-        GraphicsDeviceManager graphics;
-        ScreenManager screenManager;
-        public List<AIable> aiAbles = new List<AIable>();
-        public List<PhysicsAble> physicsAbles = new List<PhysicsAble>();
-        public Dictionary<String, Texture2D> textureDict = new Dictionary<String, Texture2D>();
 
+        ScreenManager screenManager;
+
+        GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Level activeLevel;
 
         /// <summary>
         /// Create the main instance of the project and run.
         /// </summary>
+
+        public Level activeLevel;
+        public Vector2 viewPosition;
+
         public ProjectSkyCrane()
         {
             Content.RootDirectory = "Content";
@@ -74,6 +75,7 @@ namespace SkyCrane
             //textureDict.Add("testlevel", testLevel);
 
             //activeLevel = Level.generateLevel(spriteBatch, this);
+            Texture2D testLevel = this.Content.Load<Texture2D>("testlevel");
         }
 
         /// <summary>
@@ -96,6 +98,8 @@ namespace SkyCrane
             // TODO: Add your update logic here
 
             // Note: The vast majority of this will be captured on-screen
+            //UpdateGameControls(gameTime);
+
             base.Update(gameTime);
             return;
         }

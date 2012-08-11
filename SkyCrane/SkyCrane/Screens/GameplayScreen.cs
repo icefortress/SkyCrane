@@ -15,6 +15,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SkyCrane.GameStateManager;
+using System.Collections.Generic;
 #endregion
 
 namespace SkyCrane.Screens
@@ -24,17 +25,22 @@ namespace SkyCrane.Screens
     /// placeholder to get the idea across: you'll probably want to
     /// put some more interesting gameplay in here!
     /// </summary>
-    class GameplayScreen : GameScreen
+    public class GameplayScreen : GameScreen
     {
         #region Fields
 
         ContentManager content;
         SpriteFont gameFont;
 
-        Vector2 playerPosition = new Vector2(100, 100);
-        Vector2 enemyPosition = new Vector2(100, 100);
+        // Our game stuff
+        public Level activeLevel;
+        public Vector2 viewPosition;
+        public PlayerCharacter usersPlayer;
 
-        Random random = new Random();
+        public List<Entity> entities = new List<Entity>();
+        public List<AIable> aiAbles = new List<AIable>();
+        public List<PhysicsAble> physicsAbles = new List<PhysicsAble>();
+        public Dictionary<String, Texture2D> textureDict = new Dictionary<String, Texture2D>();
 
         float pauseAlpha;
 
@@ -48,8 +54,16 @@ namespace SkyCrane.Screens
         /// </summary>
         public GameplayScreen()
         {
+            content.Load<Texture2D>("testlevel");
+
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
+
+            activeLevel = Level.generateLevel(this);
+            usersPlayer = PlayerCharacter.createDefaultPlayerCharacter(this);
+
+            entities.Add(activeLevel);
+            entities.Add(usersPlayer);
         }
 
 
@@ -99,6 +113,9 @@ namespace SkyCrane.Screens
         {
             base.Update(gameTime, otherScreenHasFocus, false);
 
+            // TODO: Add your update logic here
+            viewPosition = activeLevel.getViewPosition(usersPlayer);
+
             // Gradually fade in or out depending on whether we are covered by the pause screen.
             if (coveredByOtherScreen)
                 pauseAlpha = Math.Min(pauseAlpha + 1f / 32, 1);
@@ -107,21 +124,7 @@ namespace SkyCrane.Screens
 
             if (IsActive)
             {
-                // Apply some random jitter to make the enemy move around.
-                const float randomization = 10;
-
-                enemyPosition.X += (float)(random.NextDouble() - 0.5) * randomization;
-                enemyPosition.Y += (float)(random.NextDouble() - 0.5) * randomization;
-
-                // Apply a stabilizing force to stop the enemy moving off the screen.
-                Vector2 targetPosition = new Vector2(
-                    ScreenManager.GraphicsDevice.Viewport.Width / 2 - gameFont.MeasureString("Insert Gameplay Here").X / 2, 
-                    200);
-
-                enemyPosition = Vector2.Lerp(enemyPosition, targetPosition, 0.05f);
-
-                // TODO: this game isn't very fun! You could probably improve
-                // it by inserting something more interesting in this space :-)
+                
             }
         }
 
@@ -176,8 +179,6 @@ namespace SkyCrane.Screens
 
                 if (movement.Length() > 1)
                     movement.Normalize();
-
-                playerPosition += movement * 2;
             }
         }
 
@@ -196,10 +197,10 @@ namespace SkyCrane.Screens
 
             spriteBatch.Begin();
 
-            spriteBatch.DrawString(gameFont, "// TODO", playerPosition, Color.Green);
-
-            spriteBatch.DrawString(gameFont, "Insert Gameplay Here",
-                                   enemyPosition, Color.DarkRed);
+            foreach (Entity e in entities)
+            {
+                e.Draw(gameTime, spriteBatch);
+            }
 
             spriteBatch.End();
 
