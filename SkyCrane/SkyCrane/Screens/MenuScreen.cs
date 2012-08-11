@@ -42,10 +42,10 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Whether or not the screen is currently capturing typed input.
         /// </summary>
-        protected bool TypingInput
+        public bool TypingInput
         {
             get { return typingInput; }
-            set { typingInput = value; }
+            protected set { typingInput = value; }
         }
 
         /// <summary>
@@ -65,6 +65,14 @@ namespace SkyCrane.Screens
             get { return graphicalSelect; }
         }
 
+        /// <summary>
+        /// The title of the menu.
+        /// </summary>
+        protected string MenuTitle
+        {
+            get { return menuTitle; }
+            set { menuTitle = value; }
+        }
 
         #endregion
 
@@ -130,7 +138,10 @@ namespace SkyCrane.Screens
                 // Move to the previous menu entry?
                 if (input.IsMenuUp(ControllingPlayer))
                 {
-                    menuBleepEffect.Play();
+                    if (!graphicalSelect)
+                    {
+                        menuBleepEffect.Play();
+                    }
                     do
                     {
                         selectedEntry--;
@@ -144,7 +155,10 @@ namespace SkyCrane.Screens
                 // Move to the next menu entry?
                 if (input.IsMenuDown(ControllingPlayer))
                 {
-                    menuBleepEffect.Play();
+                    if (!graphicalSelect)
+                    {
+                        menuBleepEffect.Play();
+                    }
                     do
                     {
                         selectedEntry++;
@@ -162,11 +176,11 @@ namespace SkyCrane.Screens
                 // OnSelectEntry and OnCancel, so they can tell which player triggered them.
                 if (menuEntries[selectedEntry].Toggleable && input.IsMenuToggle(ControllingPlayer, out playerIndex, out toggleDirection))
                 {
-                    OnSelectEntry(selectedEntry, playerIndex, toggleDirection);
+                    OnSelectEntry(selectedEntry, playerIndex, input.IsMenuSelect(ControllingPlayer, out playerIndex), false, toggleDirection);
                 }
                 else if (input.IsMenuSelect(ControllingPlayer, out playerIndex))
                 {
-                    OnSelectEntry(selectedEntry, playerIndex, 0);
+                    OnSelectEntry(selectedEntry, playerIndex, true, false, 0);
                 }
                 else if (input.IsMenuCancel(ControllingPlayer, out playerIndex))
                 {
@@ -179,11 +193,11 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Handler for when the user has chosen a menu entry.
         /// </summary>
-        protected virtual void OnSelectEntry(int entryIndex, PlayerIndex playerIndex, int toggleDirection)
+        protected virtual void OnSelectEntry(int entryIndex, PlayerIndex playerIndex, bool menuAccepted, bool menuCancelled, int toggleDirection)
         {
             if (menuEntries[entryIndex].Enabled)
             {
-                menuEntries[entryIndex].OnSelectEntry(playerIndex, toggleDirection);
+                menuEntries[entryIndex].OnSelectEntry(playerIndex, menuAccepted, menuCancelled, toggleDirection);
             }
             return;
         }
@@ -210,9 +224,9 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Handler for when the user types data into a text-accepting menu entry.
         /// </summary>
-        protected virtual void OnTyped(int entryIndex, PlayerIndex playerIndex, bool inputAccepted, bool inputCancelled, bool inputBackspace, String keysTyped)
+        protected virtual void OnTyped(int entryIndex, PlayerIndex playerIndex, bool typingAccepted, bool typingCancelled, bool typingBackspace, String keysTyped)
         {
-            menuEntries[entryIndex].OnInputTyped(playerIndex, inputAccepted, inputCancelled, inputBackspace, keysTyped);
+            menuEntries[entryIndex].OnInputTyped(playerIndex, typingAccepted, typingCancelled, typingBackspace, keysTyped);
             return;
         }
 
@@ -281,7 +295,6 @@ namespace SkyCrane.Screens
             }
             return;
         }
-
 
         /// <summary>
         /// Draws the menu.

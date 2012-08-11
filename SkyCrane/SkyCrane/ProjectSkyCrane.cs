@@ -16,6 +16,7 @@ namespace SkyCrane
     {
 
         ScreenManager screenManager;
+        public const int MAX_PLAYERS = 4;
 
         /// <summary>
         /// The GraphicsDeviceManager currently associated with the game.

@@ -23,13 +23,15 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Constructor.
         /// </summary>
-        public PlayerInputEventArgs(PlayerIndex playerIndex, int toggleDirection = 0, bool inputAccepted = false, bool inputCancelled = false, bool inputBackspace = false, String keysTyped = null)
+        public PlayerInputEventArgs(PlayerIndex playerIndex, bool menuAccept = false, bool menuCancel = false, int toggleDirection = 0, bool typingAccepted = false, bool typingCancelled = false, bool typingBackspace = false, String keysTyped = null)
         {
             this.playerIndex = playerIndex;
+            this.menuAccept = menuAccept;
+            this.menuCancel = menuCancel;
             this.toggleDirection = toggleDirection;
-            this.inputAccepted = inputAccepted;
-            this.inputCancelled = inputCancelled;
-            this.inputBackspace = inputBackspace;
+            this.typingAccepted = typingAccepted;
+            this.typingCancelled = typingCancelled;
+            this.typingBackspace = typingBackspace;
             this.keysTyped = keysTyped;
             return;
         }
@@ -44,6 +46,24 @@ namespace SkyCrane.Screens
         PlayerIndex playerIndex;
 
         /// <summary>
+        /// Gets whether or not the input was accepted.
+        /// </summary>
+        public bool MenuAccept
+        {
+            get { return menuAccept; }
+        }
+        bool menuAccept;
+
+        /// <summary>
+        /// Gets whether or not the input was accepted.
+        /// </summary>
+        public bool MenuCancel
+        {
+            get { return menuCancel; }
+        }
+        bool menuCancel;
+
+        /// <summary>
         /// Gets the direction the player was toggling during the event.
         /// </summary>
         public int ToggleDirection
@@ -55,29 +75,29 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Gets whether or not the input was accepted.
         /// </summary>
-        public bool InputAccepted
+        public bool TypingAccepted
         {
-            get { return inputAccepted; }
+            get { return typingAccepted; }
         }
-        bool inputAccepted;
+        bool typingAccepted;
 
         /// <summary>
         /// Gets whether or not the input was cancelled.
         /// </summary>
-        public bool InputCancelled
+        public bool TypingCancelled
         {
-            get { return inputCancelled; }
+            get { return typingCancelled; }
         }
-        bool inputCancelled;
+        bool typingCancelled;
 
         /// <summary>
         /// Gets whether or not the input was cancelled.
         /// </summary>
-        public bool InputBackspace
+        public bool TypingBackspace
         {
-            get { return inputBackspace; }
+            get { return typingBackspace; }
         }
-        bool inputBackspace;
+        bool typingBackspace;
 
         /// <summary>
         /// Get the input that was typed when this event was fired.
