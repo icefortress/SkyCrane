@@ -19,10 +19,17 @@ namespace SkyCrane
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        /// <summary>
+        /// Create the main instance of the project and run.
+        /// </summary>
         public ProjectSkyCrane()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            this.graphics.PreferredBackBufferWidth = 1280;
+            this.graphics.PreferredBackBufferHeight = 720;
+            return;
         }
 
         /// <summary>
@@ -36,6 +43,7 @@ namespace SkyCrane
             // TODO: Add your initialization logic here
 
             base.Initialize();
+            return;
         }
 
         /// <summary>
@@ -48,6 +56,7 @@ namespace SkyCrane
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            return;
         }
 
         /// <summary>
@@ -57,6 +66,7 @@ namespace SkyCrane
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
+            return;
         }
 
         /// <summary>
@@ -66,13 +76,26 @@ namespace SkyCrane
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
+            UpdateGameControls(gameTime);
 
             // TODO: Add your update logic here
 
             base.Update(gameTime);
+            return;
+        }
+
+        /// <summary>
+        /// Update control-related information for all players.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        private void UpdateGameControls(GameTime gameTime)
+        {
+            // Allows the game to exit
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            {
+                this.Exit();
+            }
+            return;
         }
 
         /// <summary>
@@ -86,6 +109,7 @@ namespace SkyCrane
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
+            return;
         }
     }
 }
