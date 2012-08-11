@@ -76,11 +76,6 @@ namespace SkyCrane.Screens
             textureDict.Add("testlevel", testLevel);
             textureDict.Add("testchar", testChar);
 
-            // A real game would probably have more content than this sample, so
-            // it would take longer to load. We simulate that by delaying for a
-            // while, giving you a chance to admire the beautiful loading screen.
-            Thread.Sleep(1000);
-
             Level l = Level.generateLevel(this);
             gameState.currentLevel = l;
             gameState.addEntity(0, l);

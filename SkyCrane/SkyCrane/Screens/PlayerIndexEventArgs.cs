@@ -16,16 +16,18 @@ namespace SkyCrane.Screens
 {
     /// <summary>
     /// Custom event argument which includes the index of the player who
-    /// triggered the event. This is used by the MenuEntry.Selected event.
+    /// triggered the event and toggle information. This is used by the MenuEntry.Selected event.
     /// </summary>
     class PlayerIndexEventArgs : EventArgs
     {
         /// <summary>
         /// Constructor.
         /// </summary>
-        public PlayerIndexEventArgs(PlayerIndex playerIndex)
+        public PlayerIndexEventArgs(PlayerIndex playerIndex, int toggleDirection )
         {
             this.playerIndex = playerIndex;
+            this.toggleDirection = toggleDirection;
+            return;
         }
 
 
@@ -36,7 +38,16 @@ namespace SkyCrane.Screens
         {
             get { return playerIndex; }
         }
-
         PlayerIndex playerIndex;
+
+        /// <summary>
+        /// Gets the direction the player was toggling during the event.
+        /// </summary>
+        public int ToggleDirection
+        {
+            get { return toggleDirection; }
+        }
+        int toggleDirection;
+
     }
 }

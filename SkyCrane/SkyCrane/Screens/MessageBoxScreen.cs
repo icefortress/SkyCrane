@@ -106,7 +106,7 @@ namespace SkyCrane.Screens
             {
                 // Raise the accepted event, then exit the message box.
                 if (Accepted != null)
-                    Accepted(this, new PlayerIndexEventArgs(playerIndex));
+                    Accepted(this, new PlayerIndexEventArgs(playerIndex, 0));
 
                 ExitScreen();
             }
@@ -114,7 +114,7 @@ namespace SkyCrane.Screens
             {
                 // Raise the cancelled event, then exit the message box.
                 if (Cancelled != null)
-                    Cancelled(this, new PlayerIndexEventArgs(playerIndex));
+                    Cancelled(this, new PlayerIndexEventArgs(playerIndex, 0));
 
                 ExitScreen();
             }

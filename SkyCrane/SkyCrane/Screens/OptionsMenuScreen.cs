@@ -60,10 +60,10 @@ namespace SkyCrane.Screens
             : base("Options")
         {
             // Create our menu entries.
-            musicOnMenuEntry = new MenuEntry(string.Empty);
-            musicVolumeMenuEntry = new MenuEntry(string.Empty);
-            soundFXOnMenuEntry = new MenuEntry(string.Empty);
-            soundFXVolumeMenuEntry = new MenuEntry(string.Empty);
+            musicOnMenuEntry = new MenuEntry(string.Empty, true);
+            musicVolumeMenuEntry = new MenuEntry(string.Empty, true);
+            soundFXOnMenuEntry = new MenuEntry(string.Empty, true);
+            soundFXVolumeMenuEntry = new MenuEntry(string.Empty, true);
 
             SetMenuEntryText();
 
@@ -106,12 +106,20 @@ namespace SkyCrane.Screens
         /// </summary>
         void MusicOnMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            // Toggle music on and off
-            musicOn++;
-            if (musicOn > OnOff.On)
+
+            // Toggle the music on or off
+            musicOn += e.ToggleDirection;
+            if (musicOn < OnOff.Off)
             {
-                musicOn = 0;
+                musicOn = OnOff.On;
             }
+            else if (musicOn > OnOff.On)
+            {
+                musicOn = OnOff.Off;
+            }
+
+            // Toggle music on and off
+            musicVolumeMenuEntry.Enabled = musicOn == OnOff.On;
 
             SetMenuEntryText();
         }
@@ -121,7 +129,7 @@ namespace SkyCrane.Screens
         /// </summary>
         void MusicVolumeMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            musicVolume += VOLUME_DELTA;
+            musicVolume += e.ToggleDirection * VOLUME_DELTA;
             if (musicVolume > MAX_VOLUME)
             {
                 musicVolume = MIN_VOLUME;
@@ -136,12 +144,19 @@ namespace SkyCrane.Screens
         /// </summary>
         void SoundFXOnEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            // Toggle soundFX on and off
-            soundFXOn++;
-            if (soundFXOn > OnOff.On)
+            // Toggle the music on or off
+            soundFXOn += e.ToggleDirection;
+            if (soundFXOn < OnOff.Off)
             {
-                soundFXOn = 0;
+                soundFXOn = OnOff.On;
             }
+            else if (soundFXOn > OnOff.On)
+            {
+                soundFXOn = OnOff.Off;
+            }
+
+            // Toggle music on and off
+            soundFXVolumeMenuEntry.Enabled = soundFXOn == OnOff.On;
 
             SetMenuEntryText();
             return;
@@ -152,7 +167,7 @@ namespace SkyCrane.Screens
         /// </summary>
         void SoundFXVolumeMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            soundFXVolume += VOLUME_DELTA;
+            soundFXVolume += e.ToggleDirection * VOLUME_DELTA;
             if (soundFXVolume > MAX_VOLUME)
             {
                 soundFXVolume = MIN_VOLUME;

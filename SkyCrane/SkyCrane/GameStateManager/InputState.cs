@@ -143,9 +143,9 @@ namespace SkyCrane.GameStateManager
         /// <param name="playerIndex">Returned player that pressed the button (on null input).</param>
         /// <param name="menuDirection">The returned direction that the option was being toggled in.</param>
         /// <returns>True an option is being toggled.</returns>
-        public bool IsMenuToggle(PlayerIndex? controllingPlayer, out PlayerIndex playerIndex, out int menuDirection)
+        public bool IsMenuToggle(PlayerIndex? controllingPlayer, out PlayerIndex playerIndex, out int toggleDirection)
         {
-            menuDirection = 0;
+            toggleDirection = 0;
             if (IsNewKeyPress(Keys.Space, controllingPlayer, out playerIndex) ||
                     IsNewKeyPress(Keys.Enter, controllingPlayer, out playerIndex) ||
                     IsNewButtonPress(Buttons.A, controllingPlayer, out playerIndex) ||
@@ -154,16 +154,16 @@ namespace SkyCrane.GameStateManager
                     IsNewButtonPress(Buttons.LeftThumbstickRight, controllingPlayer, out playerIndex) ||
                     IsNewButtonPress(Buttons.DPadRight, controllingPlayer, out playerIndex))
             {
-                menuDirection += 1;
+                toggleDirection += 1;
             }
             if (IsNewKeyPress(Keys.Left, controllingPlayer, out playerIndex) ||
                     IsNewButtonPress(Buttons.LeftThumbstickLeft, controllingPlayer, out playerIndex) ||
                     IsNewButtonPress(Buttons.DPadLeft, controllingPlayer, out playerIndex))
             {
-                menuDirection -= 1;
+                toggleDirection -= 1;
             }
 
-            return menuDirection != 0;
+            return toggleDirection != 0;
         }
 
 

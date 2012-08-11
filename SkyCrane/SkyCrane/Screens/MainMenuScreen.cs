@@ -54,7 +54,7 @@ namespace SkyCrane.Screens
         /// </summary>
         void PlayGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            LoadingScreen.Load(ScreenManager, true, e.PlayerIndex,
+            LoadingScreen.Load(ScreenManager, false, e.PlayerIndex,
                                new GameplayScreen());
             return;
         }

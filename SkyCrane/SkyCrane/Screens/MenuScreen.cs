@@ -75,19 +75,27 @@ namespace SkyCrane.Screens
             // Move to the previous menu entry?
             if (input.IsMenuUp(ControllingPlayer))
             {
-                selectedEntry--;
-
-                if (selectedEntry < 0)
-                    selectedEntry = menuEntries.Count - 1;
+                do
+                {
+                    selectedEntry--;
+                    if (selectedEntry < 0)
+                    {
+                        selectedEntry = menuEntries.Count - 1;
+                    }
+                } while (!menuEntries[selectedEntry].Enabled);
             }
 
             // Move to the next menu entry?
             if (input.IsMenuDown(ControllingPlayer))
             {
-                selectedEntry++;
-
-                if (selectedEntry >= menuEntries.Count)
-                    selectedEntry = 0;
+                do
+                {
+                    selectedEntry++;
+                    if (selectedEntry >= menuEntries.Count)
+                    {
+                        selectedEntry = 0;
+                    }
+                } while (!menuEntries[selectedEntry].Enabled);
             }
 
             // Accept or cancel the menu? We pass in our ControllingPlayer, which may
@@ -96,24 +104,34 @@ namespace SkyCrane.Screens
             // us which player actually provided the input. We pass that through to
             // OnSelectEntry and OnCancel, so they can tell which player triggered them.
             PlayerIndex playerIndex;
+            int toggleDirection;
 
-            if (input.IsMenuSelect(ControllingPlayer, out playerIndex))
+            if (menuEntries[selectedEntry].Toggleable && input.IsMenuToggle(ControllingPlayer, out playerIndex, out toggleDirection))
             {
-                OnSelectEntry(selectedEntry, playerIndex);
+                OnSelectEntry(selectedEntry, playerIndex, toggleDirection);
+            }
+            else if (input.IsMenuSelect(ControllingPlayer, out playerIndex))
+            {
+                OnSelectEntry(selectedEntry, playerIndex, 0);
             }
             else if (input.IsMenuCancel(ControllingPlayer, out playerIndex))
             {
                 OnCancel(playerIndex);
             }
+            return;
         }
 
 
         /// <summary>
         /// Handler for when the user has chosen a menu entry.
         /// </summary>
-        protected virtual void OnSelectEntry(int entryIndex, PlayerIndex playerIndex)
+        protected virtual void OnSelectEntry(int entryIndex, PlayerIndex playerIndex, int toggleDirection)
         {
-            menuEntries[entryIndex].OnSelectEntry(playerIndex);
+            if (menuEntries[entryIndex].Enabled)
+            {
+                menuEntries[entryIndex].OnSelectEntry(playerIndex, toggleDirection);
+            }
+            return;
         }
 
 
@@ -173,6 +191,7 @@ namespace SkyCrane.Screens
                 // move down for the next entry the size of this entry
                 position.Y += menuEntry.GetHeight(this);
             }
+            return;
         }
 
 
@@ -191,6 +210,7 @@ namespace SkyCrane.Screens
 
                 menuEntries[i].Update(this, isSelected, gameTime);
             }
+            return;
         }
 
 

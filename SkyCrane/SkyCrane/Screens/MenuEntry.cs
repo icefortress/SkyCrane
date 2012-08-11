@@ -111,10 +111,13 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Method for raising the Selected event.
         /// </summary>
-        protected internal virtual void OnSelectEntry(PlayerIndex playerIndex)
+        protected internal virtual void OnSelectEntry(PlayerIndex playerIndex, int toggleDirection)
         {
             if (Selected != null)
-                Selected(this, new PlayerIndexEventArgs(playerIndex));
+            {
+                Selected(this, new PlayerIndexEventArgs(playerIndex, toggleDirection));
+            }
+            return;
         }
 
 
@@ -139,24 +142,25 @@ namespace SkyCrane.Screens
 
         #region Update and Draw
 
-
         /// <summary>
         /// Updates the menu entry.
         /// </summary>
         public virtual void Update(MenuScreen screen, bool isSelected, GameTime gameTime)
         {
-            // there is no such thing as a selected item on Windows Phone, so we always
-            // force isSelected to be false
-
             // When the menu selection changes, entries gradually fade between
             // their selected and deselected appearance, rather than instantly
             // popping to the new state.
             float fadeSpeed = (float)gameTime.ElapsedGameTime.TotalSeconds * 4;
 
             if (isSelected)
+            {
                 selectionFade = Math.Min(selectionFade + fadeSpeed, 1);
+            }
             else
+            {
                 selectionFade = Math.Max(selectionFade - fadeSpeed, 0);
+            }
+            return;
         }
 
 
@@ -165,8 +169,6 @@ namespace SkyCrane.Screens
         /// </summary>
         public virtual void Draw(MenuScreen screen, bool isSelected, GameTime gameTime)
         {
-            // there is no such thing as a selected item on Windows Phone, so we always
-            // force isSelected to be false
 
             // Draw the selected entry in yellow, otherwise white.
             Color color;
@@ -198,8 +200,8 @@ namespace SkyCrane.Screens
 
             spriteBatch.DrawString(font, text, position, color, 0,
                                    origin, scale, SpriteEffects.None, 0);
+            return;
         }
-
 
         /// <summary>
         /// Queries how much space this menu entry requires.
@@ -209,7 +211,6 @@ namespace SkyCrane.Screens
             return screen.ScreenManager.Font.LineSpacing;
         }
 
-
         /// <summary>
         /// Queries how wide the entry is, used for centering on the screen.
         /// </summary>
@@ -217,7 +218,6 @@ namespace SkyCrane.Screens
         {
             return (int)screen.ScreenManager.Font.MeasureString(Text).X;
         }
-
 
         #endregion
     }
