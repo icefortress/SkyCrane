@@ -114,11 +114,11 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Method for raising the Selected event.
         /// </summary>
-        protected internal virtual void OnSelectEntry(PlayerIndex playerIndex, int toggleDirection)
+        protected internal virtual void OnSelectEntry(PlayerIndex playerIndex, bool menuAccepted, bool menuCancelled, int toggleDirection)
         {
             if (Selected != null)
             {
-                Selected(this, new PlayerInputEventArgs(playerIndex, toggleDirection));
+                Selected(this, new PlayerInputEventArgs(playerIndex, menuAccepted, menuCancelled, toggleDirection));
             }
             return;
         }
@@ -126,11 +126,11 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Method for raising the Typed event.
         /// </summary>
-        protected internal virtual void OnInputTyped(PlayerIndex playerIndex, bool inputAccepted, bool inputCancelled, bool inputBackspace, String keysTyped)
+        protected internal virtual void OnInputTyped(PlayerIndex playerIndex, bool typingAccepted, bool typingCancelled, bool typingBackspace, String keysTyped)
         {
             if (Typed != null)
             {
-                Typed(this, new PlayerInputEventArgs(playerIndex, 0, inputAccepted, inputCancelled, inputBackspace, keysTyped));
+                Typed(this, new PlayerInputEventArgs(playerIndex, false, false, 0, typingAccepted, typingCancelled, typingBackspace, keysTyped));
             }
             return;
         }
@@ -187,9 +187,23 @@ namespace SkyCrane.Screens
 
             // Draw the selected entry in yellow, otherwise white.
             Color color;
-            if (enabled)
+            if (enabled) // Disabled entries are always gray
             {
-                color = isSelected ? Color.Yellow : Color.White;
+                if (isSelected) // Unselected entries are always white
+                {
+                    if (screen.TypingInput) // Typing input is green, non-typing is yellow
+                    {
+                        color = Color.LimeGreen;
+                    }
+                    else
+                    {
+                        color = Color.Yellow;
+                    }
+                }
+                else
+                {
+                    color = Color.White;
+                }
             }
             else
             {
