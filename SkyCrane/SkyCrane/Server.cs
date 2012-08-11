@@ -81,6 +81,7 @@ namespace SkyCrane
 
         public List<Command> getCMD()
         {
+            return new List<Command>();
         }
 
         public void broadcastSC(List<StateChange> list)
