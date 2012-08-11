@@ -9,19 +9,32 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
 namespace SkyCrane
+<<<<<<< HEAD
 {
+=======
+{   
+>>>>>>> local
 
     /// <summary>
     /// This is the main type for your game
     /// </summary>
     public class ProjectSkyCrane : Microsoft.Xna.Framework.Game
     {
+        public List<AIable> aiAbles = new List<AIable>();
+        public List<PhysicsAble> physicsAbles = new List<PhysicsAble>();
+        public Dictionary<String, Texture2D> textureDict = new Dictionary<String, Texture2D>();
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+<<<<<<< HEAD
         /// <summary>
         /// Create the main instance of the project and run.
         /// </summary>
+=======
+        Level activeLevel;
+
+>>>>>>> local
         public ProjectSkyCrane()
         {
             Content.RootDirectory = "Content";
@@ -57,7 +70,14 @@ namespace SkyCrane
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+<<<<<<< HEAD
             return;
+=======
+            Texture2D testLevel = this.Content.Load<Texture2D>("testlevel");
+            textureDict.Add("testlevel", testLevel);
+
+            activeLevel = Level.generateLevel(spriteBatch, this);
+>>>>>>> local
         }
 
         /// <summary>
@@ -107,7 +127,12 @@ namespace SkyCrane
         {
             GraphicsDevice.Clear(Color.Black);
 
+<<<<<<< HEAD
             // All the real drawing happens inside the screen manager component
+=======
+            
+
+>>>>>>> local
             base.Draw(gameTime);
             return;
         }
@@ -128,5 +153,6 @@ namespace SkyCrane
                 game.Run();
             }
         }
+
     }
 }
