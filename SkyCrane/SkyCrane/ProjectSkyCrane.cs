@@ -107,10 +107,26 @@ namespace SkyCrane
         {
             GraphicsDevice.Clear(Color.Black);
 
-            // TODO: Add your drawing code here
-
+            // All the real drawing happens inside the screen manager component
             base.Draw(gameTime);
             return;
+        }
+    }
+
+    /// <summary>
+    /// Main entry point for the game. Removes the unnecessary "program" file.
+    /// </summary>
+    public static class Program
+    {
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        static void Main(string[] args)
+        {
+            using (ProjectSkyCrane game = new ProjectSkyCrane())
+            {
+                game.Run();
+            }
         }
     }
 }
