@@ -95,7 +95,7 @@ namespace SkyCrane.Screens
             Texture2D tankl = content.Load<Texture2D>("Sprites/Tank_Animated");
             Texture2D tankr = content.Load<Texture2D>("Sprites/Tank_Animated_Right");
             Texture2D tankal = content.Load<Texture2D>("Sprites/Tank_Attack");
-            Texture2D tankar = content.Load<Texture2D>("Sprites/Tank_Attack");
+            Texture2D tankar = content.Load<Texture2D>("Sprites/Tank_Attack_Right");
             
             textureDict.Add("room2", testLevel);
             textureDict.Add("room2-collision-map", testMap);

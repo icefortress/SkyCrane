@@ -25,13 +25,13 @@ namespace SkyCrane
         // Milleseconds
         public virtual int getAttackLength()
         {
-            return 400;
+            return 100;
         }
 
         // Milleseconds
         public virtual int getAttackCooldown()
         {
-            return 1000;
+            return 160;
         }
 
         internal void startAttack(GameTime gameTime)
@@ -49,9 +49,8 @@ namespace SkyCrane
         {
             if (attacking)
             {
-                if (velocity.X < 0)
+                if (facingLeft)
                 {
-                    facingLeft = true;
                     StateChange sc = new StateChange();
                     sc.type = StateChangeType.CHANGE_SPRITE;
                     sc.intProperties.Add(StateProperties.ENTITY_ID, id);
@@ -60,9 +59,8 @@ namespace SkyCrane
 
                     notifyStateChangeListeners(sc);
                 }
-                else if (velocity.X > 0)
+                else if (!facingLeft)
                 {
-                    facingLeft = false;
                     StateChange sc = new StateChange();
                     sc.type = StateChangeType.CHANGE_SPRITE;
                     sc.intProperties.Add(StateProperties.ENTITY_ID, id);

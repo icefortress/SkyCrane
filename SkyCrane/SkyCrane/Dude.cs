@@ -66,7 +66,15 @@ namespace SkyCrane.Screens
         {
             if (forceCheck) forceCheck = false;
 
-            if (velocity.X < 0)
+            bool go_left = false;
+            bool go_right = false;
+            if (velocity.X == 0)
+            {
+                go_left = facingLeft;
+                go_right = !facingLeft;
+            }
+
+            if (velocity.X < 0 || go_left)
             {
                 facingLeft = true;
                 StateChange sc = new StateChange();
@@ -77,7 +85,7 @@ namespace SkyCrane.Screens
 
                 notifyStateChangeListeners(sc);
             }
-            else if (velocity.X > 0)
+            else if (velocity.X > 0 || go_right)
             {
                 facingLeft = false;
                 StateChange sc = new StateChange();
@@ -92,7 +100,7 @@ namespace SkyCrane.Screens
 
         public override void UpdateSprite(GameTime gameTime)
         {
-            if (velocity.X < 0 != facingLeft || forceCheck) setSpriteFromVelocity();
+            if ((velocity.X != 0 && velocity.X < 0 != facingLeft) || forceCheck) setSpriteFromVelocity();
             base.UpdateSprite(gameTime);
         }
 
