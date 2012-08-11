@@ -1,0 +1,13 @@
+Here's where I am at the end of the first evening:
+* you can move around a level. The panning limits are based around the size of the level image and a provided scaling factor, but I'd prefer if we kept it to 1 and just made all our levels 1:1 for now.
+* The classes I made are
+-Level
+-PlayerCharacter
+-Entity
+-PhysicsAble
+-AIable
+-GameState
+-lots of work on GameplayScreen
+All the game update steps are in GameplayScreen
+
+In Gamestate, the integer for adding an entity is a drawing order. lower draws first!
