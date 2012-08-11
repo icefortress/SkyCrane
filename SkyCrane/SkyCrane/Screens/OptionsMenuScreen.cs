@@ -38,16 +38,16 @@ namespace SkyCrane.Screens
 
         // Current music options
         static OnOff musicOn = OnOff.On;
-        static int musicVolume = 100;
+        static int musicVolume = MAX_VOLUME;
 
         // Current sound FX options
         static OnOff soundFXOn = OnOff.On;
-        static int soundFXVolume = 100;
+        static int soundFXVolume = MAX_VOLUME;
 
         // Volume level properties
         const int MIN_VOLUME = 0;
-        const int MAX_VOLUME = 100;
-        const int VOLUME_DELTA = 10;
+        const int MAX_VOLUME = 11;
+        const int VOLUME_DELTA = 1;
 
         #endregion
 
