@@ -76,21 +76,19 @@ namespace SkyCrane.Screens
 
             gameFont = content.Load<SpriteFont>("Fonts/gamefont");
 
-            Texture2D testLevel = content.Load<Texture2D>("Levels/filback");
-            Texture2D testMap = content.Load<Texture2D>("Levels/filmap");
-            Texture2D testChar = content.Load<Texture2D>("Sprites/PinkWizard");
+            Texture2D testLevel = content.Load<Texture2D>("Levels/room3");
+            Texture2D testMap = content.Load<Texture2D>("Levels/room3-collision_map");
+            Texture2D testChar = content.Load<Texture2D>("Sprites/Tank_Animated");
             
-            textureDict.Add("testback", testLevel);
-            textureDict.Add("testmap", testMap);
+            textureDict.Add("room2", testLevel);
+            textureDict.Add("room2-collision-map", testMap);
             textureDict.Add("testchar", testChar);
 
             Level l = Level.generateLevel(this);
             gameState.currentLevel = l;
             gameState.addEntity(0, l);
 
-            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, "testchar", "poop");
-
-            goodtogo = true;
+            serverStartGame(1);
 
             /*Enemy e = Enemy.createDefaultEnemy(this);
             this.addEntity(100, e);
@@ -122,6 +120,23 @@ namespace SkyCrane.Screens
 
 
         #endregion
+
+        public void serverStartGame(int numPlayers)
+        {
+            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, 45, "testchar", "poop");
+
+            List<int> playerIds = new List<int>();
+            for (int i = 1; i < numPlayers; i++)
+            {
+                PlayerCharacter pc = gameState.createPlayer(1280 / 2 + 20 * i, 720 / 2 + 50, 45, "testchar", "poop");
+                playerIds.Add(pc.id);
+            }
+
+            // Get the players from the server and send them each a notification of who the fuck theyare
+
+            goodtogo = true;
+
+        }
 
         #region Update and Draw
 
