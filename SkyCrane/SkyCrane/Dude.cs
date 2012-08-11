@@ -14,8 +14,15 @@ namespace SkyCrane.Screens
         Rectangle topRect;
         Rectangle bottomRect;
 
-        public Dude(GameplayScreen g, int posX, int posY, int frameWidth, String textureName, String animationName) : base(g, posX, posY, frameWidth, textureName, animationName)
+        bool facingLeft = true;
+
+        String textureLeft;
+        String textureRight;
+
+        public Dude(GameplayScreen g, int posX, int posY, int frameWidth, String textureLeft, String textureRight, String animationName) : base(g, posX, posY, frameWidth, textureLeft, animationName)
         {
+            this.textureLeft = textureLeft;
+            this.textureRight = textureRight;
         }
 
         public void UpdatePhysics()
@@ -50,6 +57,36 @@ namespace SkyCrane.Screens
         public virtual void HandleCollision(CollisionDirection cd, PhysicsAble entity)
         {
             velocity = Vector2.Zero;
+        }
+
+        public override void setVelocity(Vector2 val)
+        {
+            /*int frame_width = s.intProperties[StateProperties.FRAME_WIDTH];
+                String texture_name = s.stringProperties[StateProperties.SPRITE_NAME];
+                String animation_name = s.stringProperties[StateProperties.ANIMATION_NAME];*/
+
+            if (val.X < 0 && !facingLeft)
+            {
+                facingLeft = true;
+                StateChange sc = new StateChange();
+                sc.type = StateChangeType.CHANGE_SPRITE;
+                sc.intProperties.Add(StateProperties.ENTITY_ID, id);
+                sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureLeft);
+                sc.stringProperties.Add(StateProperties.ANIMATION_NAME, "poop");
+
+                notifyStateChangeListeners(sc);
+            }
+            else if (val.X > 0 && facingLeft)
+            {
+                facingLeft = false;
+                StateChange sc = new StateChange();
+                sc.type = StateChangeType.CHANGE_SPRITE;
+                sc.intProperties.Add(StateProperties.ENTITY_ID, id);
+                sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureRight);
+                sc.stringProperties.Add(StateProperties.ANIMATION_NAME, "poop");
+
+                notifyStateChangeListeners(sc);
+            }
         }
 
         public CollisionDirection CheckCollision(PhysicsAble entity)

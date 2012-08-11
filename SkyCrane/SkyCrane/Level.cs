@@ -61,7 +61,7 @@ namespace SkyCrane
 
         /* Computes the view position (centred) in world coordinates that things should be drawn off of based on player position
          * This is necessary to deal with the edges of the world */
-        public Vector2 getViewPosition(PlayerCharacter c)
+        public Vector2 getViewPosition(Entity c)
         {
             Vector2 characterPosition = c.worldPosition;
 

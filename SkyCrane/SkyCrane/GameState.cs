@@ -10,7 +10,7 @@ namespace SkyCrane
     public class GameState : StateChangeListener
     {
         public Level currentLevel;
-        public PlayerCharacter usersPlayer;
+        public Entity usersPlayer = null;
         public GameplayScreen context;
 
         public List<StateChange> changes = new List<StateChange>();
@@ -43,12 +43,12 @@ namespace SkyCrane
         public SortedDictionary<int, List<Entity>> drawLists = new SortedDictionary<int, List<Entity>>();
 
         // Should be called by the server to create a player entity in the current game state
-        public PlayerCharacter createPlayer(int posX, int posY, int frameWidth, String textureName, String animationName)
+        public PlayerCharacter createPlayer(int posX, int posY, int frameWidth, String textureLeft, String textureRight, String animationName)
         {
-            PlayerCharacter pc = new PlayerCharacter(context, posX, posY, frameWidth, textureName, animationName);
+            PlayerCharacter pc = new PlayerCharacter(context, posX, posY, frameWidth, textureLeft, textureRight, animationName);
             addEntity(100, pc);
 
-            StateChange sc = Entity.createEntityStateChange(pc.id, posX, posY, frameWidth, textureName, animationName);
+            StateChange sc = Entity.createEntityStateChange(pc.id, posX, posY, frameWidth, textureLeft, animationName);
             changes.Add(sc);
 
             return pc;
@@ -91,6 +91,10 @@ namespace SkyCrane
             removeEntity(entities[eid]);
         }
 
+        public void applyAllStatechangs(List<StateChange> ss)
+        {
+            foreach (StateChange s in ss) applyStateChange(s);
+        }
 
         // This should never create a state change
         public void applyStateChange(StateChange s)
@@ -117,12 +121,13 @@ namespace SkyCrane
                 
                 addEntity(draw_priority, e);
             }
-            else if (s.type == StateChangeType.SET_PLAYER) {
-                usersPlayer = (PlayerCharacter) entities[entity];
-            }
             else if (s.type == StateChangeType.DELETE_ENTITY)
             {
                 removeEntity(entity);
+            }
+            else if (s.type == StateChangeType.SET_PLAYER)
+            {
+                usersPlayer = entities[entity];
             }
             else if (s.type == StateChangeType.CHANGE_SPRITE)
             {
@@ -130,7 +135,7 @@ namespace SkyCrane
                 String texture_name = s.stringProperties[StateProperties.SPRITE_NAME];
                 String animation_name = s.stringProperties[StateProperties.ANIMATION_NAME];
 
-
+                entities[entity].changeAnimation(frame_width, texture_name, animation_name);
             }
         }
         

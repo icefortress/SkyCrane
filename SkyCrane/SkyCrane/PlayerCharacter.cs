@@ -23,7 +23,7 @@ namespace SkyCrane
             return sc;
         }
 
-        public PlayerCharacter(GameplayScreen g, int posX, int posY, int frameWidth, String textureName, String animationName) : base(g, posX, posY, frameWidth, textureName, animationName)
+        public PlayerCharacter(GameplayScreen g, int posX, int posY, int frameWidth, String textureLeft, String textureRight, String animationName) : base(g, posX, posY, frameWidth, textureLeft, textureRight, animationName)
         {
         }
 
