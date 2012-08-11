@@ -28,7 +28,7 @@ namespace SkyCrane.Screens
             : base("Main Menu")
         {
             // Create our menu entries.
-            MenuEntry playGameMenuEntry = new MenuEntry("Play Game");
+            MenuEntry playGameMenuEntry = new MenuEntry("New Game");
             MenuEntry optionsMenuEntry = new MenuEntry("Options");
             MenuEntry exitMenuEntry = new MenuEntry("Exit");
 
@@ -41,6 +41,7 @@ namespace SkyCrane.Screens
             MenuEntries.Add(playGameMenuEntry);
             MenuEntries.Add(optionsMenuEntry);
             MenuEntries.Add(exitMenuEntry);
+            return;
         }
 
 
@@ -56,6 +57,7 @@ namespace SkyCrane.Screens
         {
             LoadingScreen.Load(ScreenManager, true, e.PlayerIndex,
                                new GameplayScreen());
+            return;
         }
 
 
@@ -65,6 +67,7 @@ namespace SkyCrane.Screens
         void OptionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
             ScreenManager.AddScreen(new OptionsMenuScreen(), e.PlayerIndex);
+            return;
         }
 
 
@@ -74,12 +77,10 @@ namespace SkyCrane.Screens
         protected override void OnCancel(PlayerIndex playerIndex)
         {
             const string message = "Are you sure you want to exit this sample?";
-
             MessageBoxScreen confirmExitMessageBox = new MessageBoxScreen(message);
-
             confirmExitMessageBox.Accepted += ConfirmExitMessageBoxAccepted;
-
             ScreenManager.AddScreen(confirmExitMessageBox, playerIndex);
+            return;
         }
 
 
@@ -90,6 +91,7 @@ namespace SkyCrane.Screens
         void ConfirmExitMessageBoxAccepted(object sender, PlayerIndexEventArgs e)
         {
             ScreenManager.Game.Exit();
+            return;
         }
 
 
