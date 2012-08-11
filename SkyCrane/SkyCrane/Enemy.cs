@@ -34,7 +34,7 @@ namespace SkyCrane
             List<Entity> targets = new List<Entity>();
             
             // TODO: need to add all player characters
-            targets.Add(context.usersPlayer);
+            targets.Add(context.gameState.usersPlayer);
 
             // Find closest target
             Entity target = null;

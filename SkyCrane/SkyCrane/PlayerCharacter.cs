@@ -24,6 +24,29 @@ namespace SkyCrane
             return pc;
         }
 
+        public static StateChange createPlayerStateChange(int posX, int posY, String textureName, String animationName)
+        {
+            StateChange sc = new StateChange();
+            sc.type = StateChangeType.CREATE_PLAYER_CHARACTER;
+            sc.intProperties.Add(StateProperties.POSITION_X, posX);
+            sc.intProperties.Add(StateProperties.POSITION_Y, posY);
+            sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureName);
+            sc.stringProperties.Add(StateProperties.ANIMATION_NAME, animationName);
+
+            return sc;
+        }
+
+        public PlayerCharacter(GameplayScreen g, int posX, int posY, String textureName, String animationName) : base(g)
+        {
+            worldPosition = new Vector2(posX, posY);
+            Texture2D chara = g.textureDict[textureName];
+
+            List<int> animationFrames = new List<int>(); // TODO: some way of loading animation
+            animationFrames.Add(0);
+            InitDrawable(chara, chara.Width, chara.Height, animationFrames, 1, Color.White, 1, true);
+            active = true;
+        }
+
         public PlayerCharacter(GameplayScreen g) : base(g)
         {
         }
