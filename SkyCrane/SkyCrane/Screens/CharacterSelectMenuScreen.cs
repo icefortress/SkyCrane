@@ -23,6 +23,7 @@ namespace SkyCrane.Screens
 
         bool host;
         bool multiplayer;
+        int numPlayers = 1;
 
         #endregion
 
@@ -40,13 +41,16 @@ namespace SkyCrane.Screens
             this.multiplayer = true;
 
             // Create our menu entries.
-            MenuEntry back = new MenuEntry("Back");
+            MenuEntry startGameMenuEntry = new MenuEntry("Start Game");
+            MenuEntry backMenuEntry = new MenuEntry("Back");
 
             // Hook up menu event handlers.
-            back.Selected += OnCancel;
+            startGameMenuEntry.Selected += StartGameMenuEntrySelected;
+            backMenuEntry.Selected += OnCancel;
 
             // Add entries to the menu.
-            MenuEntries.Add(back);
+            MenuEntries.Add(startGameMenuEntry);
+            MenuEntries.Add(backMenuEntry);
             return;
         }
 
@@ -57,9 +61,9 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Event handler for when the Play Game menu entry is selected.
         /// </summary>
-        void PlayGameMenuEntrySelected(object sender, PlayerInputEventArgs e)
+        void StartGameMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
-            LoadingScreen.Load(ScreenManager, false, e.PlayerIndex, new GameplayScreen());
+            LoadingScreen.Load(ScreenManager, false, e.PlayerIndex, new GameplayScreen(host, multiplayer, numPlayers));
             return;
         }
 

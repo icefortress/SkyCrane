@@ -39,8 +39,9 @@ namespace SkyCrane.Screens
 
         public GameState gameState;
 
-        public bool isServer = true;
-        public int numPlayers = 4;
+        public bool isServer;
+        public bool isMultiplayer;
+        public int numPlayers;
 
         bool goodtogo = false;
 
@@ -53,12 +54,15 @@ namespace SkyCrane.Screens
 
         #region Initialization
 
-
         /// <summary>
         /// Constructor.
         /// </summary>
-        public GameplayScreen()
+        public GameplayScreen(bool isServer, bool isMultiplayer, int numPlayers)
         {
+            this.isServer = isServer;
+            this.isMultiplayer = isMultiplayer;
+            this.numPlayers = numPlayers;
+
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
 
