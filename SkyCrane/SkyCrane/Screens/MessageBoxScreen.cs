@@ -23,10 +23,16 @@ namespace SkyCrane.Screens
     /// </summary>
     class MessageBoxScreen : GameScreen
     {
+
         #region Fields
 
         string message;
+        string baseMessage;
         Texture2D gradientTexture;
+        Texture2D aButtonTexture;
+        Texture2D bButtonTexture;
+        const string okText = "Ok: [ENTER] or";
+        const string cancelText = "Cancel: [ESC] or";
 
         #endregion
 
@@ -39,15 +45,11 @@ namespace SkyCrane.Screens
 
         #region Initialization
 
-
         /// <summary>
         /// Constructor automatically includes the standard "A=ok, B=cancel"
         /// usage text prompt.
         /// </summary>
-        public MessageBoxScreen(string message)
-            : this(message, true)
-        { }
-
+        public MessageBoxScreen(string message) : this(message, true) { }
 
         /// <summary>
         /// Constructor lets the caller specify whether to include the standard
@@ -55,21 +57,20 @@ namespace SkyCrane.Screens
         /// </summary>
         public MessageBoxScreen(string message, bool includeUsageText)
         {
-            const string usageText = "\nOk: Enter, Space, A" +
-                                     "\nCancel: Esc, B"; 
-            
+            baseMessage = message;
             if (includeUsageText)
-                this.message = message + usageText;
+            {
+                this.message = baseMessage + "\n" + okText + "\n" + cancelText;
+            }
             else
+            {
                 this.message = message;
-
+            }
             IsPopup = true;
-
             TransitionOnTime = TimeSpan.FromSeconds(0.2);
             TransitionOffTime = TimeSpan.FromSeconds(0.2);
             return;
         }
-
 
         /// <summary>
         /// Loads graphics content for this screen. This uses the shared ContentManager
@@ -80,8 +81,10 @@ namespace SkyCrane.Screens
         public override void LoadContent()
         {
             ContentManager content = ScreenManager.Game.Content;
-
             gradientTexture = content.Load<Texture2D>("Menus/gradient");
+            aButtonTexture = content.Load<Texture2D>("XBox Buttons/button_a");
+            bButtonTexture = content.Load<Texture2D>("XBox Buttons/button_b");
+            return;
         }
 
 
@@ -118,13 +121,13 @@ namespace SkyCrane.Screens
 
                 ExitScreen();
             }
+            return;
         }
 
 
         #endregion
 
         #region Draw
-
 
         /// <summary>
         /// Draws the message box.
@@ -152,6 +155,10 @@ namespace SkyCrane.Screens
                                                           (int)textSize.X + hPad * 2,
                                                           (int)textSize.Y + vPad * 2);
 
+            Vector2 baseSize = font.MeasureString(baseMessage);
+            Vector2 okSize = font.MeasureString(okText);
+            Vector2 cancelSize = font.MeasureString(cancelText);
+
             // Fade the popup alpha during transitions.
             Color color = Color.White * TransitionAlpha;
 
@@ -159,9 +166,14 @@ namespace SkyCrane.Screens
 
             // Draw the background rectangle.
             spriteBatch.Draw(gradientTexture, backgroundRectangle, color);
-
+            
             // Draw the message box text.
             spriteBatch.DrawString(font, message, textPosition, color);
+
+            spriteBatch.Draw(aButtonTexture, new Rectangle((int)(textPosition.X + okSize.X) + 2,
+                (int)(textPosition.Y + baseSize.Y), (int)okSize.Y, (int)okSize.Y), color);
+            spriteBatch.Draw(bButtonTexture, new Rectangle((int)(textPosition.X + cancelSize.X) + 2,
+                (int)(textPosition.Y + textSize.Y - cancelSize.Y), (int)cancelSize.Y, (int)cancelSize.Y), color);
 
             spriteBatch.End();
         }

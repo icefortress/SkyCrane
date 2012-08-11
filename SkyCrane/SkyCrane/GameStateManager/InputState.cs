@@ -130,10 +130,10 @@ namespace SkyCrane.GameStateManager
         public bool IsMenuSelect(PlayerIndex? controllingPlayer,
                                  out PlayerIndex playerIndex)
         {
-            return IsNewKeyPress(Keys.Space, controllingPlayer, out playerIndex) ||
+            return //IsNewKeyPress(Keys.Space, controllingPlayer, out playerIndex) ||
                    IsNewKeyPress(Keys.Enter, controllingPlayer, out playerIndex) ||
-                   IsNewButtonPress(Buttons.A, controllingPlayer, out playerIndex) ||
-                   IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex);
+                   IsNewButtonPress(Buttons.A, controllingPlayer, out playerIndex);
+                   //IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex);
         }
 
         /// <summary>
@@ -146,10 +146,10 @@ namespace SkyCrane.GameStateManager
         public bool IsMenuToggle(PlayerIndex? controllingPlayer, out PlayerIndex playerIndex, out int toggleDirection)
         {
             toggleDirection = 0;
-            if (IsNewKeyPress(Keys.Space, controllingPlayer, out playerIndex) ||
-                    IsNewKeyPress(Keys.Enter, controllingPlayer, out playerIndex) ||
+            if (//IsNewKeyPress(Keys.Space, controllingPlayer, out playerIndex) ||
+                    //IsNewKeyPress(Keys.Enter, controllingPlayer, out playerIndex) ||
                     IsNewButtonPress(Buttons.A, controllingPlayer, out playerIndex) ||
-                    IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex) ||
+                    //IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex) ||
                     IsNewKeyPress(Keys.Right, controllingPlayer, out playerIndex) ||
                     IsNewButtonPress(Buttons.LeftThumbstickRight, controllingPlayer, out playerIndex) ||
                     IsNewButtonPress(Buttons.DPadRight, controllingPlayer, out playerIndex))
@@ -177,8 +177,8 @@ namespace SkyCrane.GameStateManager
                                  out PlayerIndex playerIndex)
         {
             return IsNewKeyPress(Keys.Escape, controllingPlayer, out playerIndex) ||
-                   IsNewButtonPress(Buttons.B, controllingPlayer, out playerIndex) ||
-                   IsNewButtonPress(Buttons.Back, controllingPlayer, out playerIndex);
+                   IsNewButtonPress(Buttons.B, controllingPlayer, out playerIndex);
+                   //IsNewButtonPress(Buttons.Back, controllingPlayer, out playerIndex);
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace SkyCrane.GameStateManager
         {
             PlayerIndex playerIndex;
             return IsNewKeyPress(Keys.Escape, controllingPlayer, out playerIndex) ||
-                   IsNewButtonPress(Buttons.Back, controllingPlayer, out playerIndex) ||
+                   //IsNewButtonPress(Buttons.Back, controllingPlayer, out playerIndex) ||
                    IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex);
         }
 
