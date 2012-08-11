@@ -32,8 +32,8 @@ namespace SkyCrane.Screens
         /// </summary>
         enum OnOff
         {
-            On,
-            Off
+            Off,
+            On
         }
 
         // Current music options
@@ -43,6 +43,11 @@ namespace SkyCrane.Screens
         // Current sound FX options
         static OnOff soundFXOn = OnOff.On;
         static int soundFXVolume = 100;
+
+        // Volume level properties
+        const int MIN_VOLUME = 0;
+        const int MAX_VOLUME = 100;
+        const int VOLUME_DELTA = 10;
 
         #endregion
 
@@ -103,7 +108,6 @@ namespace SkyCrane.Screens
         {
             // Toggle music on and off
             musicOn++;
-
             if (musicOn > OnOff.On)
             {
                 musicOn = 0;
@@ -117,6 +121,12 @@ namespace SkyCrane.Screens
         /// </summary>
         void MusicVolumeMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
+            musicVolume += VOLUME_DELTA;
+            if (musicVolume > MAX_VOLUME)
+            {
+                musicVolume = MIN_VOLUME;
+            }
+
             SetMenuEntryText();
             return;
         }
@@ -126,7 +136,7 @@ namespace SkyCrane.Screens
         /// </summary>
         void SoundFXOnEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            // Toggle music on and off
+            // Toggle soundFX on and off
             soundFXOn++;
             if (soundFXOn > OnOff.On)
             {
@@ -142,6 +152,12 @@ namespace SkyCrane.Screens
         /// </summary>
         void SoundFXVolumeMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
+            soundFXVolume += VOLUME_DELTA;
+            if (soundFXVolume > MAX_VOLUME)
+            {
+                soundFXVolume = MIN_VOLUME;
+            }
+
             SetMenuEntryText();
             return;
         }
