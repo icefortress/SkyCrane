@@ -36,37 +36,13 @@ namespace SkyCrane.Screens
 
         // Our game stuff
         public Vector2 viewPosition;
-        public PlayerCharacter usersPlayer;
 
         public GameState gameState;
 
         public bool isServer = true;
+        bool goodtogo = false;
 
         List<Command> commandBuffer = new List<Command>();
-
-        public SortedDictionary<int, List<Entity>> drawPriorityEntities = new SortedDictionary<int, List<Entity>>();
-
-        public void addEntity(int drawPriority, Entity e)
-        {
-            if (!drawPriorityEntities.ContainsKey(drawPriority))
-            {
-                drawPriorityEntities.Add(drawPriority, new List<Entity>());
-            }
-            drawPriorityEntities[drawPriority].Add(e);
-        }
-
-        // Could be more efficient, obviously
-        public void removeEntity(Entity e)
-        {
-            foreach (int k in drawPriorityEntities.Keys)
-            {
-                drawPriorityEntities[k].Remove(e);
-            }
-        }
-
-        // These are the entities you own and update yourself
-        public List<AIable> aiAbles = new List<AIable>();
-        public List<PhysicsAble> physicsAbles = new List<PhysicsAble>();
         public Dictionary<String, Texture2D> textureDict = new Dictionary<String, Texture2D>();
 
         float pauseAlpha;
@@ -84,7 +60,7 @@ namespace SkyCrane.Screens
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
 
-            gameState = new GameState();
+            gameState = new GameState(this);
         }
 
 
@@ -110,20 +86,17 @@ namespace SkyCrane.Screens
 
             Level l = Level.generateLevel(this);
             gameState.currentLevel = l;
-            this.addEntity(0, l);
-            gameState.entities.Add(l.id, l);
-            physicsAbles.Add(l);
+            gameState.addEntity(0, l);
 
-            usersPlayer = PlayerCharacter.createDefaultPlayerCharacter(this);
-            this.addEntity(100, usersPlayer);
-            gameState.entities.Add(usersPlayer.id, usersPlayer);
-            physicsAbles.Add(usersPlayer);
+            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, "testchar", "poop");
 
-            Enemy e = Enemy.createDefaultEnemy(this);
+            goodtogo = true;
+
+            /*Enemy e = Enemy.createDefaultEnemy(this);
             this.addEntity(100, e);
             gameState.entities.Add(e.id, e);
             physicsAbles.Add(e);
-            aiAbles.Add(e);
+            aiAbles.Add(e);*/
 
             // Some test music
             MediaPlayer.Stop();
@@ -163,8 +136,10 @@ namespace SkyCrane.Screens
         {
             base.Update(gameTime, otherScreenHasFocus, false);
 
+            if (!goodtogo) return;
+
             // TODO: Add your update logic here
-            viewPosition = gameState.currentLevel.getViewPosition(usersPlayer);
+            viewPosition = gameState.currentLevel.getViewPosition(gameState.usersPlayer);
 
             if (isServer)
             {
@@ -176,29 +151,31 @@ namespace SkyCrane.Screens
                 }
 
                 // Apply commands from the client
-                List<Command> clientCommands = null;
+                /*List<Command> clientCommands = null;
                 foreach (Command c in clientCommands)
                 {
                     Entity e = gameState.entities[c.entity_id];
                     e.velocity = c.direction * 3;
-                }
+                }*/
 
-                foreach (AIable a in aiAbles)
+                foreach (Entity e in gameState.entities.Values)
                 {
-                    a.UpdateAI(gameTime);
-                }
-
-                foreach (PhysicsAble p in physicsAbles)
-                {
-                    p.UpdatePhysics();
+                    if (e is AIable) ((AIable)e).UpdateAI(gameTime);
+                    if (e is PhysicsAble) ((PhysicsAble)e).UpdatePhysics();
                 }
 
                 // Iterate over the physicsAbles to see if they are colliding with eachother
-                foreach (PhysicsAble p in physicsAbles)
+                foreach (Entity e in gameState.entities.Values)
                 {
-                    foreach (PhysicsAble pp in physicsAbles)
+                    if (!(e is PhysicsAble)) continue;
+                    PhysicsAble p = (PhysicsAble) e;
+
+                    foreach (Entity ee in gameState.entities.Values)
                     {
-                        if (p == pp) continue;
+                        if (e == ee) continue;
+
+                        if (!(ee is PhysicsAble)) continue;
+                        PhysicsAble pp = (PhysicsAble)ee;
 
                         // We let the target decide if there's a collision. This will help with things like the Level special case
                         CollisionDirection cd = pp.CheckCollision(p);
@@ -299,7 +276,7 @@ namespace SkyCrane.Screens
                     movement.Normalize();
 
                 Command c = new Command();
-                c.entity_id = usersPlayer.id;
+                c.entity_id = gameState.usersPlayer.id;
                 c.direction = movement;
                 c.ct = CommandType.MOVE;
 
@@ -322,8 +299,8 @@ namespace SkyCrane.Screens
 
             spriteBatch.Begin();
 
-            foreach(int k in drawPriorityEntities.Keys) {
-                foreach (Entity e in drawPriorityEntities[k])
+            foreach(int k in gameState.drawLists.Keys) {
+                foreach (Entity e in gameState.drawLists[k])
                 {
                     e.Draw(gameTime, spriteBatch);
                 }

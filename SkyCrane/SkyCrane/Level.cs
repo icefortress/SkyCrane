@@ -26,6 +26,8 @@ namespace SkyCrane
             return bah;
         }
 
+        public Level(GameplayScreen g, String bgKey, String bmKey, int size_x, int size_y) : this(g, g.textureDict[bgKey], g.textureDict[bmKey], new Vector2(size_x, size_y)) { }
+
         public Level(GameplayScreen g, Texture2D background, Texture2D bitmap, Vector2 size)
             : base(g)
         {
