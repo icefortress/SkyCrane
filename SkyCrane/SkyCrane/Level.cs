@@ -11,13 +11,15 @@ namespace SkyCrane
     public class Level : Entity, PhysicsAble
     {
         Texture2D background;
-        Texture2D bitmap; // For checking collisions
-        Vector2 size;
+        Color[] bitmap; // For checking collisions
+        int bitmapWidth;
+        int bitmapHeight;
+        Vector2 levelSize;
 
         // TODO: we can use this to build levels with various params
         public static Level generateLevel(GameplayScreen g)
         {
-            Level bah = new Level(g, g.textureDict["testlevel"], g.textureDict["testlevel"], new Vector2(2000, 2000));
+            Level bah = new Level(g, g.textureDict["testback"], g.textureDict["testmap"], new Vector2(1280, 720));
             bah.worldPosition = new Vector2(1280/2, 720/2);
             bah.active = true;
 
@@ -28,10 +30,37 @@ namespace SkyCrane
             : base(g)
         {
             this.background = background;
-            this.bitmap = bitmap;
-            this.size = size;
 
-            InitDrawable(background, background.Width, background.Height, 1, 1, Color.White, size.X / background.Width, true);
+            this.bitmap = new Color[bitmap.Width * bitmap.Height];
+            bitmap.GetData<Color>(this.bitmap);
+            bitmapWidth = bitmap.Width;
+            bitmapHeight = bitmap.Height;
+
+            this.levelSize = size;
+
+            List<int> animationFrames = new List<int>();
+            animationFrames.Add(0);
+
+            InitDrawable(background, background.Width, background.Height, animationFrames, 1, Color.White, levelSize.X / background.Width, true);
+        }
+
+        public Vector2 GetPhysicsSize()
+        {
+            return new Vector2(0, 0); // Level is a special case, is really composed of lots of miniature obstacles
+        }
+
+        public Vector2 GetPhysicsPosition()
+        {
+            return worldPosition;
+        }
+
+        public Vector2 GetPhysicsVelocity()
+        {
+            return Vector2.Zero;
+        } 
+
+        public void HandleCollision(CollisionDirection cd, PhysicsAble entity)
+        {
         }
 
         /* Computes the view position (centred) in world coordinates that things should be drawn off of based on player position
@@ -53,7 +82,7 @@ namespace SkyCrane
             {
                 position.X = this.worldPosition.X - half_scaled_bg_w + 1280 / 2;
             }
-            else if (characterInLevel.X > (this.size.X - 1280 / 2))
+            else if (characterInLevel.X > (this.levelSize.X - 1280 / 2))
             {
                 position.X = this.worldPosition.X + half_scaled_bg_w - 1280/2;
             }
@@ -78,27 +107,81 @@ namespace SkyCrane
             return position;
         }
 
-        public CollisionDirection CheckCollision(Vector2 position, Rectangle bounds)
+        public CollisionDirection CheckCollision(PhysicsAble entity)
         {
             // Assuming for now position and bounds defined in pixel space, this should be easy to switch out if needed
+            Vector2 position = entity.GetPhysicsPosition() + entity.GetPhysicsVelocity();
+            Vector2 size = entity.GetPhysicsSize();
 
-            int left =  (int) Math.Floor((position.X - bounds.Left) / size.X * bitmap.Width);
-            int width = (int) Math.Floor(bounds.Width / size.X * bitmap.Width);
-            int top = (int) Math.Floor((position.Y - bounds.Top) / size.Y * bitmap.Width);
-            int height = (int) Math.Floor(bounds.Height / size.Y * bitmap.Height);
+            // Define region of pixels under the bounds
+            int left = (int)Math.Floor((position.X - size.X/2) / levelSize.X * bitmapWidth);
+            int width = (int)Math.Ceiling(size.X / levelSize.X * bitmapWidth);
+            int top = (int)Math.Floor((position.Y - size.Y/2) / levelSize.Y * bitmapHeight);
+            int height = (int)Math.Ceiling(size.Y / levelSize.Y * bitmapHeight);
+
+            bool hitTop = false;
+            bool hitLeft = false;
+            bool hitRight = false;
+            bool hitBottom = false;
 
             for (int x = left; x < left + width; x++)
             {
                 for (int y = top; y < top + height; y++)
                 {
+
+                    int index = y * bitmapWidth + x;
+
                     // TODO: shouldn't get too far ahead of myself
+                    if (index < bitmap.Length && bitmap[index] == Color.Black)
+                    {
+                        if (x - left < width / 2) hitLeft = true;
+                        if (x - left > width / 2) hitRight = true;
+                        if (y - top < height / 2) hitTop = true;
+                        if (y - top > height / 2) hitBottom = true;
+                    }
+
                 }
             }
 
-            return CollisionDirection.NONE;
+            if (hitLeft && hitTop)
+            {
+                return CollisionDirection.TOPLEFT;
+            }
+            else if (hitRight && hitTop)
+            {
+                return CollisionDirection.BOTTOMRIGHT;
+            }
+            else if (hitBottom && hitRight)
+            {
+                return CollisionDirection.BOTTOMRIGHT;
+            }
+            else if (hitBottom && hitLeft)
+            {
+                return CollisionDirection.BOTTOMLEFT;
+            }
+            else if (hitTop)
+            {
+                return CollisionDirection.TOP;
+            }
+            else if (hitBottom)
+            {
+                return CollisionDirection.BOTTOM;
+            }
+            else if (hitLeft)
+            {
+                return CollisionDirection.LEFT;
+            }
+            else if (hitRight)
+            {
+                return CollisionDirection.RIGHT;
+            }
+            else
+            {
+                return CollisionDirection.NONE;
+            }
         }
 
-        public void UpdatePhysics(GameTime time, List<PhysicsAble> others)
+        public void UpdatePhysics()
         {
         }
     }

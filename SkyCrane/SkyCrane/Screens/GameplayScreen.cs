@@ -40,6 +40,29 @@ namespace SkyCrane.Screens
 
         public GameState gameState;
 
+        public bool isServer = true;
+
+
+        public SortedDictionary<int, List<Entity>> drawPriorityEntities = new SortedDictionary<int, List<Entity>>();
+
+        public void addEntity(int drawPriority, Entity e)
+        {
+            if (!drawPriorityEntities.ContainsKey(drawPriority))
+            {
+                drawPriorityEntities.Add(drawPriority, new List<Entity>());
+            }
+            drawPriorityEntities[drawPriority].Add(e);
+        }
+
+        // Could be more efficient, obviously
+        public void removeEntity(Entity e)
+        {
+            foreach (int k in drawPriorityEntities.Keys)
+            {
+                drawPriorityEntities[k].Remove(e);
+            }
+        }
+
         public List<AIable> aiAbles = new List<AIable>();
         public List<PhysicsAble> physicsAbles = new List<PhysicsAble>();
         public Dictionary<String, Texture2D> textureDict = new Dictionary<String, Texture2D>();
@@ -75,17 +98,30 @@ namespace SkyCrane.Screens
 
             gameFont = content.Load<SpriteFont>("Fonts/gamefont");
 
-            Texture2D testLevel = content.Load<Texture2D>("Levels/room1");
-            Texture2D testChar = content.Load<Texture2D>("Sprites/Wizard");
+            Texture2D testLevel = content.Load<Texture2D>("Levels/filback");
+            Texture2D testMap = content.Load<Texture2D>("Levels/filmap");
+            Texture2D testChar = content.Load<Texture2D>("Sprites/PinkWizard");
             
-            textureDict.Add("testlevel", testLevel);
+            textureDict.Add("testback", testLevel);
+            textureDict.Add("testmap", testMap);
             textureDict.Add("testchar", testChar);
 
             Level l = Level.generateLevel(this);
             gameState.currentLevel = l;
-            gameState.addEntity(0, l);
+            this.addEntity(0, l);
+            gameState.entities.Add(l);
+            physicsAbles.Add(l);
+
             usersPlayer = PlayerCharacter.createDefaultPlayerCharacter(this);
-            gameState.addEntity(100, usersPlayer);
+            this.addEntity(100, usersPlayer);
+            gameState.entities.Add(usersPlayer);
+            physicsAbles.Add(usersPlayer);
+
+            Enemy e = Enemy.createDefaultEnemy(this);
+            this.addEntity(100, e);
+            gameState.entities.Add(e);
+            physicsAbles.Add(e);
+            aiAbles.Add(e);
 
             // Some test music
             MediaPlayer.Stop();
@@ -127,6 +163,39 @@ namespace SkyCrane.Screens
 
             // TODO: Add your update logic here
             viewPosition = gameState.currentLevel.getViewPosition(usersPlayer);
+
+            // Server has to update AI characters here
+            if (isServer)
+            {
+                foreach (AIable a in aiAbles)
+                {
+                    a.UpdateAI(gameTime);
+                }
+            }
+
+            foreach (PhysicsAble p in physicsAbles)
+            {
+                p.UpdatePhysics();
+            }
+
+            // Iterate over the physicsAbles to see if they are colliding with eachother
+            foreach (PhysicsAble p in physicsAbles)
+            {
+                foreach(PhysicsAble pp in physicsAbles) {
+                    if(p == pp) continue;
+
+                    // We let the target decide if there's a collision. This will help with things like the Level special case
+                    CollisionDirection cd = pp.CheckCollision(p);
+                    if (cd != CollisionDirection.NONE) p.HandleCollision(cd, pp);
+                }
+            }
+
+            // Move objects by their post-check velocity
+            foreach (Entity e in gameState.entities)
+            {
+                e.worldPosition += e.velocity;
+            }
+
 
             // Gradually fade in or out depending on whether we are covered by the pause screen.
             if (coveredByOtherScreen)
@@ -192,7 +261,7 @@ namespace SkyCrane.Screens
                 if (movement.Length() > 1)
                     movement.Normalize();
 
-                usersPlayer.worldPosition += 3 * movement;
+                usersPlayer.velocity = 3 * movement;
             }
         }
 
@@ -211,8 +280,8 @@ namespace SkyCrane.Screens
 
             spriteBatch.Begin();
 
-            foreach(int k in gameState.drawPriorityEntities.Keys) {
-                foreach (Entity e in gameState.drawPriorityEntities[k])
+            foreach(int k in drawPriorityEntities.Keys) {
+                foreach (Entity e in drawPriorityEntities[k])
                 {
                     e.Draw(gameTime, spriteBatch);
                 }

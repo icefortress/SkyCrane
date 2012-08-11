@@ -19,10 +19,13 @@ Content\Menus\background.xnb
 Content\Menus\blank.xnb
 Content\Menus\gradient.xnb
 Content\Sprites\testchar.xnb
-Content\Fonts\gamefont.xnb
-Content\Fonts\menufont.xnb
 Content\Levels\room1.xnb
 Content\Sprites\Wizard.xnb
+Content\Fonts\gamefont.xnb
+Content\Fonts\menufont.xnb
 Content\Music\Nero - Doomsday.xnb
 Content\SoundFX\bleep.xnb
+Content\Levels\filback.xnb
+Content\Levels\filmap.xnb
+Content\Sprites\PinkWizard.xnb
 Content\Music\Nero - Doomsday.wma

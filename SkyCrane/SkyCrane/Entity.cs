@@ -16,14 +16,15 @@ namespace SkyCrane
         public Vector2 worldPosition;
         public Vector2 drawingPosition;
         public Vector2 velocity;
+        public Vector2 size; // This is the sprite size, not necessarily the physical form
 
-        GameplayScreen context;
+        public GameplayScreen context;
 
         // Drawable components
         public Texture2D spriteStrip;
         public float scale;
         public int frameTime;
-        public int frameCount;
+        public List<int> animationFrames;
         int elapsedTime;
         int currentFrame;
         Color color;
@@ -44,17 +45,24 @@ namespace SkyCrane
         }
 
         public void InitDrawable(Texture2D texture,
-            int frameWidth, int frameHeight, int frameCount,
+            int frameWidth, int frameHeight, List<int> animationFrames,
             int frametime, Color color, float scale, bool looping)
         {
             this.spriteStrip = texture;
             this.scale = scale;
             this.frameWidth = frameWidth;
             this.frameHeight = frameHeight;
-            this.frameCount = frameCount;
+            this.animationFrames = animationFrames;
             this.frameTime = frametime;
             this.color = color;
             this.looping = looping;
+
+            size = new Vector2(frameWidth * scale, frameHeight * scale);
+        }
+
+        public void setAnimationFrames(List<int> frs)
+        {
+            this.animationFrames = frs;
         }
 
         public void UpdateSprite(GameTime gameTime)
@@ -76,7 +84,7 @@ namespace SkyCrane
                 currentFrame++;
 
                 // If the currentFrame is equal to frameCount reset currentFrame to zero
-                if (currentFrame == frameCount)
+                if (currentFrame == animationFrames.Count)
                 {
                     currentFrame = 0;
                     // If we are not looping deactivate the animation
@@ -88,8 +96,10 @@ namespace SkyCrane
                 elapsedTime = 0;
             }
 
+            int drawFrame = animationFrames[currentFrame];
+
             // Grab the correct frame in the image strip by multiplying the currentFrame index by the frame width
-            sourceRect = new Rectangle(currentFrame * frameWidth, 0, frameWidth, frameHeight);
+            sourceRect = new Rectangle(drawFrame * frameWidth, 0, frameWidth, frameHeight);
 
             // Grab the correct frame in the image strip by multiplying the currentFrame index by the frame width
             destinationRect = new Rectangle((int)drawingPosition.X - (int)(frameWidth * scale) / 2,
