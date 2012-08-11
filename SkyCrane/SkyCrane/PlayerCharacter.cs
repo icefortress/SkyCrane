@@ -43,7 +43,7 @@ namespace SkyCrane
             Texture2D chara = g.textureDict[textureName];
 
             List<int> animationFrames = new List<int>(); // TODO: some way of loading animation
-            for (int i = 0; i < chara.Width / frameWidth; i++ )
+            for (int i = 0; i < chara.Width / frameWidth; i++)
             {
                 animationFrames.Add(i);
             }
@@ -55,7 +55,7 @@ namespace SkyCrane
         {
         }
 
-        public void HandleCollision(CollisionDirection cd, PhysicsAble entity)
+        public override void HandleCollision(CollisionDirection cd, PhysicsAble entity)
         {
             velocity = Vector2.Zero;
         }

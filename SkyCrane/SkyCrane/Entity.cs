@@ -8,6 +8,7 @@ using SkyCrane.Screens;
 
 namespace SkyCrane
 {
+
     public class Entity
     {
         public static int next_id = 0;
@@ -16,6 +17,7 @@ namespace SkyCrane
 
         public Vector2 worldPosBack;
 
+        // Accessor which creates a state change but doesn't apply until later
         public Vector2 worldPosition
         {
             get
@@ -25,8 +27,6 @@ namespace SkyCrane
 
             set
             {
-                worldPosBack = value;
-
                 StateChange sc = new StateChange();
                 sc.type = StateChangeType.MOVED;
                 sc.intProperties.Add(StateProperties.ENTITY_ID, id);
@@ -61,11 +61,38 @@ namespace SkyCrane
         public bool active = false;
         public bool looping;
 
+        public static StateChange createEntityStateChange(int posX, int posY, int frameWidth, String textureName, String animationName)
+        {
+            StateChange sc = new StateChange();
+            sc.type = StateChangeType.CREATE_ENTITY;
+            sc.intProperties.Add(StateProperties.POSITION_X, posX);
+            sc.intProperties.Add(StateProperties.POSITION_Y, posY);
+            sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
+            sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureName);
+            sc.stringProperties.Add(StateProperties.ANIMATION_NAME, animationName);
+
+            return sc;
+        }
+
         public Entity(GameplayScreen g)
         {
             this.context = g;
             id = next_id;
             next_id++;
+        }
+
+        public Entity(GameplayScreen g, int posX, int posY, int frameWidth, String textureName, String animationName)
+        {
+            worldPosition = new Vector2(posX, posY);
+            Texture2D chara = g.textureDict[textureName];
+
+            List<int> animationFrames = new List<int>(); // TODO: some way of loading animation
+            for (int i = 0; i < chara.Width / frameWidth; i++)
+            {
+                animationFrames.Add(i);
+            }
+            InitDrawable(chara, frameWidth, chara.Height, animationFrames, 200, Color.White, 1, true);
+            active = true;
         }
 
         public void notifyStateChangeListeners(StateChange sc)

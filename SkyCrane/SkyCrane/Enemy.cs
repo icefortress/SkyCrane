@@ -61,7 +61,7 @@ namespace SkyCrane
             }
         }
 
-        public void HandleCollision(CollisionDirection cd, PhysicsAble entity)
+        public override void HandleCollision(CollisionDirection cd, PhysicsAble entity)
         {
             velocity = Vector2.Zero;
         }
