@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 namespace SkyCrane
 {
     public enum StateChangeType { MOVED, CREATE_PLAYER_CHARACTER, SET_PLAYER}
-    public enum StateProperties { ENTITY_ID, POSITION_X, POSITION_Y, SPRITE_NAME, ANIMATION_NAME, DRAW_PRIORITY }
+    public enum StateProperties { ENTITY_ID, POSITION_X, POSITION_Y, SPRITE_NAME, ANIMATION_NAME, DRAW_PRIORITY, FRAME_WIDTH }
 
     public class StateChange
     {
