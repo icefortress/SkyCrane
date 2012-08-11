@@ -6,12 +6,13 @@ using Microsoft.Xna.Framework;
 
 namespace SkyCrane
 {
-    enum CommandType { MOVE }
+    enum CommandType { MOVE, SHOOT }
 
     class Command
     {
         public int entity_id;
         public CommandType ct;
+        public Vector2 position;
         public Vector2 direction;
     }
 }
