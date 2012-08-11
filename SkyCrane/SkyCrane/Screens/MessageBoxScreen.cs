@@ -81,7 +81,7 @@ namespace SkyCrane.Screens
         {
             ContentManager content = ScreenManager.Game.Content;
 
-            gradientTexture = content.Load<Texture2D>("gradient");
+            gradientTexture = content.Load<Texture2D>("Menus/gradient");
         }
 
 

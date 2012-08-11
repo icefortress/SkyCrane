@@ -16,9 +16,7 @@ namespace SkyCrane
     {
 
         ScreenManager screenManager;
-
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
 
         /// <summary>
         /// Create the main instance of the project and run.

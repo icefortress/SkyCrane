@@ -69,10 +69,10 @@ namespace SkyCrane.Screens
             if (content == null)
                 content = new ContentManager(ScreenManager.Game.Services, "Content");
 
-            gameFont = content.Load<SpriteFont>("gamefont");
+            gameFont = content.Load<SpriteFont>("Fonts/gamefont");
 
-            Texture2D testLevel = content.Load<Texture2D>("testlevel");
-            Texture2D testChar = content.Load<Texture2D>("testchar");
+            Texture2D testLevel = content.Load<Texture2D>("Levels/testlevel");
+            Texture2D testChar = content.Load<Texture2D>("Sprites/testchar");
             textureDict.Add("testlevel", testLevel);
             textureDict.Add("testchar", testChar);
 

@@ -1,9 +1,3 @@
-Content\testlevel.xnb
-Content\background.xnb
-Content\blank.xnb
-Content\gradient.xnb
-Content\gamefont.xnb
-Content\menufont.xnb
 Content\XBox Buttons\bumper_left.xnb
 Content\XBox Buttons\bumper_right.xnb
 Content\XBox Buttons\button_a.xnb
@@ -20,4 +14,10 @@ Content\XBox Buttons\stick_left.xnb
 Content\XBox Buttons\stick_right.xnb
 Content\XBox Buttons\trigger_left.xnb
 Content\XBox Buttons\trigger_right.xnb
-Content\testchar.xnb
+Content\Levels\testlevel.xnb
+Content\Menus\background.xnb
+Content\Menus\blank.xnb
+Content\Menus\gradient.xnb
+Content\Sprites\testchar.xnb
+Content\Fonts\gamefont.xnb
+Content\Fonts\menufont.xnb
