@@ -24,12 +24,12 @@ namespace SkyCrane
         public SortedDictionary<int, List<Entity>> drawLists = new SortedDictionary<int, List<Entity>>();
 
         // Should be called by the server to create a player entity in the current game state
-        public PlayerCharacter createPlayer(int posX, int posY, String textureName, String animationName)
+        public PlayerCharacter createPlayer(int posX, int posY, int frameWidth, String textureName, String animationName)
         {
-            PlayerCharacter pc = new PlayerCharacter(context, posX, posY, textureName, animationName);
+            PlayerCharacter pc = new PlayerCharacter(context, posX, posY, frameWidth, textureName, animationName);
             addEntity(100, pc);
 
-            StateChange sc = PlayerCharacter.createPlayerStateChange(posX, posY, textureName, animationName);
+            StateChange sc = PlayerCharacter.createPlayerStateChange(posX, posY, frameWidth, textureName, animationName);
             changes.Add(sc);
 
             return pc;
@@ -75,11 +75,12 @@ namespace SkyCrane
                 int entity = s.intProperties[StateProperties.ENTITY_ID];
                 int pos_x = s.intProperties[StateProperties.POSITION_X];
                 int pos_y = s.intProperties[StateProperties.POSITION_Y];
+                int frame_width = s.intProperties[StateProperties.FRAME_WIDTH];
                 int draw_priority = s.intProperties[StateProperties.DRAW_PRIORITY];
                 String texture_name = s.stringProperties[StateProperties.SPRITE_NAME];
                 String animation_name = s.stringProperties[StateProperties.ANIMATION_NAME];
 
-                PlayerCharacter pc = new PlayerCharacter(context, pos_x, pos_y, texture_name, animation_name);
+                PlayerCharacter pc = new PlayerCharacter(context, pos_x, pos_y, frame_width, texture_name, animation_name);
                 pc.id = entity;
                 
                 addEntity(draw_priority, pc);

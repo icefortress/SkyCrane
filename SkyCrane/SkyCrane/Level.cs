@@ -14,12 +14,12 @@ namespace SkyCrane
         Color[] bitmap; // For checking collisions
         int bitmapWidth;
         int bitmapHeight;
-        Vector2 levelSize;
+        Vector2 levelSize; // in pixels, after scaling
 
         // TODO: we can use this to build levels with various params
         public static Level generateLevel(GameplayScreen g)
         {
-            Level bah = new Level(g, g.textureDict["testback"], g.textureDict["testmap"], new Vector2(1280, 720));
+            Level bah = new Level(g, g.textureDict["room2"], g.textureDict["room2-collision-map"], new Vector2(1920, 1800));
             bah.worldPosition = new Vector2(1280/2, 720/2);
             bah.active = true;
 
@@ -71,8 +71,8 @@ namespace SkyCrane
         {
             Vector2 characterPosition = c.worldPosition;
 
-            float half_scaled_bg_w = this.background.Width * scale / 2;
-            float half_scaled_bg_h = this.background.Height * scale / 2;
+            float half_scaled_bg_w = levelSize.X / 2;
+            float half_scaled_bg_h = levelSize.Y / 2;
 
             Vector2 levelPosition = this.worldPosition - new Vector2(half_scaled_bg_w, half_scaled_bg_h); // getting this in terms of top-left coordinate, so we can get player's position in the world
 
@@ -115,10 +115,15 @@ namespace SkyCrane
             Vector2 position = entity.GetPhysicsPosition() + entity.GetPhysicsVelocity();
             Vector2 size = entity.GetPhysicsSize();
 
+            float half_scaled_bg_w = levelSize.X * scale / 2;
+            float half_scaled_bg_h = levelSize.Y * scale / 2;
+            Vector2 levelPosition = this.worldPosition - new Vector2(half_scaled_bg_w, half_scaled_bg_h);
+            Vector2 characterInLevel = position - levelPosition;
+
             // Define region of pixels under the bounds
-            int left = (int)Math.Floor((position.X - size.X/2) / levelSize.X * bitmapWidth);
+            int left = (int)Math.Floor((characterInLevel.X - size.X / 2) / levelSize.X * bitmapWidth);
             int width = (int)Math.Ceiling(size.X / levelSize.X * bitmapWidth);
-            int top = (int)Math.Floor((position.Y - size.Y/2) / levelSize.Y * bitmapHeight);
+            int top = (int)Math.Floor((characterInLevel.Y - size.Y / 2) / levelSize.Y * bitmapHeight);
             int height = (int)Math.Ceiling(size.Y / levelSize.Y * bitmapHeight);
 
             bool hitTop = false;
