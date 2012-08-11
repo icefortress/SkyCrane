@@ -42,6 +42,7 @@ namespace SkyCrane.Screens
         public bool isServer;
         public bool isMultiplayer;
         public int numPlayers;
+        public Dictionary<int, int> serverIDLookup = new Dictionary<int, int>();
 
         bool goodtogo = false;
 
@@ -49,6 +50,9 @@ namespace SkyCrane.Screens
         public Dictionary<String, Texture2D> textureDict = new Dictionary<String, Texture2D>();
 
         float pauseAlpha;
+
+        RawServer serverReference = null;
+        RawClient clientReference = null;
 
         #endregion
 
@@ -205,12 +209,12 @@ namespace SkyCrane.Screens
                 commandBuffer.Clear(); // Important!
 
                 // Apply commands from the client
-                /*List<Command> clientCommands = null;
+                List<Command> clientCommands = serverReference.getCMD();
                 foreach (Command c in clientCommands)
                 {
                     Entity e = gameState.entities[c.entity_id];
                     e.velocity = c.direction * 3;
-                }*/
+                }
 
                 foreach (Entity e in gameState.entities.Values)
                 {
@@ -249,7 +253,8 @@ namespace SkyCrane.Screens
                 }
 
                 // Push changes to clients
-
+                serverReference.broadcastSC(gameState.changes);
+                
                 // Commit changes locally
                 gameState.commitChanges();
                 gameState.changes.Clear();
@@ -258,16 +263,13 @@ namespace SkyCrane.Screens
             {
                 
                 // Send our input to the server
-                foreach (Command c in commandBuffer)
-                {
-                    // TODO
-                }
+                clientReference.sendCMD(commandBuffer);
 
                 // Flush our gamestatemanager changes, we don't trust ourselves
                 gameState.changes.Clear();
 
                 // Get changes from server
-                List<StateChange> changes = null; //TODO
+                List<StateChange> changes = clientReference.rcvUPD();
 
                 // Apply all changes on the server
                 foreach(StateChange sc in changes) {
