@@ -10,14 +10,21 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
 namespace SkyCrane
-{
+{   
+
     /// <summary>
     /// This is the main type for your game
     /// </summary>
     public class ProjectSkyCrane : Microsoft.Xna.Framework.Game
     {
+        public List<AIable> aiAbles = new List<AIable>();
+        public List<PhysicsAble> physicsAbles = new List<PhysicsAble>();
+        public Dictionary<String, Texture2D> textureDict = new Dictionary<String, Texture2D>();
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+
+        Level activeLevel;
 
         public ProjectSkyCrane()
         {
@@ -48,6 +55,10 @@ namespace SkyCrane
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            Texture2D testLevel = this.Content.Load<Texture2D>("testlevel");
+            textureDict.Add("testlevel", testLevel);
+
+            activeLevel = Level.generateLevel(spriteBatch, this);
         }
 
         /// <summary>
@@ -85,7 +96,10 @@ namespace SkyCrane
 
             // TODO: Add your drawing code here
 
+            
+
             base.Draw(gameTime);
         }
+
     }
 }
