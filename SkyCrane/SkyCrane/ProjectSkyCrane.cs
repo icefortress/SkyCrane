@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SkyCrane.GameStateManager;
 using SkyCrane.Screens;
+using System.Collections.Generic;
 
 namespace SkyCrane
 {
@@ -20,13 +21,11 @@ namespace SkyCrane
         public Dictionary<String, Texture2D> textureDict = new Dictionary<String, Texture2D>();
 
         SpriteBatch spriteBatch;
+        Level activeLevel;
 
         /// <summary>
         /// Create the main instance of the project and run.
         /// </summary>
-
-        Level activeLevel;
-
         public ProjectSkyCrane()
         {
             Content.RootDirectory = "Content";
@@ -37,11 +36,12 @@ namespace SkyCrane
             graphics.PreferredBackBufferHeight = 720;
 
             // Initialize the screen manager
-            //screenManager = new ScreenManager(this);
-            //Components.Add(screenManager);
+            screenManager = new ScreenManager(this);
+            Components.Add(screenManager);
 
             // Activate a few initial screens
-            //screenManager.AddScreen(new BackgroundScreen(), null);
+            screenManager.AddScreen(new BackgroundScreen(), null);
+            screenManager.AddScreen(new MainMenuScreen(), null);
 
             return;
         }
@@ -67,13 +67,13 @@ namespace SkyCrane
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            //spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            Texture2D testLevel = this.Content.Load<Texture2D>("testlevel");
-            textureDict.Add("testlevel", testLevel);
+            //Texture2D testLevel = this.Content.Load<Texture2D>("testlevel");
+            //textureDict.Add("testlevel", testLevel);
 
-            activeLevel = Level.generateLevel(spriteBatch, this);
+            //activeLevel = Level.generateLevel(spriteBatch, this);
         }
 
         /// <summary>
