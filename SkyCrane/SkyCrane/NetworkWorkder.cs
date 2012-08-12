@@ -150,10 +150,11 @@ namespace SkyCrane
 
     public class CMDPacket : Packet
     {
-        public CMDPacket()
+        public CMDPacket(Command s)
         {
             this.ptype = PacketType.CMD;
             this.addHeader(ptype);
+            this.addContent(s.getPackedData());
             this.finalize();
         }
     }
@@ -189,4 +190,8 @@ namespace SkyCrane
         }
     }
 
+    public interface Marshable
+    {
+        public byte[] getPackedData();
+    }
 }
