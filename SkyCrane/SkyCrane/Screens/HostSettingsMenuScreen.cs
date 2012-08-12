@@ -109,16 +109,16 @@ namespace SkyCrane.Screens
                 hostAddress.Append(e.KeysTyped);
                 resetText = true;
             }
-            if (e.InputBackspace && hostAddress.Length > 0) // Remove a character
+            if (e.TypingBackspace && hostAddress.Length > 0) // Remove a character
             {
                 hostAddress.Remove(hostAddress.Length - 1, 1);
                 resetText = true;
             }
-            if (e.InputAccepted) // User has entered a value
+            if (e.TypingAccepted) // User has entered a value
             {
                 lastAddress = hostAddress.ToString();
             }
-            else if (e.InputCancelled) // User has cancelled their input
+            else if (e.TypingCancelled) // User has cancelled their input
             {
                 hostAddress.Clear();
                 hostAddress.Append(lastAddress);
@@ -158,16 +158,16 @@ namespace SkyCrane.Screens
                     }
                 }
             }
-            if (e.InputBackspace && hostPort.Length > 0) // Remove a character
+            if (e.TypingBackspace && hostPort.Length > 0) // Remove a character
             {
                 hostPort.Remove(hostPort.Length - 1, 1);
                 resetText = true;
             }
-            if (e.InputAccepted) // User has entered a value
+            if (e.TypingAccepted) // User has entered a value
             {
                 lastPort = hostPort.ToString();
             }
-            else if (e.InputCancelled) // User has cancelled their input
+            else if (e.TypingCancelled) // User has cancelled their input
             {
                 hostPort.Clear();
                 hostPort.Append(lastPort);

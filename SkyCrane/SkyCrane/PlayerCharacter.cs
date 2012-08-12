@@ -8,21 +8,10 @@ using SkyCrane.Screens;
 
 namespace SkyCrane
 {
-    public class PlayerCharacter : Dude
+
+    public class PlayerCharacter : AttackingDude
     {
-
-        public static PlayerCharacter createDefaultPlayerCharacter(GameplayScreen g)
-        {
-            PlayerCharacter pc = new PlayerCharacter(g);
-            pc.worldPosition = new Vector2(1280 / 2, 720 / 2 + 100);
-            Texture2D chara = g.textureDict["testchar"];
-            List<int> animationFrames= new List<int>();
-            animationFrames.Add(0);
-            pc.InitDrawable(chara, chara.Width, chara.Height, animationFrames, 1, Color.White, 1, true);
-            pc.active = true;
-
-            return pc;
-        }
+        public static Vector2 HITBOX_SIZE = new Vector2(45, 20);
 
         public static StateChange createPlayerStateChange(int posX, int posY, int frameWidth, String textureName, String animationName)
         {
@@ -37,22 +26,13 @@ namespace SkyCrane
             return sc;
         }
 
-        public PlayerCharacter(GameplayScreen g, int posX, int posY, int frameWidth, String textureName, String animationName) : base(g)
+        public PlayerCharacter(GameplayScreen g, int posX, int posY, int frameWidth,
+            String textureLeft, String textureRight, String textureAttackLeft, String textureAttackRight) :
+            base(g, posX, posY, frameWidth, textureLeft, textureRight, textureAttackLeft, textureAttackRight)
         {
-            worldPosBack = new Vector2(posX, posY);
-            Texture2D chara = g.textureDict[textureName];
+            scale = 2;
 
-            List<int> animationFrames = new List<int>(); // TODO: some way of loading animation
-            for (int i = 0; i < chara.Width / frameWidth; i++)
-            {
-                animationFrames.Add(i);
-            }
-            InitDrawable(chara, frameWidth, chara.Height, animationFrames, 200, Color.White, 1, true);
-            active = true;
-        }
-
-        public PlayerCharacter(GameplayScreen g) : base(g)
-        {
+            physicsSize = HITBOX_SIZE;
         }
 
         public override void HandleCollision(CollisionDirection cd, PhysicsAble entity)

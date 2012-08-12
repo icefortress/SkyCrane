@@ -39,7 +39,11 @@ namespace SkyCrane.Screens
 
         public GameState gameState;
 
-        public bool isServer = true;
+        public bool isServer;
+        public bool isMultiplayer;
+        public int numPlayers;
+        public Dictionary<int, int> serverIDLookup = new Dictionary<int, int>();
+
         bool goodtogo = false;
 
         List<Command> commandBuffer = new List<Command>();
@@ -47,20 +51,30 @@ namespace SkyCrane.Screens
 
         float pauseAlpha;
 
+        RawServer serverReference = null;
+        RawClient clientReference = null;
+
         #endregion
 
         #region Initialization
 
-
         /// <summary>
         /// Constructor.
         /// </summary>
-        public GameplayScreen()
+        public GameplayScreen(bool isServer, bool isMultiplayer, int numPlayers)
         {
+            this.isServer = isServer;
+            this.isMultiplayer = isMultiplayer;
+            this.numPlayers = numPlayers;
+
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
 
             gameState = new GameState(this);
+
+            if (isServer)
+            {
+            }
         }
 
 
@@ -78,17 +92,21 @@ namespace SkyCrane.Screens
 
             Texture2D testLevel = content.Load<Texture2D>("Levels/room3");
             Texture2D testMap = content.Load<Texture2D>("Levels/room3-collision_map");
-            Texture2D testChar = content.Load<Texture2D>("Sprites/Tank_Animated");
+            Texture2D tankl = content.Load<Texture2D>("Sprites/Tank_Animated");
+            Texture2D tankr = content.Load<Texture2D>("Sprites/Tank_Animated_Right");
+            Texture2D tankal = content.Load<Texture2D>("Sprites/Tank_Attack");
+            Texture2D tankar = content.Load<Texture2D>("Sprites/Tank_Attack_Right");
             
             textureDict.Add("room2", testLevel);
             textureDict.Add("room2-collision-map", testMap);
-            textureDict.Add("testchar", testChar);
+            textureDict.Add("tankl", tankl);
+            textureDict.Add("tankr", tankr);
+            textureDict.Add("tankal", tankal);
+            textureDict.Add("tankar", tankar);
 
             Level l = Level.generateLevel(this);
             gameState.currentLevel = l;
             gameState.addEntity(0, l);
-
-            serverStartGame(1);
 
             /*Enemy e = Enemy.createDefaultEnemy(this);
             this.addEntity(100, e);
@@ -121,21 +139,37 @@ namespace SkyCrane.Screens
 
         #endregion
 
-        public void serverStartGame(int numPlayers)
+        public void serverStartGame()
         {
-            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, 45, "testchar", "poop");
+            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, 45, "tankl", "tankr", "tankal", "tankar");
 
-            List<int> playerIds = new List<int>();
-            for (int i = 1; i < numPlayers; i++)
+            if (isMultiplayer)
             {
-                PlayerCharacter pc = gameState.createPlayer(1280 / 2 + 20 * i, 720 / 2 + 50, 45, "testchar", "poop");
-                playerIds.Add(pc.id);
+                // Create players and broadcast to the clients
+                List<int> playerIds = new List<int>();
+                for (int i = 1; i < numPlayers; i++)
+                {
+                    PlayerCharacter pc = gameState.createPlayer(1280 / 2 + 20 * i, 720 / 2 + 50, 45, "tankl", "tankr", "tankal", "tankar");
+                    playerIds.Add(pc.id);
+                }
             }
 
             // Get the players from the server and send them each a notification of who the fuck theyare
 
             goodtogo = true;
 
+        }
+
+        public void clientStartGame()
+        {
+            // Keep pulling statechanges until we have our character set
+            while (gameState.usersPlayer == null)
+            {
+                List<StateChange> changes = clientReference.rcvUPD();
+                gameState.applyAllStatechangs(changes);
+            }
+
+            // then enter the game
         }
 
         #region Update and Draw
@@ -151,13 +185,25 @@ namespace SkyCrane.Screens
         {
             base.Update(gameTime, otherScreenHasFocus, false);
 
-            if (!goodtogo) return;
+            // Make sure character information has been sent/received before doing anything for real
+            if (!goodtogo)
+            {
+                if (isServer)
+                {
+                    serverStartGame();
+                }
+                else
+                {
+                    clientStartGame();
+                }
+            }
 
             // TODO: Add your update logic here
             viewPosition = gameState.currentLevel.getViewPosition(gameState.usersPlayer);
 
             if (isServer)
             {
+
                 // Apply own commands, and client's commands
                 foreach (Command c in commandBuffer)
                 {
@@ -173,16 +219,24 @@ namespace SkyCrane.Screens
 
                         gameState.createBullet((int)pos.X, (int)pos.Y, velocity);
                     }
+                    else if (c.ct == CommandType.ATTACK)
+                    {
+                        PlayerCharacter attacker = (PlayerCharacter)gameState.entities[c.entity_id];
+                        attacker.startAttack(gameTime);
+                    }
                 }
                 commandBuffer.Clear(); // Important!
 
                 // Apply commands from the client
-                /*List<Command> clientCommands = null;
-                foreach (Command c in clientCommands)
+                if (isMultiplayer)
                 {
-                    Entity e = gameState.entities[c.entity_id];
-                    e.velocity = c.direction * 3;
-                }*/
+                    List<Command> clientCommands = serverReference.getCMD();
+                    foreach (Command c in clientCommands)
+                    {
+                        Entity e = gameState.entities[c.entity_id];
+                        e.velocity = c.direction * 3;
+                    }
+                }
 
                 foreach (Entity e in gameState.entities.Values)
                 {
@@ -190,7 +244,7 @@ namespace SkyCrane.Screens
                     if (e is PhysicsAble) ((PhysicsAble)e).UpdatePhysics();
                 }
 
-                // Iterate over the physicsAbles to see if they are colliding with eachother
+                // Iterate over the physicsAbles to see if they are colliding with eachther
                 foreach (Entity e in gameState.entities.Values)
                 {
                     if (!(e is PhysicsAble)) continue;
@@ -221,25 +275,25 @@ namespace SkyCrane.Screens
                 }
 
                 // Push changes to clients
-
+                if(isMultiplayer) serverReference.broadcastSC(gameState.changes);
+                
                 // Commit changes locally
                 gameState.commitChanges();
                 gameState.changes.Clear();
             }
             else
             {
+                
                 // Send our input to the server
-                foreach (Command c in commandBuffer)
-                {
-                    // TODO
-                }
+                clientReference.sendCMD(commandBuffer);
 
                 // Flush our gamestatemanager changes, we don't trust ourselves
                 gameState.changes.Clear();
 
                 // Get changes from server
-                List<StateChange> changes = null; //TODO
+                List<StateChange> changes = clientReference.rcvUPD();
 
+                // Apply all changes on the server
                 foreach(StateChange sc in changes) {
                     gameState.applyStateChange(sc);
                 }
@@ -317,6 +371,14 @@ namespace SkyCrane.Screens
                     c.direction = movement;
                     c.ct = CommandType.SHOOT;
                     c.position = gameState.usersPlayer.worldPosition;
+                    commandBuffer.Add(c);
+                }
+
+                if (keyboardState.IsKeyDown(Keys.X))
+                {
+                    Command c = new Command();
+                    c.entity_id = gameState.usersPlayer.id;
+                    c.ct = CommandType.ATTACK;
                     commandBuffer.Add(c);
                 }
 

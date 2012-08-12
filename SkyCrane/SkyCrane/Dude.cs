@@ -14,9 +14,18 @@ namespace SkyCrane.Screens
         Rectangle topRect;
         Rectangle bottomRect;
 
-        public Dude(GameplayScreen g)
-            : base(g)
+        protected bool facingLeft = true;
+        protected bool forceCheck = false;
+
+        protected String textureLeft;
+        protected String textureRight;
+
+        public Vector2 physicsSize;
+
+        public Dude(GameplayScreen g, int posX, int posY, int frameWidth, String textureLeft, String textureRight) : base(g, posX, posY, frameWidth, textureLeft)
         {
+            this.textureLeft = textureLeft;
+            this.textureRight = textureRight;
         }
 
         public void UpdatePhysics()
@@ -35,7 +44,7 @@ namespace SkyCrane.Screens
 
         public Vector2 GetPhysicsSize()
         {
-            return size;
+            return physicsSize;
         }
 
         public Vector2 GetPhysicsPosition()
@@ -51,6 +60,48 @@ namespace SkyCrane.Screens
         public virtual void HandleCollision(CollisionDirection cd, PhysicsAble entity)
         {
             velocity = Vector2.Zero;
+        }
+
+        public virtual void setSpriteFromVelocity()
+        {
+            if (forceCheck) forceCheck = false;
+
+            bool go_left = false;
+            bool go_right = false;
+            if (velocity.X == 0)
+            {
+                go_left = facingLeft;
+                go_right = !facingLeft;
+            }
+
+            if (velocity.X < 0 || go_left)
+            {
+                facingLeft = true;
+                StateChange sc = new StateChange();
+                sc.type = StateChangeType.CHANGE_SPRITE;
+                sc.intProperties.Add(StateProperties.ENTITY_ID, id);
+                sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
+                sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureLeft);
+
+                notifyStateChangeListeners(sc);
+            }
+            else if (velocity.X > 0 || go_right)
+            {
+                facingLeft = false;
+                StateChange sc = new StateChange();
+                sc.type = StateChangeType.CHANGE_SPRITE;
+                sc.intProperties.Add(StateProperties.ENTITY_ID, id);
+                sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
+                sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureRight);
+
+                notifyStateChangeListeners(sc);
+            }
+        }
+
+        public override void UpdateSprite(GameTime gameTime)
+        {
+            if ((velocity.X != 0 && velocity.X < 0 != facingLeft) || forceCheck) setSpriteFromVelocity();
+            base.UpdateSprite(gameTime);
         }
 
         public CollisionDirection CheckCollision(PhysicsAble entity)
