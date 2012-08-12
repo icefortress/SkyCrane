@@ -62,5 +62,25 @@ namespace SkyCrane.NetCode
 
             return sc;
         }
+
+        public static StateChange createHealthBarStateChange(int id, int health_bar_id)
+        {
+            StateChange sc = new StateChange();
+            sc.type = StateChangeType.CREATE_HEALTH_BAR;
+            sc.intProperties.Add(StateProperties.ENTITY_ID, id);
+            sc.intProperties.Add(StateProperties.HEALTH_BAR_ID, health_bar_id);
+
+            return sc;
+        }
+
+        public static StateChange changeHealthStateChange(int id, int health)
+        {
+            StateChange sc = new StateChange();
+            sc.type = StateChangeType.CHANGE_HEALTH;
+            sc.intProperties.Add(StateProperties.ENTITY_ID, id);
+            sc.intProperties.Add(StateProperties.HEALTH, health);
+
+            return sc;
+        }
     }
 }

@@ -185,11 +185,13 @@ namespace SkyCrane.Screens
             Texture2D realbull = content.Load<Texture2D>("Sprites/TheRealBullet");
             textureDict.Add("realbull", realbull);
             textureDict.Add("bowbolt", content.Load<Texture2D>("Sprites/bowbolt"));
+            textureDict.Add("healthbar", content.Load<Texture2D>("Sprites/HealthBar"));
+            textureDict.Add("healthchunk", content.Load<Texture2D>("Sprites/HealthPoint"));
 
 
             Level l = Level.generateLevel(this);
             gameState.currentLevel = l;
-            gameState.addEntity(0, l);
+            gameState.addEntity(0, l, l.id);
 
             /*Enemy e = Enemy.createDefaultEnemy(this);
             this.addEntity(100, e);
