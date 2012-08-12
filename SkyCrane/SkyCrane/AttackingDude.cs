@@ -7,19 +7,22 @@ using Microsoft.Xna.Framework;
 
 namespace SkyCrane
 {
-    public class AttackingDude : Dude
+    public abstract class AttackingDude : Dude
     {
-        bool attacking = false;
+        public bool attacking = false;
         String textureAttackLeft;
         String textureAttackRight;
 
+        int attackFrameWidth;
+
         TimeSpan lastAttack = new TimeSpan(0);
 
-        public AttackingDude(GameplayScreen g, int posX, int posY, int frameWidth, String textureLeft, String textureRight, String textureAttackLeft, String textureAttackRight) :
+        public AttackingDude(GameplayScreen g, int posX, int posY, int frameWidth, int attackFrameWidth, String textureLeft, String textureRight, String textureAttackLeft, String textureAttackRight) :
             base(g, posX, posY, frameWidth, textureLeft, textureRight)
         {
             this.textureAttackLeft = textureAttackLeft;
             this.textureAttackRight = textureAttackRight;
+            this.attackFrameWidth = attackFrameWidth;
         }
 
         // Milleseconds
@@ -34,7 +37,7 @@ namespace SkyCrane
             return 160;
         }
 
-        internal void startAttack(GameTime gameTime)
+        public bool startAttack(GameTime gameTime)
         {
             // Check if ready to attack again
             TimeSpan diff = gameTime.TotalGameTime.Subtract(lastAttack);
@@ -42,7 +45,10 @@ namespace SkyCrane
                 lastAttack = gameTime.TotalGameTime;
                 attacking = true;
                 forceCheck = true;
+                return true;
             }
+
+            return false;
         }
 
         public override void setSpriteFromVelocity()
@@ -54,7 +60,7 @@ namespace SkyCrane
                     StateChange sc = new StateChange();
                     sc.type = StateChangeType.CHANGE_SPRITE;
                     sc.intProperties.Add(StateProperties.ENTITY_ID, id);
-                    sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
+                    sc.intProperties.Add(StateProperties.FRAME_WIDTH, attackFrameWidth);
                     sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureAttackLeft);
 
                     notifyStateChangeListeners(sc);
@@ -64,7 +70,7 @@ namespace SkyCrane
                     StateChange sc = new StateChange();
                     sc.type = StateChangeType.CHANGE_SPRITE;
                     sc.intProperties.Add(StateProperties.ENTITY_ID, id);
-                    sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
+                    sc.intProperties.Add(StateProperties.FRAME_WIDTH, attackFrameWidth);
                     sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureAttackRight);
 
                     notifyStateChangeListeners(sc);

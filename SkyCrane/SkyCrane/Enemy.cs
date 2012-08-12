@@ -8,8 +8,37 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace SkyCrane
 {
-    /*public class Enemy : Dude, AIable
+    public abstract class Enemy : AttackingDude, AIable
     {
+
+        public static Vector2 HITBOX_SIZE = new Vector2(45, 20);
+
+        public Enemy(GameplayScreen g, int posX, int posY, int frameWidth, int attackFrameWidth,
+            String textureLeft, String textureRight, String textureAttackLeft, String textureAttackRight) :
+            base(g, posX, posY, frameWidth, attackFrameWidth, textureLeft, textureRight, textureAttackLeft, textureAttackRight)
+        {
+            scale = 2;
+        }
+
+        public override Vector2 getHitbox()
+        {
+            return HITBOX_SIZE;
+        }
+
+        public override void HandleCollision(CollisionDirection cd, PhysicsAble entity)
+        {
+            if (entity is MageAttack)
+            {
+            }
+            else if (entity is Enemy)
+            {
+            }
+            else
+            {
+                velocity = Vector2.Zero;
+            }
+            
+        }
 
         public void UpdateAI(GameTime time)
         {
@@ -33,19 +62,15 @@ namespace SkyCrane
             // Move towards target
             velocity = (target.worldPosition - worldPosition);
 
-            if (velocity.Length() < 1)
+            if (velocity.Length() < 50)
             {
-                velocity = Vector2.Zero;
+                startAttack(time);
             }
             else
             {
                 velocity.Normalize();
+                velocity *= 2;
             }
         }
-
-        public override void HandleCollision(CollisionDirection cd, PhysicsAble entity)
-        {
-            velocity = Vector2.Zero;
-        }
-    }*/
+    }
 }

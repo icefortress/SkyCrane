@@ -99,7 +99,7 @@ namespace SkyCrane.Screens
         public override void LoadContent()
         {
             ContentManager content = ScreenManager.Game.Content;
-            menuBleepEffect = content.Load<SoundEffect>("SoundFX/bleep");
+            //menuBleepEffect = content.Load<SoundEffect>("SoundFX/success_bleep");
             return;
         }
 
@@ -140,7 +140,7 @@ namespace SkyCrane.Screens
                 {
                     if (!graphicalSelect)
                     {
-                        menuBleepEffect.Play();
+                        //menuBleepEffect.Play();
                     }
                     do
                     {
@@ -157,7 +157,7 @@ namespace SkyCrane.Screens
                 {
                     if (!graphicalSelect)
                     {
-                        menuBleepEffect.Play();
+                        //menuBleepEffect.Play();
                     }
                     do
                     {
