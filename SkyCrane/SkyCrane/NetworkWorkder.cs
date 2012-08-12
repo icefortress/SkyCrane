@@ -21,6 +21,7 @@ namespace SkyCrane
         private int myID;
 
         private Semaphore sendSem = new Semaphore(0, 100);
+        private Semaphore nextSem = new Semaphore(0, 100);
 
         //This is the server side
         public NetworkWorker(int port = 0)
@@ -64,24 +65,13 @@ namespace SkyCrane
 
         public Packet getNext()
         {
-            if (readBuffer.Count > 0)
-                return readBuffer.Dequeue();
-            else
-                return null;
-        }
-
-        public void hasNextBlocked()
-        {
-
-        }
-
-        public bool hasNext()
-        {
-            bool ret;
-            lock (this.readBuffer)
+            this.nextSem.WaitOne();
+            Packet ret;
+            lock (readBuffer)
             {
-                ret = (this.readBuffer.Count > 0) ? true : false;
+                ret = readBuffer.Dequeue();
             }
+
             return ret;
         }
 
@@ -104,6 +94,7 @@ namespace SkyCrane
                 {
                     readBuffer.Enqueue(p);
                 }
+                this.nextSem.Release();
             }
         }
 

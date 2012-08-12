@@ -68,15 +68,13 @@ namespace SkyCrane
             this.go = false;
         }
 
-        private void runThis() {
+        private void runThis()
+        {
             Packet p;
             while (this.go)
             {
-                if (nw.hasNext())
-                {
-                    p = nw.getNext();
-                    Console.WriteLine(p.ptype);
-                }
+                p = nw.getNext();
+                Console.WriteLine(p.ptype);
             }
         }
 
@@ -89,7 +87,8 @@ namespace SkyCrane
         {
         }
 
-        public void signalSC(List<StateChange> list, ConnectionID cid){
+        public void signalSC(List<StateChange> list, ConnectionID cid)
+        {
 
         }
     }
@@ -100,7 +99,8 @@ namespace SkyCrane
         public short ID;
         private IPEndPoint endpt;
 
-        public static ConnectionID newConnectionID(IPEndPoint ep){
+        public static ConnectionID newConnectionID(IPEndPoint ep)
+        {
             ConnectionID c = new ConnectionID(ep);
             c.ID = ids++;
             return c;
