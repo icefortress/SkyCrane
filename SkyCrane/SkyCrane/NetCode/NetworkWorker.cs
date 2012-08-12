@@ -18,8 +18,8 @@ namespace SkyCrane.NetCode
         private static int id = 0;
         private int myID;
 
-        private Semaphore sendSem = new Semaphore(0, 100);
-        private Semaphore nextSem = new Semaphore(0, 100);
+        private Semaphore sendSem = new Semaphore(0, 1000);
+        private Semaphore nextSem = new Semaphore(0, 1000);
 
         private static int TIMEOUT = 5000;
 
@@ -30,8 +30,8 @@ namespace SkyCrane.NetCode
             //Console.WriteLine("Started NW-Server on port: " + this.Client.LocalEndPoint);
             this.rcvThread = new Thread(thread_do_recv);
             this.sendThread = new Thread(thread_do_send);
-            rcvThread.Name = "Receive Thread ID: " + id;
-            sendThread.Name = "Send Thread ID: " + id;
+            rcvThread.Name = "Server Receive Thread ID: " + id;
+            sendThread.Name = "Sever Send Thread ID: " + id;
             this.rcvThread.Start();
             this.sendThread.Start();
             this.myID = id;
@@ -46,8 +46,8 @@ namespace SkyCrane.NetCode
             //Console.WriteLine("Started NW-Client on port: " + this.Client.LocalEndPoint);
             this.rcvThread = new Thread(thread_do_recv);
             this.sendThread = new Thread(thread_do_send);
-            rcvThread.Name = "Receive Thread ID: " + id;
-            sendThread.Name = "Send Thread ID: " + id;
+            rcvThread.Name = "Client Receive Thread ID: " + id;
+            sendThread.Name = "Client Send Thread ID: " + id;
             this.rcvThread.Start();
             this.sendThread.Start();
             this.myID = id;
@@ -59,6 +59,7 @@ namespace SkyCrane.NetCode
             lock (this.buffer)
             {
                 this.buffer.Enqueue(p);
+                //Console.WriteLine("Backlog Commit: {0} "+Thread.CurrentThread.Name, buffer.Count);
             }
             this.sendSem.Release();
         }
@@ -100,6 +101,7 @@ namespace SkyCrane.NetCode
                 lock (readBuffer)
                 {
                     readBuffer.Enqueue(p);
+                    //Console.WriteLine("ReadBuffer {0}:" + Thread.CurrentThread.Name, readBuffer.Count);
                 }
                 this.nextSem.Release();
             }
