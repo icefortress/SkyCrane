@@ -31,9 +31,13 @@ namespace SkyCrane.Screens
         List<MenuEntry> menuEntries = new List<MenuEntry>();
         int selectedEntry = 0;
         string menuTitle;
-        SoundEffect menuBleepEffect;
         bool typingInput;
         bool graphicalSelect;
+
+        // Sound effects used by menus in general
+        protected SoundEffect menuScrollSoundEffect;
+        protected SoundEffect menuSelectSoundEffect;
+        protected SoundEffect menuCancelSoundEffect;
 
         #endregion
 
@@ -99,7 +103,9 @@ namespace SkyCrane.Screens
         public override void LoadContent()
         {
             ContentManager content = ScreenManager.Game.Content;
-            //menuBleepEffect = content.Load<SoundEffect>("SoundFX/success_bleep");
+            menuScrollSoundEffect = content.Load<SoundEffect>("SoundFX/menu_scroll");
+            menuSelectSoundEffect = content.Load<SoundEffect>("SoundFX/menu_select");
+            menuCancelSoundEffect = content.Load<SoundEffect>("SoundFX/menu_cancel");
             return;
         }
 
@@ -140,7 +146,7 @@ namespace SkyCrane.Screens
                 {
                     if (!graphicalSelect)
                     {
-                        //menuBleepEffect.Play();
+                        menuScrollSoundEffect.Play();
                     }
                     do
                     {
@@ -157,7 +163,7 @@ namespace SkyCrane.Screens
                 {
                     if (!graphicalSelect)
                     {
-                        //menuBleepEffect.Play();
+                        menuScrollSoundEffect.Play();
                     }
                     do
                     {
@@ -176,14 +182,23 @@ namespace SkyCrane.Screens
                 // OnSelectEntry and OnCancel, so they can tell which player triggered them.
                 if (menuEntries[selectedEntry].Toggleable && input.IsMenuToggle(ControllingPlayer, out playerIndex, out toggleDirection))
                 {
+                    if (!graphicalSelect)
+                    {
+                        menuSelectSoundEffect.Play();
+                    }
                     OnSelectEntry(selectedEntry, playerIndex, input.IsMenuSelect(ControllingPlayer, out playerIndex), false, toggleDirection);
                 }
                 else if (input.IsMenuSelect(ControllingPlayer, out playerIndex))
                 {
+                    if (!graphicalSelect)
+                    {
+                        menuSelectSoundEffect.Play();
+                    }
                     OnSelectEntry(selectedEntry, playerIndex, true, false, 0);
                 }
                 else if (input.IsMenuCancel(ControllingPlayer, out playerIndex))
                 {
+                    menuCancelSoundEffect.Play();
                     OnCancel(playerIndex);
                 }
             }
