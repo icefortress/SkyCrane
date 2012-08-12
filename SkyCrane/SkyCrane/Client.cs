@@ -16,7 +16,7 @@ namespace SkyCrane
         private NetworkWorker nw;
         private IPEndPoint server;
         private bool go = true;
-        public enum cState { DISCONNECTED, CONNECTED, TRYCONNECT, SEND, RECV, SYNC };
+        public enum cState { DISCONNECTED, CONNECTED, TRYCONNECT };
         cState curState = cState.DISCONNECTED;
 
         // Queue of state changes to be passed off the the UI
@@ -33,10 +33,21 @@ namespace SkyCrane
 
         public bool connect(string host, int port)
         {
+            // Store server info
             this.server = new IPEndPoint(IPAddress.Parse(host), port);
 
+            // Client may now try to connect
             this.curState = cState.TRYCONNECT;
+
+            //Spawn the client reader/writer threads
+            this.nw = new NetworkWorker(server);
+
+            // Send the handshake request to the server
+            this.handshake();
+
+            // Wait for the connection to be established
             while (this.curState == cState.TRYCONNECT) ;
+
             return true;
         }
 
@@ -47,25 +58,34 @@ namespace SkyCrane
 
         //Main routine, this does all the processing
         private void ClientstartFunc()
-        {   
+        {
+            // Hold here until the server information has been provided
+            // TODO
+
             // Event Loop
             // Pull packets out of the network layer and handle them
             while (this.go)
             {
-                // Connect to the server, if this has not already been done
-                if (curState == cState.TRYCONNECT)
-                {
-                    //Spawn the client reader/writer threads
-                    this.nw = new NetworkWorker(server);
-                    this.handshake();
-                    this.curState = cState.CONNECTED;
-                }
-                
-                // Once the client has been connected, get packets
-                if (curState == cState.CONNECTED)
-                {
-                    Packet newPacket = nw.getNext(); // This is a blocking call! 
+                Packet newPacket = nw.getNext(); // This is a blocking call! 
 
+                // Handle timeout
+                if (newPacket == null)
+                {
+                    Console.WriteLine("Timeout on receive");
+                    switch (curState)
+                    {
+                        case cState.TRYCONNECT:
+                            break;
+                        case cState.CONNECTED:
+                            break;
+                        case cState.DISCONNECTED:
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
                     // Handle the new packet 
                     switch (newPacket.ptype)
                     {
@@ -99,21 +119,11 @@ namespace SkyCrane
             }
         }
 
-        private bool handshake()
+        private void handshake()
         {
-            StateChange s = new StateChange();
-            s.stringProperties[StateProperties.POSITION_X] = "Bacon";
             HandshakePacket hs = new HandshakePacket();
-            SYNCPacket sp = new SYNCPacket();
-            STCPacket stcp = new STCPacket(s);
-            stcp.setDest(server);
-            sp.setDest(server); 
             hs.setDest(server);
-
-            this.nw.commitPacket(sp);
-            this.nw.commitPacket(stcp);
             this.nw.commitPacket(hs);
-            return true;
         }
 
         //OPERATORS
@@ -123,6 +133,7 @@ namespace SkyCrane
             {
                 // Create the CMD Packet
                 CMDPacket newCMD = new CMDPacket(c);
+                newCMD.Dest = server;
 
                 // Add the CMD packet to the network worker's send queue
                 this.nw.commitPacket(newCMD);
