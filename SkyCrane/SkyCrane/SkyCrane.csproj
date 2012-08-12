@@ -80,6 +80,7 @@
     <Compile Include="Dudes\CrossbowBolt.cs" />
     <Compile Include="Dudes\Goblin.cs" />
     <Compile Include="Dudes\JarCat.cs" />
+    <Compile Include="Dudes\Laser.cs" />
     <Compile Include="Dudes\OrientalDude.cs" />
     <Compile Include="Dudes\RealBullet.cs" />
     <Compile Include="Dudes\Rogue.cs" />

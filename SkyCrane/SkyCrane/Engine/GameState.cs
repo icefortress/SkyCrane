@@ -138,6 +138,15 @@ namespace SkyCrane.Engine
             changes.Add(sc);
         }
 
+        public void createLaser(int posX, int posY, Vector2 velocity)
+        {
+            Laser b = new Laser(context, new Vector2(posX, posY), velocity);
+            addEntity(200, b, b.id);
+
+            StateChange sc = StateChangeFactory.createEntityStateChange(b.id, posX, posY, Laser.frameWidth, b.GetFrameTime(), Laser.textureName, b.scale, 200);
+            changes.Add(sc);
+        }
+
         public void createBullet(int posX, int posY, Vector2 velocity)
         {
             Bullet b = new Bullet(context, new Vector2(posX, posY), velocity);

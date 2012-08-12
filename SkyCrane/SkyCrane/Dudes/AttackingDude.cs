@@ -19,7 +19,7 @@ namespace SkyCrane.Dudes
 
         int attackFrameWidth;
 
-        TimeSpan lastAttack = new TimeSpan(0);
+        protected TimeSpan lastAttack = new TimeSpan(0);
 
         public AttackingDude(GameplayScreen g, int posX, int posY, int frameWidth, int attackFrameWidth, String textureLeft, String textureRight, String textureAttackLeft, String textureAttackRight, float scale) :
             base(g, posX, posY, frameWidth, textureLeft, textureRight, scale)
