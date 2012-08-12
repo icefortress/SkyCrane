@@ -20,7 +20,7 @@ namespace SkyCrane
         private static int id = 0;
         private int myID;
 
-        private Semaphore sendSem;
+        private Semaphore sendSem = new Semaphore(0, 100);
 
         //This is the server side
         public NetworkWorker(int port = 0)
@@ -59,6 +59,7 @@ namespace SkyCrane
             {
                 this.buffer.Enqueue(p);
             }
+            this.sendSem.Release();
         }
 
         public Packet getNext()
@@ -86,9 +87,9 @@ namespace SkyCrane
             MemoryStream ms;
             while (this.go)
             {
-                Console.WriteLine("waiting..."+Thread.CurrentThread.Name);
+                Console.WriteLine("waiting..." + Thread.CurrentThread.Name);
                 byte[] data = this.Receive(ref srv);
-                Console.WriteLine("NW-" + myID + " Recv: "+data.Length+" bytes");
+                Console.WriteLine("NW-" + myID + " Recv: " + data.Length + " bytes");
                 Packet p = new Packet();
                 p.Dest = srv;
                 ms = new MemoryStream(data);
@@ -104,18 +105,15 @@ namespace SkyCrane
         private void thread_do_send()
         {
             Thread.CurrentThread.IsBackground = true;
-            Thread.Sleep(3000);
             while (this.go)
             {
+                this.sendSem.WaitOne(); //Get Semaphore
                 lock (this.buffer)
                 {
-                    if (buffer.Count > 0)
-                    {
-                        //Console.WriteLine("NW-" + myID + " Send");
-                        Packet pkt = buffer.Dequeue();
-                        int i = this.Send(pkt.data, pkt.data.Length, pkt.Dest);
-                        //Console.WriteLine(i);
-                    }
+                    Console.WriteLine("NW-" + myID + " Send");
+                    Packet pkt = this.buffer.Dequeue();
+                    int i = this.Send(pkt.data, pkt.data.Length, pkt.Dest);
+                    Console.WriteLine(i);
                 }
             }
         }
@@ -152,10 +150,11 @@ namespace SkyCrane
 
     public class CMDPacket : Packet
     {
-        public CMDPacket()
+        public CMDPacket(Command s)
         {
             this.ptype = PacketType.CMD;
             this.addHeader(ptype);
+            this.addContent(s.getPackedData());
             this.finalize();
         }
     }
@@ -191,4 +190,8 @@ namespace SkyCrane
         }
     }
 
+    public interface Marshable
+    {
+        public byte[] getPackedData();
+    }
 }

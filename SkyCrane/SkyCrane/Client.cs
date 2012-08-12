@@ -16,7 +16,7 @@ namespace SkyCrane
         private NetworkWorker nw;
         private IPEndPoint server;
         private bool go = true;
-        public enum cState { DISCONNECTED, CONNECTED, TRYCONNECT,SEND,RECV,SYNC };
+        public enum cState { DISCONNECTED, CONNECTED, TRYCONNECT, SEND, RECV, SYNC };
         cState curState = cState.DISCONNECTED;
 
         // Queue of state changes to be passed off the the UI
@@ -31,7 +31,7 @@ namespace SkyCrane
             clientThread.Name = "mainClientThread";
             clientThread.Start();
         }
-         
+
         public bool connect(string host, int port)
         {
             this.server = new IPEndPoint(IPAddress.Parse(host), port);
@@ -77,9 +77,10 @@ namespace SkyCrane
             stcp.setDest(server);
             sp.setDest(server);
             hs.setDest(server);
-                this.nw.commitPacket(sp);
-                this.nw.commitPacket(stcp);
-                this.nw.commitPacket(hs);
+
+            this.nw.commitPacket(sp);
+            this.nw.commitPacket(stcp);
+            this.nw.commitPacket(hs);
             return true;
         }
 
