@@ -93,6 +93,7 @@
     <Compile Include="Engine\GameState.cs" />
     <Compile Include="Engine\Level.cs" />
     <Compile Include="NetCode\Command.cs" />
+    <Compile Include="NetCode\NetcodeTest.cs" />
     <Compile Include="NetCode\NetworkWorker.cs" />
     <Compile Include="Engine\PhysicsAble.cs" />
     <Compile Include="Dudes\PlayerCharacter.cs" />

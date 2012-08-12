@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
+using System.Diagnostics;
 
 namespace SkyCrane.NetCode
 {
@@ -13,6 +14,10 @@ namespace SkyCrane.NetCode
         private bool go = true;
         public enum cState { DISCONNECTED, CONNECTED, TRYCONNECT };
         cState curState = cState.DISCONNECTED;
+
+        //Stopwatch for pinging
+        private Stopwatch sw_ping = new Stopwatch();
+        private long lastPing = -1;
 
         // Semaphore to wait on for the server info to be known
         private Semaphore ready = new Semaphore(0, 1);
@@ -30,6 +35,7 @@ namespace SkyCrane.NetCode
             // Create the thread
             clientThread = new Thread(this.ClientstartFunc);
             clientThread.Name = "mainClientThread";
+            clientThread.IsBackground = true;
 
             clientThread.Start();
         }
@@ -87,7 +93,8 @@ namespace SkyCrane.NetCode
                             break;
                         case cState.CONNECTED:
                             // The server may have died, ping the server to find out
-                            this.pingServer();
+                            //this.pingServer();
+                   //TODO Should probably not silently ignore this....
                             break;
                         case cState.DISCONNECTED:
                         default:
@@ -115,6 +122,7 @@ namespace SkyCrane.NetCode
                             {
                                 case cState.TRYCONNECT:
                                     // The connection has succeeded!
+                                    this.startPing();
                                     this.curState = cState.CONNECTED;
                                     break;
                                 case cState.CONNECTED:
@@ -206,6 +214,9 @@ namespace SkyCrane.NetCode
                                 case cState.TRYCONNECT:
                                     break;
                                 case cState.CONNECTED:
+                                    sw_ping.Stop();
+                                    lock (this)
+                                        this.lastPing = sw_ping.ElapsedMilliseconds;
                                     break;
                                 case cState.DISCONNECTED:
                                 default:
@@ -231,11 +242,20 @@ namespace SkyCrane.NetCode
             this.nw.commitPacket(hs);
         }
 
-        private void pingServer()
+        private void startPing()
         {
+            Timer t = new Timer(this.pingTimer, new AutoResetEvent(false), 1000, 1000);
+        }
+
+        private void pingTimer(Object stateInfo)
+        {
+            if (sw_ping.IsRunning)
+                return;
             PingPacket pp = new PingPacket();
+            sw_ping.Reset();
             pp.setDest(server);
             this.nw.commitPacket(pp);
+            sw_ping.Start();
         }
 
         private void syncServer()
@@ -311,6 +331,13 @@ namespace SkyCrane.NetCode
             }
 
             return newStates;
+        }
+
+        //Retrieve the last measured ping
+        public long getPing()
+        {
+            lock (this)
+                return this.lastPing;
         }
     }
 }
