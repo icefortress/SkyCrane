@@ -87,6 +87,15 @@ namespace SkyCrane
             changes.Add(sc);
         }
 
+        public void createMageAttack(int posX, int posY, Vector2 velocity)
+        {
+            MageAttack m = new MageAttack(context, new Vector2(posX, posY), velocity);
+            addEntity(200, m);
+
+            StateChange sc = Entity.createEntityStateChange(m.id, posX, posY, MageAttack.frameWidth, MageAttack.textureName);
+            changes.Add(sc);
+        }
+
         public void addEntity(int drawPriority, Entity e)
         {
             entities.Add(e.id, e);

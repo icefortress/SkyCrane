@@ -46,6 +46,9 @@ namespace SkyCrane.Screens
 
         public PlayerCharacter secondPlayer = null;
 
+        bool canCreate = true;
+        bool attackButtonOK = true;
+
         bool goodtogo = false;
         public bool bulletExists = false;
 
@@ -132,6 +135,8 @@ namespace SkyCrane.Screens
             // Load thingamabobs
             Texture2D bullet = content.Load<Texture2D>("Sprites/Charge_Flying");
             textureDict.Add("bullet", bullet);
+            Texture2D mageAttack = content.Load<Texture2D>("Sprites/Beam");
+            textureDict.Add("wand", mageAttack);
 
 
             Level l = Level.generateLevel(this);
@@ -190,7 +195,7 @@ namespace SkyCrane.Screens
             // Get the players from the server and send them each a notification of who the fuck theyare
 
             // TODO: add an enemy for testing
-            //gameState.createEnemy(1280 / 2, 720 / 2 + 200, 45, "skeleton");
+            gameState.createEnemy(1280 / 2, 720 / 2 + 200, 45, "skeleton");
 
             goodtogo = true;
 
@@ -266,7 +271,13 @@ namespace SkyCrane.Screens
                     else if (c.ct == CommandType.ATTACK)
                     {
                         PlayerCharacter attacker = (PlayerCharacter)gameState.entities[c.entity_id];
-                        attacker.startAttack(gameTime);
+                        bool success = attacker.startAttack(gameTime);
+
+                        if (gameState.entities[c.entity_id] is Wizard)
+                        {
+                            Vector2 pos = c.position;
+                            gameState.createMageAttack((int)pos.X, (int)pos.Y, c.direction * 8);
+                        }
                     }
                 }
                 commandBuffer.Clear(); // Important!
@@ -457,12 +468,27 @@ namespace SkyCrane.Screens
                     commandBuffer.Add(c);
                 }
 
-                if (keyboardState.IsKeyDown(Keys.X))
+                if (keyboardState.IsKeyDown(Keys.X) && attackButtonOK)
                 {
                     Command c = new Command();
                     c.entity_id = gameState.usersPlayer.id;
                     c.ct = CommandType.ATTACK;
+                    c.position = gameState.usersPlayer.worldPosition;
+                    c.direction = movement;
                     commandBuffer.Add(c);
+                    attackButtonOK = false;
+                }
+                else if (keyboardState.IsKeyUp(Keys.X))
+                {
+                    attackButtonOK = true;
+                }
+
+                if (keyboardState.IsKeyDown(Keys.R) && canCreate)
+                {
+                    gameState.createEnemy(1280 / 2, 720 / 2 + 200, 45, "skeleton");
+                    canCreate = false;
+                } else if (keyboardState.IsKeyUp(Keys.R)) {
+                    canCreate = true;
                 }
 
                 Command c2 = new Command();

@@ -296,28 +296,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Sprites\Rogue.png">
-      <Name>Rogue</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Sprites\Rogue_Animated.png">
-      <Name>Rogue_Animated</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Sprites\Rogue_Animated_Right.png">
-      <Name>Rogue_Animated_Right</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Sprites\Rogue_Attack.png">
-      <Name>Rogue_Attack</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Sprites\Rogue_Attack_Right.png">
-      <Name>Rogue_Attack_Right</Name>
+    <Compile Include="Sprites\Beam.png">
+      <Name>Beam</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
