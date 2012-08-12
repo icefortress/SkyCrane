@@ -1,6 +1,6 @@
 #region File Description
 //-----------------------------------------------------------------------------
-// PlayerIndexEventArgs.cs
+// PlayerInputEventArgs.cs
 //
 // XNA Community Game Platform
 // Copyright (C) Microsoft Corporation. All rights reserved.
@@ -23,9 +23,8 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Constructor.
         /// </summary>
-        public PlayerInputEventArgs(PlayerIndex playerIndex, bool menuAccept = false, bool menuCancel = false, int toggleDirection = 0, bool typingAccepted = false, bool typingCancelled = false, bool typingBackspace = false, String keysTyped = null)
+        public PlayerInputEventArgs(bool menuAccept = false, bool menuCancel = false, int toggleDirection = 0, bool typingAccepted = false, bool typingCancelled = false, bool typingBackspace = false, String keysTyped = null)
         {
-            this.playerIndex = playerIndex;
             this.menuAccept = menuAccept;
             this.menuCancel = menuCancel;
             this.toggleDirection = toggleDirection;
@@ -35,15 +34,6 @@ namespace SkyCrane.Screens
             this.keysTyped = keysTyped;
             return;
         }
-
-        /// <summary>
-        /// Gets the index of the player who triggered this event.
-        /// </summary>
-        public PlayerIndex PlayerIndex
-        {
-            get { return playerIndex; }
-        }
-        PlayerIndex playerIndex;
 
         /// <summary>
         /// Gets whether or not the input was accepted.

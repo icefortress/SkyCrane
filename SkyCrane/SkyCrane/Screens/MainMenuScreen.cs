@@ -55,7 +55,7 @@ namespace SkyCrane.Screens
         /// </summary>
         void NewGameMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
-            ScreenManager.AddScreen(new CharacterSelectMenuScreen(true, false), e.PlayerIndex);
+            ScreenManager.AddScreen(new CharacterSelectMenuScreen(true, false));
             return;
         }
 
@@ -64,7 +64,7 @@ namespace SkyCrane.Screens
         /// </summary>
         void MultiplayerMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
-            ScreenManager.AddScreen(new MultiplayerMenuScreen(), e.PlayerIndex);
+            ScreenManager.AddScreen(new MultiplayerMenuScreen());
             return;
         }
 
@@ -73,7 +73,7 @@ namespace SkyCrane.Screens
         /// </summary>
         void OptionsMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
-            ScreenManager.AddScreen(new OptionsMenuScreen(), e.PlayerIndex);
+            ScreenManager.AddScreen(new OptionsMenuScreen());
             return;
         }
 
@@ -81,12 +81,12 @@ namespace SkyCrane.Screens
         /// <summary>
         /// When the user cancels the main menu, ask if they want to exit the sample.
         /// </summary>
-        protected override void OnCancel(PlayerIndex playerIndex)
+        protected override void OnCancel()
         {
             const string message = "Return to desktop?";
             MessageBoxScreen confirmExitMessageBox = new MessageBoxScreen(message);
             confirmExitMessageBox.Accepted += ConfirmExitMessageBoxAccepted;
-            ScreenManager.AddScreen(confirmExitMessageBox, playerIndex);
+            ScreenManager.AddScreen(confirmExitMessageBox);
             return;
         }
 

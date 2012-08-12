@@ -228,7 +228,7 @@ namespace SkyCrane.Screens
                     return;
                 }
 
-                ScreenManager.AddScreen(new CharacterSelectMenuScreen(true, true), e.PlayerIndex);
+                ScreenManager.AddScreen(new CharacterSelectMenuScreen(true, true));
             }
             else // Start up a client and try connecting to the host
             {
@@ -248,7 +248,7 @@ namespace SkyCrane.Screens
                     return;
                 }
 
-                ScreenManager.AddScreen(new CharacterSelectMenuScreen(false, true), e.PlayerIndex);
+                ScreenManager.AddScreen(new CharacterSelectMenuScreen(false, true));
             }
             return;
         }

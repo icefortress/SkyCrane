@@ -499,22 +499,20 @@ namespace SkyCrane.Screens
             }
 
             // Look up inputs for the active player profile.
-            int playerIndex = (int)ControllingPlayer.Value;
 
-            KeyboardState keyboardState = input.currentKeyboardStates[playerIndex];
-            GamePadState gamePadState = input.currentGamePadStates[playerIndex];
+            KeyboardState keyboardState = input.currentKeyboardState;
+            GamePadState gamePadState = input.currentGamePadState;
 
             // The game pauses either if the user presses the pause button, or if
             // they unplug the active gamepad. This requires us to keep track of
             // whether a gamepad was ever plugged in, because we don't want to pause
             // on PC if they are playing with a keyboard and have no gamepad at all!
-            bool gamePadDisconnected = !gamePadState.IsConnected &&
-                                       input.gamePadWasConnected[playerIndex];
+            bool gamePadDisconnected = !gamePadState.IsConnected &&  input.gamePadWasConnected;
 
-            if (input.IsPauseGame(ControllingPlayer) || gamePadDisconnected)
+            if (input.IsPauseGame() || gamePadDisconnected)
             {
                 pauseSoundEffect.Play();
-                ScreenManager.AddScreen(new PauseMenuScreen(), ControllingPlayer);
+                ScreenManager.AddScreen(new PauseMenuScreen());
             }
             else
             {

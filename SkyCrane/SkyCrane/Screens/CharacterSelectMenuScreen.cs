@@ -148,7 +148,7 @@ namespace SkyCrane.Screens
         /// <summary>
         /// A player has hit cancel while browsing characters.
         /// </summary>
-        protected override void OnCancel(PlayerIndex playerIndex)
+        protected override void OnCancel()
         {
             if (!characterSelectionsLocked[playerId])
             {
@@ -165,7 +165,7 @@ namespace SkyCrane.Screens
                         ((ProjectSkyCrane)ScreenManager.Game).RawClient.sendMSC(disconnectPacket);
                     }
                 }
-                base.OnCancel(playerIndex);
+                base.OnCancel();
             }
             else // Unlock a character selection
             {
@@ -215,7 +215,7 @@ namespace SkyCrane.Screens
                     {
                         HostBroadcastGameStart();
                     }
-                    LoadingScreen.Load(ScreenManager, false, e.PlayerIndex, new GameplayScreen(host, multiplayer, NumConnectedPlayers(), playerId, characterSelections, playerIdToConnectionHash));
+                    LoadingScreen.Load(ScreenManager, false, new GameplayScreen(host, multiplayer, NumConnectedPlayers(), playerId, characterSelections, playerIdToConnectionHash));
                 }
                 menuSelectSoundEffect.Play();
             }
@@ -490,7 +490,7 @@ namespace SkyCrane.Screens
                                 }
                                 break;
                             case MenuState.Type.GameStart:
-                                LoadingScreen.Load(ScreenManager, false, PlayerIndex.One, new GameplayScreen(host, multiplayer, NumConnectedPlayers(), playerId, characterSelections, null));
+                                LoadingScreen.Load(ScreenManager, false, new GameplayScreen(host, multiplayer, NumConnectedPlayers(), playerId, characterSelections, null));
                                 break;
                             default:
                                 throw new ArgumentException();

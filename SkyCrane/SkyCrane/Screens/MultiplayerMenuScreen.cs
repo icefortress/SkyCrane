@@ -52,7 +52,7 @@ namespace SkyCrane.Screens
         /// </summary>
         void HostGameMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
-            ScreenManager.AddScreen(new HostSettingsMenuScreen(true), e.PlayerIndex);
+            ScreenManager.AddScreen(new HostSettingsMenuScreen(true));
             return;
         }
 
@@ -61,7 +61,7 @@ namespace SkyCrane.Screens
         /// </summary>
         void JoinGameMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
-            ScreenManager.AddScreen(new HostSettingsMenuScreen(false), e.PlayerIndex);
+            ScreenManager.AddScreen(new HostSettingsMenuScreen(false));
             return;
         }
 
