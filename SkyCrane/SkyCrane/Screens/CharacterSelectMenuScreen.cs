@@ -45,6 +45,7 @@ namespace SkyCrane.Screens
         const string cancelMessage = "[ESC] or";
         const string openSlotMessage = "Slot Open";
         const string closedSlotMessage = "Slot Closed";
+        const string startMessage = "Ready to Start! Press [ENTER] or";
 
         #endregion
 
@@ -96,8 +97,8 @@ namespace SkyCrane.Screens
         public override void LoadContent()
         {
             ContentManager content = ScreenManager.Game.Content;
-            characters = new Texture2D[] { content.Load<Texture2D>("Sprites/Wizard"),
-                content.Load<Texture2D>("Sprites/PinkWizard") };
+            characters = new Texture2D[] { content.Load<Texture2D>("Sprites/Tank"),
+                content.Load<Texture2D>("Sprites/Wizard"), content.Load<Texture2D>("Sprites/Rogue") };
             aButtonTextured2D = content.Load<Texture2D>("XBox Buttons/button_a");
             bButtonTextured2D = content.Load<Texture2D>("XBox Buttons/button_b");
             dPadLeftTexture2D = content.Load<Texture2D>("XBox Buttons/dpad_left");
@@ -194,8 +195,10 @@ namespace SkyCrane.Screens
 
             spriteBatch.Begin();
 
+            // Calculate message sizes
             Vector2 selectMessageSize = ScreenManager.Font.MeasureString(selectMessage);
             Vector2 cancelMessageSize = ScreenManager.Font.MeasureString(cancelMessage);
+            Vector2 startMessageSize = ScreenManager.Font.MeasureString(startMessage);
 
             for (int i = 0; i < numPlayers; i += 1) // Draw the individual characters
             {
@@ -230,20 +233,24 @@ namespace SkyCrane.Screens
                         spriteBatch.Draw(dPadLeftTexture2D, new Rectangle(centerColumn - (64 + 8), dPadBase, 64, 64), drawColor);
                         spriteBatch.Draw(dPadRightTexture2D, new Rectangle(centerColumn + (192 + 8), dPadBase, 64, 64), drawColor);
 
-                        float finalMessageBase = centerColumn + (192 - (playerNameSize + selectMessageSize.X + 32)) / 2;
+                        float finalMessageBase = centerColumn + (192 - (playerNameSize + selectMessageSize.X + 64)) / 2;
                         spriteBatch.DrawString(ScreenManager.Font, playerName + selectMessage, new Vector2(finalMessageBase, selectBase), transitionColor);
                         spriteBatch.Draw(aButtonTextured2D, new Vector2(finalMessageBase + playerNameSize + selectMessageSize.X, selectBase - 8), drawColor);
                     }
                     else // Draw the cancel selection button
                     {
-                        float finalMessageBase = centerColumn + (192 - (playerNameSize + cancelMessageSize.X + 32)) / 2;
+                        float finalMessageBase = centerColumn + (192 - (playerNameSize + cancelMessageSize.X + 64)) / 2;
                         spriteBatch.DrawString(ScreenManager.Font, playerName + cancelMessage, new Vector2(finalMessageBase, selectBase), transitionColor);
                         spriteBatch.Draw(bButtonTextured2D, new Vector2(finalMessageBase + playerNameSize + cancelMessageSize.X, selectBase - 8), drawColor);
                     }
 
                     if (host && AllLocked()) // Draw the "press to continue" message
                     {
-                       
+                        spriteBatch.DrawString(ScreenManager.Font, startMessage,
+                             new Vector2(graphics.PresentationParameters.BackBufferWidth - (startMessageSize.X + 64),
+                             graphics.PresentationParameters.BackBufferHeight - startMessageSize.Y), transitionColor);
+                        spriteBatch.Draw(aButtonTextured2D, new Vector2(graphics.PresentationParameters.BackBufferWidth - 64,
+                            graphics.PresentationParameters.BackBufferHeight - (64 - 8)), transitionColor);
                     }
                 }
                 else // Draw the other player names
@@ -254,7 +261,7 @@ namespace SkyCrane.Screens
             }
 
             Vector2 slotMessageSize; // Get the size of the redundant slot messages
-            if (multiplayer)
+            if (multiplayer) // Insert slot messages
             {
                 slotMessageSize = ScreenManager.Font.MeasureString(openSlotMessage);
             }
@@ -270,13 +277,13 @@ namespace SkyCrane.Screens
                 int xBase = column * spacePerColumn;
                 int yBase = (int)titleEnd + row * spacePerRow;
 
-                if (multiplayer)
+                if (multiplayer) // Show that slots are open
                 {
                     spriteBatch.DrawString(ScreenManager.Font, openSlotMessage,
                         new Vector2(xBase + (spacePerColumn - slotMessageSize.X) / 2,
                             yBase + (spacePerRow - slotMessageSize.Y) / 2), transitionColor);
                 }
-                else
+                else // Show that the other slots are closed
                 {
                     spriteBatch.DrawString(ScreenManager.Font, closedSlotMessage,
                         new Vector2(xBase + (spacePerColumn - slotMessageSize.X) / 2,
