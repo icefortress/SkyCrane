@@ -61,7 +61,7 @@ namespace SkyCrane.Screens
         bool goodtogo = false;
         public bool bulletExists = false;
 
-        List<Command> commandBuffer = new List<Command>();
+        public List<Command> commandBuffer = new List<Command>();
         public Dictionary<String, Texture2D> textureDict = new Dictionary<String, Texture2D>();
 
         float pauseAlpha;
@@ -168,6 +168,11 @@ namespace SkyCrane.Screens
             textureDict.Add("skeletonal", skeletonal);
             textureDict.Add("skeletonar", skeletonar);
 
+            textureDict.Add("goblinl", content.Load<Texture2D>("Sprites/Goblin_Animated"));
+            textureDict.Add("goblinr", content.Load<Texture2D>("Sprites/Goblin_Animated_Right"));
+            textureDict.Add("goblinal", content.Load<Texture2D>("Sprites/Goblin_Attack"));
+            textureDict.Add("goblinar", content.Load<Texture2D>("Sprites/Goblin_Attack_Right"));
+
             // Load thingamabobs
             Texture2D bullet = content.Load<Texture2D>("Sprites/Charge_Flying");
             textureDict.Add("bullet", bullet);
@@ -179,6 +184,7 @@ namespace SkyCrane.Screens
             textureDict.Add("doctorwallh", doctorwallh);
             Texture2D realbull = content.Load<Texture2D>("Sprites/TheRealBullet");
             textureDict.Add("realbull", realbull);
+            textureDict.Add("bowbolt", content.Load<Texture2D>("Sprites/bowbolt"));
 
 
             Level l = Level.generateLevel(this);
@@ -261,6 +267,10 @@ namespace SkyCrane.Screens
             {
                 Entity e = gameState.entities[c.entity_id];
                 e.velocity = c.direction * 3;
+            }
+            else if (c.ct == CommandType.GOBLIN_ATTACK)
+            {
+                gameState.createBolt((int) c.position.X, (int)c.position.Y, c.direction * 6);
             }
             else if (c.ct == CommandType.SHOOT)
             {
@@ -347,7 +357,7 @@ namespace SkyCrane.Screens
 
                     pos += offset;
 
-                    if(success) gameState.createDoctorWall(c.entity_id, (int)pos.X, (int)pos.Y, hor);
+                    if (success) gameState.createDoctorWall(c.entity_id, (int)pos.X, (int)pos.Y, hor);
                 }
                 else if (gameState.entities[c.entity_id] is Rogue)
                 {
@@ -608,7 +618,7 @@ namespace SkyCrane.Screens
 
                 if (keyboardState.IsKeyDown(Keys.R) && canCreate && isServer)
                 {
-                    gameState.createEnemy(1280 / 2, 720 / 2 + 200, 45, "skeleton");
+                    gameState.createEnemy(1280 / 2, 720 / 2 + 200, "goblin");
                     canCreate = false;
                 } else if (keyboardState.IsKeyUp(Keys.R)) {
                     canCreate = true;

@@ -79,12 +79,16 @@ namespace SkyCrane.Engine
             return pc;
         }
 
-        public Enemy createEnemy(int posX, int posY, int frameWidth, String type)
+        public Enemy createEnemy(int posX, int posY, String type)
         {
             Enemy e = null;
             if (type == "skeleton")
             {
                 e = new Skeleton(context, posX, posY);
+            }
+            else if (type == "goblin")
+            {
+                e = new Goblin(context, posX, posY);
             }
             addEntity(100, e);
 
@@ -92,6 +96,15 @@ namespace SkyCrane.Engine
             changes.Add(sc);
 
             return e;
+        }
+
+        public void createBolt(int posX, int posY, Vector2 velocity)
+        {
+            CrossbowBolt b = new CrossbowBolt(context, new Vector2(posX, posY), velocity);
+            addEntity(200, b);
+
+            StateChange sc = StateChangeFactory.createEntityStateChange(b.id, posX, posY, Bullet.frameWidth, b.GetFrameTime(), Bullet.textureName, b.scale, 200);
+            changes.Add(sc);
         }
 
         public void createBullet(int posX, int posY, Vector2 velocity)

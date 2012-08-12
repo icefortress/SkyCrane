@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 
 namespace SkyCrane.NetCode
 {
-    public enum CommandType { MOVE, SHOOT, ATTACK }
+    public enum CommandType { MOVE, SHOOT, ATTACK, GOBLIN_ATTACK }
 
     public class Command : Marshable
     {

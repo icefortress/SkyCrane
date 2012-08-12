@@ -77,6 +77,8 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dudes\CrossbowBolt.cs" />
+    <Compile Include="Dudes\Goblin.cs" />
     <Compile Include="Dudes\OrientalDude.cs" />
     <Compile Include="Dudes\RealBullet.cs" />
     <Compile Include="Dudes\Rogue.cs" />
