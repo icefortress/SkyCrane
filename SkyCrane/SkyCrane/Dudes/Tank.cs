@@ -35,6 +35,10 @@ namespace SkyCrane.Dudes
                 e.applyDamage(3);
                 damageApplied = true;
             }
+            else
+            {
+                base.HandleCollision(cd, entity);
+            }
         }
     }
 }

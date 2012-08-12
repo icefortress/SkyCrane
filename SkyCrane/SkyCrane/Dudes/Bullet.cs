@@ -45,9 +45,10 @@ namespace SkyCrane.Dudes
 
         public void attach(PlayerCharacter pc)
         {
-            if (lastOwner == pc) return;
+            if (lastOwner == pc || owner == pc) return;
             owner = pc;
             this.velocity = Vector2.Zero;
+            LevelUp();
         }
 
         public void refire(PlayerCharacter pc, Vector2 velocity)
