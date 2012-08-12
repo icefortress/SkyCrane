@@ -27,6 +27,7 @@ namespace SkyCrane.Screens
     {
 
         // TODO: Pretend that id's are nicely handled all over the place until I actually handle them niceley later after sleep
+        // TODO: Prevent spoofing by ensuring that requests are coming from the right places
 
         #region Fields
 
@@ -347,9 +348,19 @@ namespace SkyCrane.Screens
                                 }
                                 break;
                             case MenuState.Type.SelectCharacter:
-                                HostBroadcastSprites();
+                                if (connectionToPlayerIdHash.ContainsKey(serverStates[i].Item1)) // We've already seen this player and they haven't disconnected, resend their current id
+                                {
+                                    int requestingId = connectionToPlayerIdHash[serverStates[i].Item1];
+                                    if (requestingId == serverStates[i].Item2.PlayerId) // Prevent spoofing and sillyness
+                                    {
+                                        characterSelections[serverStates[i].Item2.PlayerId] = (PlayerCharacter.Type)serverStates[i].Item2.EventDetail;
+                                    }
+                                    HostBroadcastSprites();
+                                }
                                 break;
                             case MenuState.Type.LockCharacter:
+                                //if (serverStates[i].Item2.EventDetail == 
+                                //characterSelectionsLocked[serverStates[i].Item2.PlayerId] = (PlayerCharacter.Type)serverStates[i].Item2.EventDetail;
                                 throw new NotImplementedException();
                                 break;
                             default:
