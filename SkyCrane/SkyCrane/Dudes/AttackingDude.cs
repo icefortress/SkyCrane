@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using SkyCrane.Screens;
 using Microsoft.Xna.Framework;
+using SkyCrane.NetCode;
 
-namespace SkyCrane
+namespace SkyCrane.Dudes
 {
     public abstract class AttackingDude : Dude
     {
@@ -13,12 +14,15 @@ namespace SkyCrane
         String textureAttackLeft;
         String textureAttackRight;
 
+        public bool damageApplied = false; // makes sure an attack only does damage once
+        // will unfortunately need to be re-implemented on all attacks, as they do not inherit from some "attack" class
+
         int attackFrameWidth;
 
         TimeSpan lastAttack = new TimeSpan(0);
 
-        public AttackingDude(GameplayScreen g, int posX, int posY, int frameWidth, int attackFrameWidth, String textureLeft, String textureRight, String textureAttackLeft, String textureAttackRight) :
-            base(g, posX, posY, frameWidth, textureLeft, textureRight)
+        public AttackingDude(GameplayScreen g, int posX, int posY, int frameWidth, int attackFrameWidth, String textureLeft, String textureRight, String textureAttackLeft, String textureAttackRight, float scale) :
+            base(g, posX, posY, frameWidth, textureLeft, textureRight, scale)
         {
             this.textureAttackLeft = textureAttackLeft;
             this.textureAttackRight = textureAttackRight;
@@ -45,6 +49,7 @@ namespace SkyCrane
                 lastAttack = gameTime.TotalGameTime;
                 attacking = true;
                 forceCheck = true;
+                damageApplied = false;
                 return true;
             }
 

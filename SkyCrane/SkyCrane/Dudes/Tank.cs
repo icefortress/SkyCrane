@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using SkyCrane.Screens;
 
-namespace SkyCrane
+namespace SkyCrane.Dudes
 {
     class Tank : PlayerCharacter
     {
@@ -27,13 +27,14 @@ namespace SkyCrane
             return TEXTURE_LEFT;
         }
 
-        public override void HandleCollision(CollisionDirection cd, PhysicsAble entity)
+        public override void HandleCollision(Engine.CollisionDirection cd, Engine.PhysicsAble entity)
         {
-            if (entity is Bullet)
+            if (entity is Enemy && attacking && !damageApplied)
             {
-                Console.WriteLine("Tank hit bullet");
+                Enemy e = (Enemy)entity;
+                e.applyDamage(3);
+                damageApplied = true;
             }
-            base.HandleCollision(cd, entity);
         }
     }
 }

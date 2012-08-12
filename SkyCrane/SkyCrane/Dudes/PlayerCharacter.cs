@@ -5,21 +5,33 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SkyCrane.Screens;
+using SkyCrane.Engine;
 
-namespace SkyCrane
+namespace SkyCrane.Dudes
 {
 
     public abstract class PlayerCharacter : AttackingDude
     {
+        public static float SCALE = 2;
+
+        /// <summary>
+        /// The types of possible player characters.
+        /// </summary>
+        public enum Type
+        {
+            Doctor = 0,
+            Rogue,
+            Tank,
+            Wizard
+        }
+
         public static Vector2 HITBOX_SIZE = new Vector2(45, 45);
         Bullet bulletRef = null;
 
         public PlayerCharacter(GameplayScreen g, int posX, int posY, int frameWidth, int attackFrameWidth,
             String textureLeft, String textureRight, String textureAttackLeft, String textureAttackRight) :
-            base(g, posX, posY, frameWidth, attackFrameWidth, textureLeft, textureRight, textureAttackLeft, textureAttackRight)
+            base(g, posX, posY, frameWidth, attackFrameWidth, textureLeft, textureRight, textureAttackLeft, textureAttackRight, 2)
         {
-            scale = 2;
-
             physicsSize = HITBOX_SIZE;
         }
 
@@ -42,22 +54,17 @@ namespace SkyCrane
                 bulletRef = (Bullet)entity;
                 bulletRef.attach(this);
             }
-            else if (entity is Enemy)
-            {
-                Enemy e = (Enemy)entity;
-                if (attacking)
-                {
-                    Console.WriteLine("Hit enemy!");
-                }
-                else if (e.attacking)
-                {
-                    Console.WriteLine("Hit by enemy!"); 
-                    velocity = entity.GetPhysicsVelocity() * 2;
-                }
-            }
             else if (entity is Level)
             {
                 velocity = Vector2.Zero;
+            }
+            else if (entity is Enemy)
+            {
+                if (((Enemy)entity).attacking)
+                {
+                    Console.WriteLine("Hit by enemy!");
+                    velocity = entity.GetPhysicsVelocity() * 2;
+                }
             }
 
         }

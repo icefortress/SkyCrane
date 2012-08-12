@@ -18,6 +18,9 @@ using SkyCrane.GameStateManager;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
+using SkyCrane.Dudes;
+using SkyCrane.NetCode;
+using SkyCrane.Engine;
 #endregion
 
 namespace SkyCrane.Screens
@@ -42,6 +45,10 @@ namespace SkyCrane.Screens
         public bool isServer;
         public bool isMultiplayer;
         public int numPlayers;
+        public int playerId;
+        public PlayerCharacter.Type[] characterSelections;
+        List<int> playerEntityIds = new List<int>();
+
         public Dictionary<int, int> serverIDLookup = new Dictionary<int, int>();
 
         public PlayerCharacter secondPlayer = null;
@@ -60,6 +67,10 @@ namespace SkyCrane.Screens
         RawServer serverReference = null;
         RawClient clientReference = null;
 
+        // Sound and music variables
+        Song backGroundSong;
+        SoundEffect pauseSoundEffect;
+
         #endregion
 
         #region Initialization
@@ -67,20 +78,20 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Constructor.
         /// </summary>
-        public GameplayScreen(bool isServer, bool isMultiplayer, int numPlayers)
+        public GameplayScreen(bool isServer, bool isMultiplayer, int numPlayers, int playerId, PlayerCharacter.Type[] characterSelections)
         {
             this.isServer = isServer;
             this.isMultiplayer = isMultiplayer;
             this.numPlayers = numPlayers;
+            this.characterSelections = characterSelections;
 
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
 
             gameState = new GameState(this);
 
-            if (isServer)
-            {
-            }
+
+            return;
         }
 
 
@@ -111,6 +122,16 @@ namespace SkyCrane.Screens
             Texture2D wizardr = content.Load<Texture2D>("Sprites/Wizard_Animated_Right");
             Texture2D wizardal = content.Load<Texture2D>("Sprites/Wizard_Attack");
             Texture2D wizardar = content.Load<Texture2D>("Sprites/Wizard_Attack_Right");
+
+            Texture2D doctorl = content.Load<Texture2D>("Sprites/Doctor_Animated");
+            Texture2D doctorr = content.Load<Texture2D>("Sprites/Doctor_Animated_Right");
+            Texture2D doctoral = content.Load<Texture2D>("Sprites/Doctor_Attack");
+            Texture2D doctorar = content.Load<Texture2D>("Sprites/Doctor_Attack_Right");
+
+            Texture2D roguel = content.Load<Texture2D>("Sprites/Rogue_Animated");
+            Texture2D roguer = content.Load<Texture2D>("Sprites/Rogue_Animated_Right");
+            Texture2D rogueal = content.Load<Texture2D>("Sprites/Rogue_Attack");
+            Texture2D roguear = content.Load<Texture2D>("Sprites/Rogue_Attack_Right");
             
             textureDict.Add("tankl", tankl);
             textureDict.Add("tankr", tankr);
@@ -120,12 +141,20 @@ namespace SkyCrane.Screens
             textureDict.Add("wizardr", wizardr);
             textureDict.Add("wizardal", wizardal);
             textureDict.Add("wizardar", wizardar);
+            textureDict.Add("doctorl", doctorl);
+            textureDict.Add("doctorr", doctorr);
+            textureDict.Add("doctoral", doctoral);
+            textureDict.Add("doctorar", doctorar);
+            textureDict.Add("roguel", roguel);
+            textureDict.Add("roguer", roguer);
+            textureDict.Add("rogueal", rogueal);
+            textureDict.Add("roguear", roguear);
 
             // Load enemies
             Texture2D skeletonl = content.Load<Texture2D>("Sprites/Skeleton_Animated");
             Texture2D skeletonr = content.Load<Texture2D>("Sprites/Skeleton_Animated_Right");
             Texture2D skeletonal = content.Load<Texture2D>("Sprites/Skeleton_Attack");
-            Texture2D skeletonar = content.Load<Texture2D>("Sprites/Skeleton_Attack");
+            Texture2D skeletonar = content.Load<Texture2D>("Sprites/Skeleton_Attack_Right");
 
             textureDict.Add("skeletonl", skeletonl);
             textureDict.Add("skeletonr", skeletonr);
@@ -137,6 +166,10 @@ namespace SkyCrane.Screens
             textureDict.Add("bullet", bullet);
             Texture2D mageAttack = content.Load<Texture2D>("Sprites/Beam");
             textureDict.Add("wand", mageAttack);
+            Texture2D doctorwall = content.Load<Texture2D>("Sprites/Doctor_Wall");
+            textureDict.Add("doctorwall", doctorwall);
+            Texture2D doctorwallh = content.Load<Texture2D>("Sprites/Doctor_Wall_Horizontal");
+            textureDict.Add("doctorwallh", doctorwallh);
 
 
             Level l = Level.generateLevel(this);
@@ -149,11 +182,13 @@ namespace SkyCrane.Screens
             physicsAbles.Add(e);
             aiAbles.Add(e);*/
 
-            // Some test music
-            /*MediaPlayer.Stop();
-            Song bgMusic = content.Load<Song>("Music/Nero - Doomsday");
-            MediaPlayer.Volume = 0.3f;
-            MediaPlayer.Play(bgMusic);*/
+            // Set up the background music
+            MediaPlayer.Stop();
+            backGroundSong = content.Load<Song>("Music/Nero - Doomsday");
+            MediaPlayer.Play(backGroundSong);
+
+            // Set up any generic sound effects that will be needed
+            pauseSoundEffect = content.Load<SoundEffect>("SoundFX/menu_cancel");
 
             // once the load has finished, we use ResetElapsedTime to tell the game's
             // timing mechanism that we have just finished a very long frame, and that
@@ -176,45 +211,113 @@ namespace SkyCrane.Screens
 
         public void serverStartGame()
         {
-            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, "wizard");
+            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, characterSelections[0]);
+            playerEntityIds.Add(gameState.usersPlayer.id);
 
             // TODO: delete this
-            secondPlayer = gameState.createPlayer(1280 / 2, 720 / 2 - 50, "tank");
+            //secondPlayer = gameState.createPlayer(1280 / 2, 720 / 2 - 50, characterSelections[1]);
 
             if (isMultiplayer)
             {
                 // Create players and broadcast to the clients
-                List<int> playerIds = new List<int>();
                 for (int i = 1; i < numPlayers; i++)
                 {
-                    PlayerCharacter pc = gameState.createPlayer(1280 / 2 + 20 * i, 720 / 2 + 50, "tank");
-                    playerIds.Add(pc.id);
+                    PlayerCharacter pc = gameState.createPlayer(1280 / 2 + 20 * i, 720 / 2 + 50, characterSelections[i]);
+                    playerEntityIds.Add(pc.id);
+
+                    // send notification to player of their entity
+                    StateChange sc = new StateChange();
+                    sc.type = StateChangeType.SET_PLAYER;
+                    sc.intProperties.Add(StateProperties.ENTITY_ID, pc.id);
+
+                    List<StateChange> l = new List<StateChange>();
+                    l.Add(sc);
+
+                    //serverReference.signalSC(l, new ConnectionID());
                 }
             }
 
             // Get the players from the server and send them each a notification of who the fuck theyare
 
-            // TODO: add an enemy for testing
-            gameState.createEnemy(1280 / 2, 720 / 2 + 200, 45, "skeleton");
 
             goodtogo = true;
 
         }
 
-        public void clientStartGame()
-        {
-            // Keep pulling statechanges until we have our character set
-            while (gameState.usersPlayer == null)
-            {
-                List<StateChange> changes = clientReference.rcvUPD();
-                gameState.applyAllStatechangs(changes);
-            }
-
-            // then enter the game
-        }
-
         #region Update and Draw
 
+
+        // Move this to GameState at some point
+        public void applyCommand(Command c, GameTime g)
+        {
+            if (c.ct == CommandType.MOVE)
+            {
+                Entity e = gameState.entities[c.entity_id];
+                e.velocity = c.direction * 3;
+            }
+            else if (c.ct == CommandType.SHOOT)
+            {
+                Vector2 velocity = c.direction * 8;
+                if (bulletExists)
+                {
+                    PlayerCharacter shooter = (PlayerCharacter)gameState.entities[c.entity_id];
+                    shooter.fireBullet(velocity);
+                }
+                else
+                {
+                    Vector2 pos = c.position;
+                    gameState.createBullet((int)pos.X, (int)pos.Y, velocity);
+                    bulletExists = true;
+                }
+            }
+            else if (c.ct == CommandType.ATTACK)
+            {
+                PlayerCharacter attacker = (PlayerCharacter)gameState.entities[c.entity_id];
+                bool success = attacker.startAttack(g);
+
+                if (gameState.entities[c.entity_id] is Wizard)
+                {
+                    Vector2 pos = c.position;
+                    gameState.createMageAttack((int)pos.X, (int)pos.Y, c.direction * 8);
+                }
+                else if (gameState.entities[c.entity_id] is Doctor)
+                {
+                    bool hor = false;
+                    Vector2 offset;
+
+                    Vector2 pos = c.position;
+                    Vector2 vel = c.direction;
+
+                    if (Math.Abs(vel.X) > Math.Abs(vel.Y))
+                    {
+                        if (vel.X > 0)
+                        {
+                            offset = new Vector2(80, 0);
+                        }
+                        else
+                        {
+                            offset = new Vector2(-80, 0);
+                        }
+                    }
+                    else
+                    {
+                        hor = true;
+                        if (vel.Y > 0)
+                        {
+                            offset = new Vector2(0, 80);
+                        }
+                        else
+                        {
+                            offset = new Vector2(0, -80);
+                        }
+                    }
+
+                    pos += offset;
+
+                    gameState.createDoctorWall(c.entity_id, (int)pos.X, (int)pos.Y, hor);
+                }
+            }
+        }
 
         /// <summary>
         /// Updates the state of the game. This method checks the GameScreen.IsActive
@@ -227,16 +330,15 @@ namespace SkyCrane.Screens
             base.Update(gameTime, otherScreenHasFocus, false);
 
             // Make sure character information has been sent/received before doing anything for real
-            if (!goodtogo)
+            if (isServer && !goodtogo)
             {
-                if (isServer)
-                {
-                    serverStartGame();
-                }
-                else
-                {
-                    clientStartGame();
-                }
+                serverStartGame();
+            }
+            else if (!isServer && gameState.usersPlayer == null)
+            {
+                List<StateChange> changes = clientReference.rcvUPD();
+                gameState.applyAllStatechangs(changes);
+                return;
             }
 
             // TODO: Add your update logic here
@@ -248,48 +350,17 @@ namespace SkyCrane.Screens
                 // Apply own commands, and client's commands
                 foreach (Command c in commandBuffer)
                 {
-                    if (c.ct == CommandType.MOVE)
-                    {
-                        Entity e = gameState.entities[c.entity_id];
-                        e.velocity = c.direction * 3;
-                    }
-                    else if (c.ct == CommandType.SHOOT)
-                    {
-                        Vector2 velocity = c.direction * 8;
-                        if (bulletExists)
-                        {
-                            PlayerCharacter shooter = (PlayerCharacter)gameState.entities[c.entity_id];
-                            shooter.fireBullet(velocity);
-                        }
-                        else
-                        {
-                            Vector2 pos = c.position;
-                            gameState.createBullet((int)pos.X, (int)pos.Y, velocity);
-                            bulletExists = true;
-                        }
-                    }
-                    else if (c.ct == CommandType.ATTACK)
-                    {
-                        PlayerCharacter attacker = (PlayerCharacter)gameState.entities[c.entity_id];
-                        bool success = attacker.startAttack(gameTime);
-
-                        if (gameState.entities[c.entity_id] is Wizard)
-                        {
-                            Vector2 pos = c.position;
-                            gameState.createMageAttack((int)pos.X, (int)pos.Y, c.direction * 8);
-                        }
-                    }
+                    applyCommand(c, gameTime);
                 }
                 commandBuffer.Clear(); // Important!
 
                 // Apply commands from the client
-                if (isMultiplayer)
+                if (isMultiplayer && numPlayers > 1)
                 {
                     List<Command> clientCommands = serverReference.getCMD();
                     foreach (Command c in clientCommands)
                     {
-                        Entity e = gameState.entities[c.entity_id];
-                        e.velocity = c.direction * 3;
+                        applyCommand(c, gameTime);
                     }
                 }
 
@@ -331,7 +402,10 @@ namespace SkyCrane.Screens
                 }
 
                 // Push changes to clients
-                if(isMultiplayer) serverReference.broadcastSC(gameState.changes);
+                if (isMultiplayer && numPlayers > 1)
+                {
+                    serverReference.broadcastSC(gameState.changes);
+                }
                 
                 // Commit changes locally
                 gameState.commitChanges();
@@ -393,6 +467,7 @@ namespace SkyCrane.Screens
 
             if (input.IsPauseGame(ControllingPlayer) || gamePadDisconnected)
             {
+                pauseSoundEffect.Play();
                 ScreenManager.AddScreen(new PauseMenuScreen(), ControllingPlayer);
             }
             else
@@ -400,7 +475,7 @@ namespace SkyCrane.Screens
                 /* ===== COPY PASTE PLAYER 2 ====== */
 
                 // Otherwise move the player position.
-                Vector2 p2movement = Vector2.Zero;
+                /*Vector2 p2movement = Vector2.Zero;
 
                 if (keyboardState.IsKeyDown(Keys.A))
                     p2movement.X--;
@@ -431,7 +506,7 @@ namespace SkyCrane.Screens
                 c3.entity_id = secondPlayer.id;
                 c3.direction = p2movement;
                 c3.ct = CommandType.MOVE;
-                commandBuffer.Add(c3);
+                commandBuffer.Add(c3);*/
 
                 /* ===== COPY PASTE PLAYER 2 ====== */
 
@@ -483,7 +558,7 @@ namespace SkyCrane.Screens
                     attackButtonOK = true;
                 }
 
-                if (keyboardState.IsKeyDown(Keys.R) && canCreate)
+                if (keyboardState.IsKeyDown(Keys.R) && canCreate && isServer)
                 {
                     gameState.createEnemy(1280 / 2, 720 / 2 + 200, 45, "skeleton");
                     canCreate = false;

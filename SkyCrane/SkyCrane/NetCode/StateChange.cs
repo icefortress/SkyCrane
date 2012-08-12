@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
 using System.IO;
 
-namespace SkyCrane
+namespace SkyCrane.NetCode
 {
-    public enum StateChangeType { MOVED, CREATE_PLAYER_CHARACTER, SET_PLAYER, CREATE_ENTITY, DELETE_ENTITY, CHANGE_SPRITE}
-    public enum StateProperties { ENTITY_ID, POSITION_X, POSITION_Y, SPRITE_NAME, ANIMATION_NAME, DRAW_PRIORITY, FRAME_WIDTH }
+    public enum StateChangeType { MOVED, CREATE_PLAYER_CHARACTER, SET_PLAYER, CREATE_ENTITY, DELETE_ENTITY, CHANGE_SPRITE, CHANGE_SCALE }
+    public enum StateProperties { ENTITY_ID, POSITION_X, POSITION_Y, SPRITE_NAME, ANIMATION_NAME, DRAW_PRIORITY, FRAME_WIDTH, SCALE}
 
     public class StateChange : Marshable
     {
         public StateChangeType type;
         public Dictionary<StateProperties, int> intProperties = new Dictionary<StateProperties, int>();
         public Dictionary<StateProperties, String> stringProperties = new Dictionary<StateProperties, String>();
+        public Dictionary<StateProperties, double> doubleProperties = new Dictionary<StateProperties, double>();
 
         public StateChange() { }
 
@@ -38,6 +36,13 @@ namespace SkyCrane
                 bb.Write(kvp.Value);
             }
 
+            bb.Write((byte)doubleProperties.Count);
+            foreach (KeyValuePair<StateProperties, double> kvp in doubleProperties)
+            {
+                bb.Write((byte)kvp.Key);
+                bb.Write((double)kvp.Value);
+            }
+
             return ms.ToArray();
         }
 
@@ -58,6 +63,12 @@ namespace SkyCrane
             for (int i = 0; i < nums; i++)
             {
                 this.stringProperties[(StateProperties)br.ReadByte()] = br.ReadString();
+            }
+
+            nums = br.ReadByte();
+            for (int i = 0; i < nums; i++)
+            {
+                this.doubleProperties[(StateProperties)br.ReadByte()] = br.ReadDouble();
             }
         }
 

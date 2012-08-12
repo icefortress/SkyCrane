@@ -5,6 +5,9 @@ using Microsoft.Xna.Framework.Input;
 using SkyCrane.GameStateManager;
 using SkyCrane.Screens;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Audio;
+using SkyCrane.NetCode;
 
 namespace SkyCrane
 {
@@ -15,10 +18,15 @@ namespace SkyCrane
     public class ProjectSkyCrane : Microsoft.Xna.Framework.Game
     {
 
+        // The screen manager that will be used to keep track of all screens in the game
         ScreenManager screenManager;
+
+        // Default important values
         public const int MAX_PLAYERS = 4;
-        public const int WIDTH = 1280;
-        public const int HEIGHT = 720;
+        public const int INITIAL_WIDTH = 1280;
+        public const int INITIAL_HEIGHT = 720;
+        public const float INITIAL_VOLUME = 0.5f;
+        public const bool INITIAL_VSYNC = false;
 
         /// <summary>
         /// The GraphicsDeviceManager currently associated with the game.
@@ -30,6 +38,24 @@ namespace SkyCrane
         GraphicsDeviceManager graphics;
 
         /// <summary>
+        /// The netcode client used by clients when connecting to a server.
+        /// </summary>
+        public RawClient RawClient
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// The netcode server used when hosting games.
+        /// </summary>
+        public RawServer RawServer
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Create the main instance of the project and run.
         /// </summary>
         public ProjectSkyCrane()
@@ -38,9 +64,13 @@ namespace SkyCrane
 
             // Initialize the graphics manager
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = WIDTH; // 1280x720 is the XBox 360 default
-            graphics.PreferredBackBufferHeight = HEIGHT;
-            graphics.SynchronizeWithVerticalRetrace = false; // Turn off vsync by default
+            graphics.PreferredBackBufferWidth = INITIAL_WIDTH; // 1280x720 is the XBox 360 default
+            graphics.PreferredBackBufferHeight = INITIAL_HEIGHT;
+            graphics.SynchronizeWithVerticalRetrace = INITIAL_VSYNC; // Turn off vsync by default
+
+            // Initialize the volume settings
+            SoundEffect.MasterVolume = INITIAL_VOLUME;
+            MediaPlayer.Volume = INITIAL_VOLUME;
 
             // Initialize the screen manager
             screenManager = new ScreenManager(this);
@@ -49,6 +79,10 @@ namespace SkyCrane
             // Activate a few initial screens
             screenManager.AddScreen(new BackgroundScreen(), null);
             screenManager.AddScreen(new MainMenuScreen(), null);
+
+            // Server and client data
+            RawClient = null;
+            RawServer = null;
 
             return;
         }
@@ -129,9 +163,7 @@ namespace SkyCrane
         {
             using (ProjectSkyCrane game = new ProjectSkyCrane())
             {
-                //NetTest t = new NetTest(9999);
                 game.Run();
-                //t.exit();
             }
         }
     }

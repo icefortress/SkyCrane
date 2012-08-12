@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SkyCrane.Screens;
+using SkyCrane.Engine;
 
-namespace SkyCrane.Screens
+namespace SkyCrane.Dudes
 {
     class MageAttack : Dude
     {
@@ -14,14 +16,14 @@ namespace SkyCrane.Screens
         public static String textureName = "wand";
         public new static int frameWidth = 22;
         public static Vector2 HITBOX_SIZE = new Vector2(30, 30);
+        public static float SCALE = 3;
 
         public PhysicsAble lastHit = null;
 
         public MageAttack(GameplayScreen g, Vector2 position, Vector2 velocity) :
-            base(g, (int)position.X, (int)position.Y, frameWidth, textureName, textureName)
+            base(g, (int)position.X, (int)position.Y, frameWidth, textureName, textureName, 3)
         {
             this.velocity = velocity;
-            this.scale = 3;
             this.frameTime = 30;
         }
 
@@ -75,10 +77,28 @@ namespace SkyCrane.Screens
                         return;
                     }
 
+                    // Do damage
+                    Enemy e = (Enemy)entity;
+                    e.applyDamage(1);
+
                     // Bounce
                     lastHit = entity;
-                    Vector2 newVelocity = getClosestEnemy().worldPosition - this.worldPosition;
+
+                    Entity closestEnemy = getClosestEnemy();
+                    Vector2 newVelocity = Vector2.Zero;
+                    if (closestEnemy == null)
+                    {
+                        Random r = new Random();
+                        newVelocity = new Vector2(r.Next(0, 10) - 5, r.Next(0, 10) - 5);
+                    }
+                    else
+                    {
+                        newVelocity = getClosestEnemy().worldPosition - this.worldPosition;
+                    }
+
                     newVelocity.Normalize();
+
+                    
 
                     velocity = newVelocity * 8;
 

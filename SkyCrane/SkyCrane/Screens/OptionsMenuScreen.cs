@@ -12,6 +12,9 @@
 using Microsoft.Xna.Framework;
 using System.Windows.Forms;
 using System.Drawing;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
+using System.Collections.Generic;
 #endregion
 
 namespace SkyCrane.Screens
@@ -55,11 +58,11 @@ namespace SkyCrane.Screens
 
         // Current music settings
         static OnOff musicOn = OnOff.On;
-        static int musicVolume = MAX_VOLUME;
+        static int musicVolume = MAX_VOLUME / 2;
 
         // Current sound FX settings
         static OnOff soundFXOn = OnOff.On;
-        static int soundFXVolume = MAX_VOLUME;
+        static int soundFXVolume = MAX_VOLUME / 2;
 
         #endregion
 
@@ -238,7 +241,18 @@ namespace SkyCrane.Screens
                 {
                     musicOn = OnOff.Off;
                 }
-                musicVolumeMenuEntry.Enabled = musicOn == OnOff.On;
+
+                if (musicOn == OnOff.On) // Toggle the muted values and associated menus
+                {
+                    MediaPlayer.IsMuted = false;
+                    musicVolumeMenuEntry.Enabled = true;
+                }
+                else
+                {
+                    MediaPlayer.IsMuted = true;
+                    musicVolumeMenuEntry.Enabled = false;
+                }
+                
                 SetMenuEntryText();
             }
             return;
@@ -260,6 +274,7 @@ namespace SkyCrane.Screens
                 {
                     musicVolume = MAX_VOLUME;
                 }
+                MediaPlayer.Volume = (float)musicVolume / (float)MAX_VOLUME;
                 SetMenuEntryText();
             }
             return;
@@ -273,7 +288,7 @@ namespace SkyCrane.Screens
             if (e.ToggleDirection != 0)
             {
                 soundFXOn += e.ToggleDirection;
-                if (soundFXOn < OnOff.Off)
+                if (soundFXOn < OnOff.Off) // Toggle the values
                 {
                     soundFXOn = OnOff.On;
                 }
@@ -281,7 +296,17 @@ namespace SkyCrane.Screens
                 {
                     soundFXOn = OnOff.Off;
                 }
-                soundFXVolumeMenuEntry.Enabled = soundFXOn == OnOff.On;
+
+                if (soundFXOn == OnOff.On) // Potentially re-enable or disable sound
+                {
+                    SoundEffect.MasterVolume = (float)soundFXVolume / (float)MAX_VOLUME;
+                    soundFXVolumeMenuEntry.Enabled = true;
+                }
+                else
+                {
+                    SoundEffect.MasterVolume = 0;
+                    soundFXVolumeMenuEntry.Enabled = false;
+                }
                 SetMenuEntryText();
             }
             return;
@@ -295,7 +320,7 @@ namespace SkyCrane.Screens
             if (e.ToggleDirection != 0)
             {
                 soundFXVolume += e.ToggleDirection * VOLUME_DELTA;
-                if (soundFXVolume > MAX_VOLUME)
+                if (soundFXVolume > MAX_VOLUME) // Toggle the volume
                 {
                     soundFXVolume = MIN_VOLUME;
                 }
@@ -303,6 +328,7 @@ namespace SkyCrane.Screens
                 {
                     soundFXVolume = MAX_VOLUME;
                 }
+                SoundEffect.MasterVolume = (float)soundFXVolume / (float)MAX_VOLUME;
                 SetMenuEntryText();
             }
             return;

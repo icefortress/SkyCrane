@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using SkyCrane.Screens;
 
-namespace SkyCrane
+namespace SkyCrane.Dudes
 {
     class Skeleton : Enemy
     {

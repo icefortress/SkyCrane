@@ -6,15 +6,17 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SkyCrane.Screens;
 
-namespace SkyCrane
+namespace SkyCrane.Engine
 {
     public class Level : Entity, PhysicsAble
     {
         Texture2D background;
-        Color[] bitmap; // For checking collisions
+        bool[] bitmap; // For checking collisions
         int bitmapWidth;
         int bitmapHeight;
         Vector2 levelSize; // in pixels, after scaling
+
+        public static float LEVEL_SCALE = 1;
 
         // TODO: we can use this to build levels with various params
         public static Level generateLevel(GameplayScreen g)
@@ -23,15 +25,25 @@ namespace SkyCrane
         }
 
         public Level(GameplayScreen g, String bgKey, String bmKey, int size_x, int size_y)
-            : base(g, 1280/2, 720/2, size_x, bgKey)
+            : base(g, 1280 / 2, 720 / 2, size_x, bgKey, LEVEL_SCALE)
         {
             this.background = g.textureDict["room2"];
             Texture2D bitmap = g.textureDict["room2-collision-map"];
 
-            scale = (float)size_x / (float)background.Width;
+            Color[] colormap = new Color[bitmap.Width * bitmap.Height];
+            this.bitmap = new bool[bitmap.Width * bitmap.Height];
+            bitmap.GetData<Color>(colormap);
 
-            this.bitmap = new Color[bitmap.Width * bitmap.Height];
-            bitmap.GetData<Color>(this.bitmap);
+            for (int i = 0; i < colormap.Length; i++)
+            {
+                if (colormap[i] == Color.Black)
+                {
+                    this.bitmap[i] = true;
+                } else {
+                    this.bitmap[i] = false;
+                }
+            }
+
             bitmapWidth = bitmap.Width;
             bitmapHeight = bitmap.Height;
 
@@ -131,7 +143,7 @@ namespace SkyCrane
                     int index = y * bitmapWidth + x;
 
                     // TODO: shouldn't get too far ahead of myself
-                    if (index < bitmap.Length && bitmap[index] == Color.Black)
+                    if (index < bitmap.Length && bitmap[index])
                     {
                         if (x - left < width / 2) hitLeft = true;
                         if (x - left > width / 2) hitRight = true;

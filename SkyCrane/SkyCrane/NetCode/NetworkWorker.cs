@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using System.Net;
-using System.IO;
 
-namespace SkyCrane
+namespace SkyCrane.NetCode
 {
     class NetworkWorker : UdpClient
     {
@@ -21,12 +19,15 @@ namespace SkyCrane
         private int myID;
 
         private Semaphore sendSem = new Semaphore(0, 100);
+        private Semaphore nextSem = new Semaphore(0, 100);
+
+        private static int TIMEOUT = 5000;
 
         //This is the server side
         public NetworkWorker(int port = 0)
             : base(port)
         {
-            Console.WriteLine("Started NW-Server on port: " + this.Client.LocalEndPoint);
+            //Console.WriteLine("Started NW-Server on port: " + this.Client.LocalEndPoint);
             this.rcvThread = new Thread(thread_do_recv);
             this.sendThread = new Thread(thread_do_send);
             rcvThread.Name = "Receive Thread ID: " + id;
@@ -42,7 +43,7 @@ namespace SkyCrane
         public NetworkWorker(IPEndPoint endpt)
             : base(0)
         {
-            Console.WriteLine("Started NW-Client on port: " + this.Client.LocalEndPoint);
+            //Console.WriteLine("Started NW-Client on port: " + this.Client.LocalEndPoint);
             this.rcvThread = new Thread(thread_do_recv);
             this.sendThread = new Thread(thread_do_send);
             rcvThread.Name = "Receive Thread ID: " + id;
@@ -64,25 +65,20 @@ namespace SkyCrane
 
         public Packet getNext()
         {
-            if (readBuffer.Count > 0)
-                return readBuffer.Dequeue();
-            else
-                return null;
-        }
-
-        public void hasNextBlocked()
-        {
-
-        }
-
-        public bool hasNext()
-        {
-            bool ret;
-            lock (this.readBuffer)
+            if (this.nextSem.WaitOne(TIMEOUT))
             {
-                ret = (this.readBuffer.Count > 0) ? true : false;
+                Packet ret;
+                lock (readBuffer)
+                {
+                    ret = readBuffer.Dequeue();
+                }
+
+                return ret;
             }
-            return ret;
+            else
+            {
+                return null;
+            }
         }
 
         private void thread_do_recv()
@@ -92,18 +88,20 @@ namespace SkyCrane
             MemoryStream ms;
             while (this.go)
             {
-                Console.WriteLine("waiting..." + Thread.CurrentThread.Name);
+                //Console.WriteLine("waiting..." + Thread.CurrentThread.Name);
                 byte[] data = this.Receive(ref srv);
-                Console.WriteLine("NW-" + myID + " Recv: " + data.Length + " bytes");
+                //Console.WriteLine("NW-" + myID + " Recv: " + data.Length + " bytes");
                 Packet p = new Packet();
+                //p.data = new byte[200];
                 p.Dest = srv;
                 ms = new MemoryStream(data);
                 p.ptype = (Packet.PacketType)ms.ReadByte();
-                ms.Read(p.data, 1, (int)ms.Length - 1);
+                ms.Read(p.data, 0, (int)ms.Length - 1);
                 lock (readBuffer)
                 {
                     readBuffer.Enqueue(p);
                 }
+                this.nextSem.Release();
             }
         }
 
@@ -115,10 +113,11 @@ namespace SkyCrane
                 this.sendSem.WaitOne(); //Get Semaphore
                 lock (this.buffer)
                 {
-                    Console.WriteLine("NW-" + myID + " Send");
+                    //Console.WriteLine("NW-" + myID + " Send");
                     Packet pkt = this.buffer.Dequeue();
+                    //Console.WriteLine("--> {0}", (byte)pkt.data[0]);
                     int i = this.Send(pkt.data, pkt.data.Length, pkt.Dest);
-                    Console.WriteLine(i);
+                    //Console.WriteLine(i);
                 }
             }
         }
@@ -126,7 +125,7 @@ namespace SkyCrane
 
     public class Packet
     {
-        public enum PacketType { HANDSHAKE, CMD, STC, SYNC };
+        public enum PacketType { HANDSHAKE=0, CMD=1, STC=2, SYNC=3, PING=4, MSC=5 };
         public PacketType ptype;
         public IPEndPoint Dest = null;
         public byte[] data = new byte[200];
@@ -175,6 +174,17 @@ namespace SkyCrane
         }
     }
 
+    public class MSCPacket : Packet
+    {
+        public MSCPacket(MenuState s)
+        {
+            this.ptype = PacketType.MSC;
+            this.addHeader(ptype);
+            this.addContent(s.getPacketData());
+            this.finalize();
+        }
+    }
+
     public class HandshakePacket : Packet
     {
         public HandshakePacket()
@@ -190,6 +200,16 @@ namespace SkyCrane
         public SYNCPacket()
         {
             this.ptype = PacketType.SYNC;
+            this.addHeader(ptype);
+            this.finalize();
+        }
+    }
+
+    public class PingPacket : Packet
+    {
+        public PingPacket()
+        {
+            this.ptype = PacketType.PING;
             this.addHeader(ptype);
             this.finalize();
         }

@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
 using System.IO;
+using Microsoft.Xna.Framework;
 
-namespace SkyCrane
+namespace SkyCrane.NetCode
 {
     public enum CommandType { MOVE, SHOOT, ATTACK }
 
@@ -35,7 +32,7 @@ namespace SkyCrane
         {
             MemoryStream ms = new MemoryStream();
             BinaryWriter bb = new BinaryWriter(ms);
-            bb.Write(entity_id);
+            bb.Write((int)entity_id);
             bb.Write((byte)ct);
             bb.Write((double)position.X);
             bb.Write((double)position.Y);

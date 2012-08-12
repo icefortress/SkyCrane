@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using SkyCrane.Screens;
+using SkyCrane.NetCode;
+using SkyCrane.Engine;
 
-namespace SkyCrane.Screens
+namespace SkyCrane.Dudes
 {
     public abstract class Dude : Entity, PhysicsAble
     {
@@ -22,16 +25,34 @@ namespace SkyCrane.Screens
 
         public Vector2 physicsSize;
 
-        public Dude(GameplayScreen g, int posX, int posY, int frameWidth, String textureLeft, String textureRight) : base(g, posX, posY, frameWidth, textureLeft)
+        private int health;
+
+        public Dude(GameplayScreen g, int posX, int posY, int frameWidth, String textureLeft, String textureRight, float scale) : base(g, posX, posY, frameWidth, textureLeft, scale)
         {
             this.textureLeft = textureLeft;
             this.textureRight = textureRight;
 
             physicsSize = getHitbox();
+
+            health = getMaxHealth();
         }
 
         public abstract Vector2 getHitbox();
         public abstract String getDefaultTexture();
+
+        public virtual int getMaxHealth()
+        {
+            return 10;
+        }
+
+        public void applyDamage(int dmg)
+        {
+            health -= dmg;
+            if (health < 0)
+            {
+                destroy();
+            }
+        }
 
         public void UpdatePhysics()
         {
