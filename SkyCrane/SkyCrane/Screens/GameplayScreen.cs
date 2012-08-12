@@ -612,11 +612,14 @@ namespace SkyCrane.Screens
                     canCreate = true;
                 }
 
-                Command c2 = new Command();
-                c2.entity_id = gameState.usersPlayer.id;
-                c2.direction = movement;
-                c2.ct = CommandType.MOVE;
-                commandBuffer.Add(c2);
+                if (movement != Vector2.Zero)
+                {
+                    Command c2 = new Command();
+                    c2.entity_id = gameState.usersPlayer.id;
+                    c2.direction = movement;
+                    c2.ct = CommandType.MOVE;
+                    commandBuffer.Add(c2);
+                }
             }
         }
 
