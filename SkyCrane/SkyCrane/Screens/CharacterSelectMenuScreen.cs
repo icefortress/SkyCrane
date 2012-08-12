@@ -226,6 +226,28 @@ namespace SkyCrane.Screens
             return numPlayers;
         }
 
+        /// <summary>
+        /// Have the host broadcast one or more connected players.
+        /// </summary>
+        private void HostBroadcastConnected()
+        {
+            MenuState connectBroadcast = new MenuState(MenuState.Type.Connect);
+            for (int i = 0; i < playersConnected.Length; i += 1)
+            {
+                connectBroadcast.PlayerId = i;
+                if (playersConnected[i]) // Broadcast 1 to show connected
+                {
+                    connectBroadcast.EventDetail = 1;
+                }
+                else // Broadcast -1 to show not connected
+                {
+                    connectBroadcast.EventDetail = 2;
+                }
+                ((ProjectSkyCrane)ScreenManager.Game).RawServer.broadcastMSC(connectBroadcast);
+            }
+            return;
+        }
+
         #endregion
 
         #region Draw and Update
@@ -254,11 +276,11 @@ namespace SkyCrane.Screens
                                 {
                                     newId = hostIds.Dequeue();
                                     playersConnected[newId] = true;
+                                    connectionToPlayerIdHash.Add(serverStates[i].Item1, newId);
                                 }
                                 MenuState connectResponse = new MenuState(MenuState.Type.Connect, newId, 0); // Inform connector of their Id
                                 ((ProjectSkyCrane)ScreenManager.Game).RawServer.signalMSC(connectResponse, serverStates[i].Item1);
-                                connectResponse.EventDetail = 1; // Inform everyone a player has connected
-                                ((ProjectSkyCrane)ScreenManager.Game).RawServer.broadcastMSC(connectResponse);
+                                HostBroadcastConnected();
                                 break;
                             case MenuState.Type.SelectCharacter:
                                 throw new NotImplementedException();
@@ -287,12 +309,15 @@ namespace SkyCrane.Screens
                             case MenuState.Type.Connect:
                                 if (clientStates[i].EventDetail == 0) // Assign our own player id
                                 {
-                                    playersConnected[0] = true; // Obviously the host is connected
                                     playerId = clientStates[i].PlayerId;
                                 }
                                 else if (clientStates[i].EventDetail == 1) // Assign a connected player
                                 {
                                     playersConnected[clientStates[i].PlayerId] = true;
+                                }
+                                else if (clientStates[i].EventDetail == 2)
+                                {
+                                    playersConnected[clientStates[i].PlayerId] = false;
                                 }
                                 break;
                             case MenuState.Type.SelectCharacter:
