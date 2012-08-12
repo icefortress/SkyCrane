@@ -187,14 +187,17 @@ namespace SkyCrane.Screens
                     characterSelections[playerId] = 0;
                 }
 
-                if (host) // Broadcast sprite changes to all players
+                if (multiplayer)
                 {
-                    HostBroadcastSprites();
-                }
-                else // Inform the host of a sprite change
-                {
-                    MenuState spritePacket = new MenuState(MenuState.Type.SelectCharacter, playerId, (int)characterSelections[playerId]);
-                    ((ProjectSkyCrane)ScreenManager.Game).RawClient.sendMSC(spritePacket);
+                    if (host) // Broadcast sprite changes to all players
+                    {
+                        HostBroadcastSprites();
+                    }
+                    else // Inform the host of a sprite change
+                    {
+                        MenuState spritePacket = new MenuState(MenuState.Type.SelectCharacter, playerId, (int)characterSelections[playerId]);
+                        ((ProjectSkyCrane)ScreenManager.Game).RawClient.sendMSC(spritePacket);
+                    }
                 }
 
                 menuScrollSoundEffect.Play();
