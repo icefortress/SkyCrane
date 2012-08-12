@@ -11,6 +11,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 #endregion
 
 namespace SkyCrane.Screens
@@ -30,6 +31,8 @@ namespace SkyCrane.Screens
         int[] characterSelections;
         bool[] characterSelectionsLocked;
         int playerNumber;
+
+        const int PLAYERS_PER_ROW = 2;
 
         #endregion
 
@@ -169,13 +172,23 @@ namespace SkyCrane.Screens
 
             Vector2 titlePosition = new Vector2(graphics.Viewport.Width / 2, 80);
             Vector2 titleSize = font.MeasureString(MenuTitle);
-            
+
+            int numRows = (int)Math.Ceiling((float)ProjectSkyCrane.MAX_PLAYERS / (float)PLAYERS_PER_ROW); 
 
             spriteBatch.Begin();
 
-            for (int i = 0; i < numPlayers; i += 1)
+            for (int i = 0; i < numPlayers; i += 1) // Draw the individual characters
             {
-                spriteBatch.Draw(characters[characterSelections[i]], new Rectangle((int)(titlePosition.X - titleSize.X / 2), (int)(titlePosition.Y + titleSize.Y), 32, 32), new Color(192, 192, 192) * TransitionAlpha);
+                Color drawColor;
+                if (characterSelectionsLocked[i])
+                {
+                    drawColor = Color.Gray;
+                }
+                else
+                {
+                    drawColor = new Color(192, 192, 192) * TransitionAlpha;
+                }
+                spriteBatch.Draw(characters[characterSelections[i]], new Rectangle((int)(titlePosition.X - titleSize.X / 2), (int)(titlePosition.Y + titleSize.Y), 192, 192), drawColor);
             }
 
             spriteBatch.End();
