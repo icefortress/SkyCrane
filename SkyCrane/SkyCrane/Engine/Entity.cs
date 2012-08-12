@@ -52,7 +52,20 @@ namespace SkyCrane.Engine
 
         // Drawable components
         public Texture2D spriteStrip;
-        public float scale = 1;
+
+        public float scaleBack = 1;
+        public float scale {
+            get { return scaleBack; }
+            set
+            {
+                StateChange sc = new StateChange();
+                sc.type = StateChangeType.CHANGE_SCALE;
+                sc.intProperties.Add(StateProperties.ENTITY_ID, id);
+                sc.doubleProperties.Add(StateProperties.SCALE, value);
+                notifyStateChangeListeners(sc);
+            }
+        }
+
         public int frameTime;
         public List<int> animationFrames;
         int elapsedTime;
@@ -68,7 +81,7 @@ namespace SkyCrane.Engine
         public bool active = false;
         public bool looping;
 
-        public static StateChange createEntityStateChange(int entity_id, int posX, int posY, int frameWidth, String textureName)
+        public static StateChange createEntityStateChange(int entity_id, int posX, int posY, int frameWidth, String textureName, float scale)
         {
             StateChange sc = new StateChange();
             sc.type = StateChangeType.CREATE_ENTITY;
@@ -77,13 +90,16 @@ namespace SkyCrane.Engine
             sc.intProperties.Add(StateProperties.POSITION_Y, posY);
             sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
             sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureName);
+            sc.doubleProperties.Add(StateProperties.SCALE, scale);
 
             return sc;
         }
 
-        public Entity(GameplayScreen g, int posX, int posY, int frameWidth, String textureName)
+        public Entity(GameplayScreen g, int posX, int posY, int frameWidth, String textureName, float scale)
         {
             this.context = g;
+
+            this.scaleBack = scale;
 
             id = next_id;
             next_id++;
@@ -121,7 +137,7 @@ namespace SkyCrane.Engine
             int frametime, Color color, float scale, bool looping)
         {
             this.spriteStrip = texture;
-            this.scale = scale;
+            this.scaleBack = scale;
             this.frameWidth = frameWidth;
             this.frameHeight = frameHeight;
             this.animationFrames = animationFrames;

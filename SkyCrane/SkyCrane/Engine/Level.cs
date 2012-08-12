@@ -16,6 +16,8 @@ namespace SkyCrane.Engine
         int bitmapHeight;
         Vector2 levelSize; // in pixels, after scaling
 
+        public static float LEVEL_SCALE = 1;
+
         // TODO: we can use this to build levels with various params
         public static Level generateLevel(GameplayScreen g)
         {
@@ -23,12 +25,10 @@ namespace SkyCrane.Engine
         }
 
         public Level(GameplayScreen g, String bgKey, String bmKey, int size_x, int size_y)
-            : base(g, 1280/2, 720/2, size_x, bgKey)
+            : base(g, 1280 / 2, 720 / 2, size_x, bgKey, LEVEL_SCALE)
         {
             this.background = g.textureDict["room2"];
             Texture2D bitmap = g.textureDict["room2-collision-map"];
-
-            scale = (float)size_x / (float)background.Width;
 
             Color[] colormap = new Color[bitmap.Width * bitmap.Height];
             this.bitmap = new bool[bitmap.Width * bitmap.Height];

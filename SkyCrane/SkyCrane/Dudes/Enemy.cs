@@ -13,12 +13,12 @@ namespace SkyCrane.Dudes
     {
 
         public static Vector2 HITBOX_SIZE = new Vector2(45, 20);
+        public static float SCALE = 2;
 
         public Enemy(GameplayScreen g, int posX, int posY, int frameWidth, int attackFrameWidth,
             String textureLeft, String textureRight, String textureAttackLeft, String textureAttackRight) :
-            base(g, posX, posY, frameWidth, attackFrameWidth, textureLeft, textureRight, textureAttackLeft, textureAttackRight)
+            base(g, posX, posY, frameWidth, attackFrameWidth, textureLeft, textureRight, textureAttackLeft, textureAttackRight, SCALE)
         {
-            scale = 2;
         }
 
         public override Vector2 getHitbox()

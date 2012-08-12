@@ -14,15 +14,17 @@ namespace SkyCrane.Dudes
         public static String textureName = "bullet";
         public new static int frameWidth = 20;
         public static Vector2 HITBOX_SIZE = new Vector2(30, 30);
+        public static float SCALE = 1;
+
+        int payload = 1;
 
         public PlayerCharacter owner = null;
         public PlayerCharacter lastOwner = null;
 
         public Bullet(GameplayScreen g, Vector2 position, Vector2 velocity) :
-            base(g, (int)position.X, (int)position.Y, frameWidth, textureName, textureName)
+            base(g, (int)position.X, (int)position.Y, frameWidth, textureName, textureName, SCALE)
         {
             this.velocity = velocity;
-            this.scale = 1;
         }
 
         public override string getDefaultTexture()
@@ -60,10 +62,8 @@ namespace SkyCrane.Dudes
 
         public void LevelUp()
         {
-        }
-
-        public void LevelDown()
-        {
+            payload *= 2;
+            scale += 0.5F;
         }
 
         public override void HandleCollision(CollisionDirection cd, PhysicsAble entity)
@@ -73,6 +73,12 @@ namespace SkyCrane.Dudes
             {
                 destroy();
                 context.bulletExists = false;
+            }
+            else if (entity is Enemy)
+            {
+                Enemy e = (Enemy)entity;
+                e.applyDamage(payload);
+                destroy();
             }
         }
     }

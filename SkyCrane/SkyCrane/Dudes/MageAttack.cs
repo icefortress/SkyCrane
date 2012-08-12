@@ -16,14 +16,14 @@ namespace SkyCrane.Dudes
         public static String textureName = "wand";
         public new static int frameWidth = 22;
         public static Vector2 HITBOX_SIZE = new Vector2(30, 30);
+        public static float SCALE = 3;
 
         public PhysicsAble lastHit = null;
 
         public MageAttack(GameplayScreen g, Vector2 position, Vector2 velocity) :
-            base(g, (int)position.X, (int)position.Y, frameWidth, textureName, textureName)
+            base(g, (int)position.X, (int)position.Y, frameWidth, textureName, textureName, 3)
         {
             this.velocity = velocity;
-            this.scale = 3;
             this.frameTime = 30;
         }
 

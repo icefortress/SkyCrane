@@ -27,7 +27,7 @@ namespace SkyCrane.Dudes
 
         private int health;
 
-        public Dude(GameplayScreen g, int posX, int posY, int frameWidth, String textureLeft, String textureRight) : base(g, posX, posY, frameWidth, textureLeft)
+        public Dude(GameplayScreen g, int posX, int posY, int frameWidth, String textureLeft, String textureRight, float scale) : base(g, posX, posY, frameWidth, textureLeft, scale)
         {
             this.textureLeft = textureLeft;
             this.textureRight = textureRight;

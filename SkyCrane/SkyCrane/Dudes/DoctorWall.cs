@@ -17,13 +17,13 @@ namespace SkyCrane.Dudes
         public new static int frameWidth = 45;
         public static Vector2 HITBOX_VERT = new Vector2(45, 255);
         public static Vector2 HITBOX_HORZ = new Vector2(255, 45);
+        public static float SCALE = 1;
 
         bool horizontal = false;
 
         public DoctorWall(GameplayScreen g, Vector2 position, bool horizontal) :
-            base(g, (int)position.X, (int)position.Y, frameWidth, textureName, textureName)
+            base(g, (int)position.X, (int)position.Y, frameWidth, textureName, textureName, SCALE)
         {
-            this.scale = 1;
             this.frameTime = 30;
 
             // Change parameters if actually horizontal

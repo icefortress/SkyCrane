@@ -21,8 +21,8 @@ namespace SkyCrane.Dudes
 
         TimeSpan lastAttack = new TimeSpan(0);
 
-        public AttackingDude(GameplayScreen g, int posX, int posY, int frameWidth, int attackFrameWidth, String textureLeft, String textureRight, String textureAttackLeft, String textureAttackRight) :
-            base(g, posX, posY, frameWidth, textureLeft, textureRight)
+        public AttackingDude(GameplayScreen g, int posX, int posY, int frameWidth, int attackFrameWidth, String textureLeft, String textureRight, String textureAttackLeft, String textureAttackRight, float scale) :
+            base(g, posX, posY, frameWidth, textureLeft, textureRight, scale)
         {
             this.textureAttackLeft = textureAttackLeft;
             this.textureAttackRight = textureAttackRight;
