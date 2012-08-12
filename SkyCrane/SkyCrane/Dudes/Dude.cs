@@ -28,9 +28,19 @@ namespace SkyCrane.Dudes
             this.defaultTexture = defaultTexture;
         }
 
+        public override int GetFrameTime()
+        {
+            return 200;
+        }
+
         public virtual string getDefaultTexture()
         {
             return defaultTexture;
+        }
+
+        public int getHealth()
+        {
+            return health;
         }
 
         public virtual int getMaxHealth()
@@ -41,6 +51,10 @@ namespace SkyCrane.Dudes
         public void applyDamage(int dmg)
         {
             health -= dmg;
+
+            StateChange sc = StateChangeFactory.changeHealthStateChange(this.id, health);
+            notifyStateChangeListeners(sc);
+
             if (health < 0)
             {
                 destroy();

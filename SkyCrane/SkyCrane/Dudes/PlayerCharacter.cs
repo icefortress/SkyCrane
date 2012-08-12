@@ -34,6 +34,11 @@ namespace SkyCrane.Dudes
         {
         }
 
+        public override int GetFrameTime()
+        {
+            return 200;
+        }
+
         public override Vector2 GetPhysicsSize()
         {
             return HITBOX_SIZE;

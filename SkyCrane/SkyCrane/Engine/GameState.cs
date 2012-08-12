@@ -18,7 +18,10 @@ namespace SkyCrane.Engine
         public List<StateChange> changes = new List<StateChange>();
         public List<PlayerCharacter> players = new List<PlayerCharacter>();
 
+        // Special cases that need to be tracked
         public Dictionary<int, DoctorWall> walls = new Dictionary<int, DoctorWall>();
+        public List<int> healthBarWaiters = new List<int>();
+        public Dictionary<int, HealthBar> healthBars = new Dictionary<int, HealthBar>();
 
         public GameState(GameplayScreen g)
         {
@@ -36,7 +39,8 @@ namespace SkyCrane.Engine
             foreach(StateChange c in changes) {
                 // Skip entity creation, this won't create fully functional entities!
                 if (c.type == StateChangeType.CREATE_ENTITY ||
-                    c.type == StateChangeType.CREATE_PLAYER_CHARACTER)
+                    c.type == StateChangeType.CREATE_PLAYER_CHARACTER ||
+                    c.type == StateChangeType.CREATE_HEALTH_BAR)
                 {
                     continue;
                 }
@@ -71,12 +75,33 @@ namespace SkyCrane.Engine
             }
 
             // Add the new entity and create an appropriate state to accompany it
-            addEntity(100, pc);
+            addEntity(100, pc, pc.id);
             players.Add(pc);
 
             StateChange sc = StateChangeFactory.createEntityStateChange(pc.id, posX, posY, pc.frameWidth, pc.GetFrameTime(), pc.getDefaultTexture(), pc.scale, 100);
             changes.Add(sc);
+
+            // Add a health bar to the player
+            attachHealthWithStateChange(pc);
+
             return pc;
+        }
+
+        public void attachHealthWithStateChange(Entity e)
+        {
+            attachHealthBar(e);
+            int hbid = healthBars[e.id].id;
+
+            // Need a version of this for creating actual health bars
+            StateChange sc = StateChangeFactory.createHealthBarStateChange(e.id, hbid);
+            changes.Add(sc);
+        }
+
+        public void attachHealthBar(Entity e)
+        {
+            HealthBar h = new HealthBar(context, e);
+            healthBars.Add(e.id, h);
+            addEntity(300, h, h.id);
         }
 
         public Enemy createEnemy(int posX, int posY, String type)
@@ -90,7 +115,7 @@ namespace SkyCrane.Engine
             {
                 e = new Goblin(context, posX, posY);
             }
-            addEntity(100, e);
+            addEntity(100, e, e.id);
 
             StateChange sc = StateChangeFactory.createEntityStateChange(e.id, posX, posY, e.frameWidth, e.GetFrameTime(), e.getDefaultTexture(), e.scale, 100);
             changes.Add(sc);
@@ -101,16 +126,16 @@ namespace SkyCrane.Engine
         public void createBolt(int posX, int posY, Vector2 velocity)
         {
             CrossbowBolt b = new CrossbowBolt(context, new Vector2(posX, posY), velocity);
-            addEntity(200, b);
+            addEntity(200, b, b.id);
 
-            StateChange sc = StateChangeFactory.createEntityStateChange(b.id, posX, posY, Bullet.frameWidth, b.GetFrameTime(), Bullet.textureName, b.scale, 200);
+            StateChange sc = StateChangeFactory.createEntityStateChange(b.id, posX, posY, CrossbowBolt.frameWidth, b.GetFrameTime(), CrossbowBolt.textureName, b.scale, 200);
             changes.Add(sc);
         }
 
         public void createBullet(int posX, int posY, Vector2 velocity)
         {
             Bullet b = new Bullet(context, new Vector2(posX, posY), velocity);
-            addEntity(200, b);
+            addEntity(200, b, b.id);
 
             StateChange sc = StateChangeFactory.createEntityStateChange(b.id, posX, posY, Bullet.frameWidth, b.GetFrameTime(), Bullet.textureName, b.scale, 200);
             changes.Add(sc);
@@ -119,7 +144,7 @@ namespace SkyCrane.Engine
         public void createMageAttack(int posX, int posY, Vector2 velocity)
         {
             MageAttack m = new MageAttack(context, new Vector2(posX, posY), velocity);
-            addEntity(150, m);
+            addEntity(150, m, m.id);
 
             StateChange sc = StateChangeFactory.createEntityStateChange(m.id, posX, posY, MageAttack.frameWidth, m.GetFrameTime(), MageAttack.textureName, m.scale, 150);
             changes.Add(sc);
@@ -128,7 +153,7 @@ namespace SkyCrane.Engine
         public void createRogueAttack(int posX, int posY, Vector2 velocity)
         {
             RealBullet m = new RealBullet(context, new Vector2(posX, posY), velocity);
-            addEntity(150, m);
+            addEntity(150, m, m.id);
 
             StateChange sc = StateChangeFactory.createEntityStateChange(m.id, posX, posY, RealBullet.frameWidth, m.GetFrameTime(), RealBullet.textureName, m.scale, 150);
             changes.Add(sc);
@@ -143,7 +168,7 @@ namespace SkyCrane.Engine
             }
 
             DoctorWall d = new DoctorWall(context, new Vector2(posX, posY), horizontal);
-            addEntity(200, d);
+            addEntity(200, d, d.id);
 
             // Keep track of one wall per player
             walls[entity_id] = d;
@@ -152,9 +177,12 @@ namespace SkyCrane.Engine
             changes.Add(sc);
         }
 
-        public void addEntity(int drawPriority, Entity e)
+        public void addEntity(int drawPriority, Entity e, int id)
         {
-            entities.Add(e.id, e);
+            // Hack to change the id to match the server
+            e.id = id;
+
+            entities.Add(id, e);
             e.slListeners.Add(this);
 
             if (!drawLists.ContainsKey(drawPriority))
@@ -189,16 +217,31 @@ namespace SkyCrane.Engine
         public void applyStateChange(StateChange s)
         {
             int entity = s.intProperties[StateProperties.ENTITY_ID];
+
+            // If there is a health bar for this entity, pass the event along
+            if (healthBars.ContainsKey(entity))
+            {
+                healthBars[entity].handleStateChange(s);
+            }
+
+
             if (s.type != StateChangeType.CREATE_ENTITY && !entities.ContainsKey(entity))
             {
                 if (s.type == StateChangeType.SET_PLAYER) // Can't ignore this case, need to save the ID for when we get it
                 {
                     usersEntity = entity;
+                } else if (s.type == StateChangeType.CREATE_HEALTH_BAR) {
+                    healthBarWaiters.Add(entity);
                 }
-                return;
+                return; // Otherwise, we have to discard this event and wait until the guy shows up
             }
-
-            if(s.type == StateChangeType.MOVED) {
+            
+            if (s.type == StateChangeType.CREATE_HEALTH_BAR)
+            {
+                attachHealthBar(entities[entity]);
+            }
+            else if (s.type == StateChangeType.MOVED)
+            {
                 int pos_x = s.intProperties[StateProperties.POSITION_X];
                 int pos_y = s.intProperties[StateProperties.POSITION_Y];
                 entities[entity].worldPosBack = new Vector2(pos_x, pos_y); // do a change without triggering a statechange
@@ -208,18 +251,24 @@ namespace SkyCrane.Engine
                 int pos_x = s.intProperties[StateProperties.POSITION_X];
                 int pos_y = s.intProperties[StateProperties.POSITION_Y];
                 int frame_width = s.intProperties[StateProperties.FRAME_WIDTH];
+                int frame_time = s.intProperties[StateProperties.FRAME_TIME];
                 int draw_priority = s.intProperties[StateProperties.DRAW_PRIORITY];
                 String texture_name = s.stringProperties[StateProperties.SPRITE_NAME];
                 float scale = (float)s.doubleProperties[StateProperties.SCALE];
 
-                Entity e = new Entity(context, pos_x, pos_y, frame_width, texture_name, scale);
-                e.id = entity;
-                
-                addEntity(draw_priority, e);
+                Entity e = new Entity(context, pos_x, pos_y, frame_width, frame_time, texture_name, scale);
 
+                addEntity(draw_priority, e, e.id);
+
+                // Set users player if it didn't exist yet
                 if (e.id == usersEntity)
                 {
                     usersPlayer = e;
+                }
+
+                // Attach health bar if we were waiting for this
+                if(healthBarWaiters.Contains(e.id)) {
+                    attachHealthBar(e);
                 }
             }
             else if (s.type == StateChangeType.DELETE_ENTITY)

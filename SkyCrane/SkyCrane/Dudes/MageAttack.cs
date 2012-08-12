@@ -29,7 +29,7 @@ namespace SkyCrane.Dudes
 
         public override int GetFrameTime()
         {
-            return 100;
+            return 60;
         }
 
         public override Vector2 GetPhysicsSize()

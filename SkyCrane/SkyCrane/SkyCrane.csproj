@@ -84,6 +84,7 @@
     <Compile Include="Dudes\Rogue.cs" />
     <Compile Include="Engine\AIable.cs" />
     <Compile Include="Dudes\AttackingDude.cs" />
+    <Compile Include="Engine\HealthBar.cs" />
     <Compile Include="NetCode\MenuState.cs" />
     <Compile Include="NetCode\Client.cs" />
     <Compile Include="Dudes\Doctor.cs" />

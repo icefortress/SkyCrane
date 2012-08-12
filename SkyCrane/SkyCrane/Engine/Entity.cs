@@ -71,7 +71,7 @@ namespace SkyCrane.Engine
         protected float rotation = 0;
 
         Rectangle sourceRect = new Rectangle();
-        Rectangle destinationRect = new Rectangle();
+        protected Rectangle destinationRect = new Rectangle();
 
         public int frameWidth;
         public int frameHeight;
@@ -87,14 +87,29 @@ namespace SkyCrane.Engine
             id = next_id;
             next_id++;
 
-            worldPosBack= new Vector2(posX, posY);
+            worldPosBack = new Vector2(posX, posY);
+
+            changeAnimation(frameWidth, textureName);
+        }
+
+        public Entity(GameplayScreen g, int posX, int posY, int frameWidth, int frameTime, String textureName, float scale)
+        {
+            this.context = g;
+
+            this.scaleBack = scale;
+
+            id = next_id;
+            next_id++;
+
+            worldPosBack = new Vector2(posX, posY);
+            this.frameTime = frameTime;
 
             changeAnimation(frameWidth, textureName);
         }
 
         public virtual int GetFrameTime()
         {
-            return 200;
+            return frameTime;
         }
 
         public void changeAnimation(int frameWidth, String textureName)
@@ -106,7 +121,8 @@ namespace SkyCrane.Engine
             {
                 animationFrames.Add(i);
             }
-            InitDrawable(chara, frameWidth, chara.Height, animationFrames, GetFrameTime(), Color.White, this.scale, true);
+
+            InitDrawable(chara, frameWidth, chara.Height, animationFrames, this.GetFrameTime(), Color.White, this.scale, true);
             active = true;
 
             currentFrame = 0;
@@ -154,7 +170,7 @@ namespace SkyCrane.Engine
 
             // If the elapsed time is larger than the frame time
             // we need to switch frames
-            if (elapsedTime > frameTime)
+            if (elapsedTime > GetFrameTime())
             {
                 // Move to the next frame
                 currentFrame++;
@@ -167,6 +183,8 @@ namespace SkyCrane.Engine
                     if (looping == false)
                         active = false;
                 }
+
+                //Console.WriteLine(this.spriteStrip.Name + ": " + this.GetFrameTime());
 
                 // Reset the elapsed time to zero
                 elapsedTime = 0;
@@ -190,7 +208,7 @@ namespace SkyCrane.Engine
             notifyStateChangeListeners(sc);
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch sb)
+        public virtual void Draw(GameTime gameTime, SpriteBatch sb)
         {
             if (active)
             {
