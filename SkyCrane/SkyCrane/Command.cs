@@ -7,9 +7,9 @@ using System.IO;
 
 namespace SkyCrane
 {
-    enum CommandType { MOVE, SHOOT, ATTACK }
+    public enum CommandType { MOVE, SHOOT, ATTACK }
 
-    class Command : Marshable
+    public class Command : Marshable
     {
         public int entity_id;
         public CommandType ct;
@@ -31,7 +31,7 @@ namespace SkyCrane
             this.direction.Y = (float)br.ReadDouble();
         }
 
-        public byte[] getPackedData()
+        public byte[] getPacketData()
         {
             MemoryStream ms = new MemoryStream();
             BinaryWriter bb = new BinaryWriter(ms);

@@ -70,6 +70,11 @@ namespace SkyCrane
                 return null;
         }
 
+        public void hasNextBlocked()
+        {
+
+        }
+
         public bool hasNext()
         {
             bool ret;
@@ -154,7 +159,7 @@ namespace SkyCrane
         {
             this.ptype = PacketType.CMD;
             this.addHeader(ptype);
-            this.addContent(s.getPackedData());
+            this.addContent(s.getPacketData());
             this.finalize();
         }
     }
@@ -192,6 +197,6 @@ namespace SkyCrane
 
     public interface Marshable
     {
-        public byte[] getPackedData();
+        byte[] getPacketData();
     }
 }
