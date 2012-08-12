@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace SkyCrane
+namespace SkyCrane.NetCode
 {
     public interface StateChangeListener
     {

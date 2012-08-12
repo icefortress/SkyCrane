@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
 using System.IO;
+using Microsoft.Xna.Framework;
 
-namespace SkyCrane
+namespace SkyCrane.NetCode
 {
     public enum CommandType { MOVE, SHOOT, ATTACK }
 

@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
 using SkyCrane.Dudes;
+using SkyCrane.NetCode;
 #endregion
 
 namespace SkyCrane.Screens

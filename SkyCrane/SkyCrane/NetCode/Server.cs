@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Threading;
-using System.Net;
-using System.Net.Sockets;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Net;
+using System.Threading;
 
 /*What do I want to achieve here...
     I need to specify the transport layer
@@ -20,7 +17,7 @@ using System.Text;
  * Latency and connectivity measurements
  */
 
-namespace SkyCrane
+namespace SkyCrane.NetCode
 {
     public static class NetTest
     {
@@ -82,9 +79,9 @@ namespace SkyCrane
                 {
                     foreach (IPEndPoint ep in connections.Keys)
                     {
-                        SYNCPacket p = new SYNCPacket();
-                        p.Dest = ep;
-                        this.nw.commitPacket(p);
+                        SYNCPacket ps = new SYNCPacket();
+                        ps.Dest = ep;
+                        this.nw.commitPacket(ps);
                     }
                     continue;
                 }

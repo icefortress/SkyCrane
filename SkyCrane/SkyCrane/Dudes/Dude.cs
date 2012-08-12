@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using SkyCrane.Screens;
+using SkyCrane.NetCode;
 
 namespace SkyCrane.Dudes
 {

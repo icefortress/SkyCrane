@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using SkyCrane.Dudes;
 using SkyCrane.Screens;
+using SkyCrane.NetCode;
 
 namespace SkyCrane
 {

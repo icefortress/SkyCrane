@@ -60,12 +60,9 @@
     <XnaCompressContent>true</XnaCompressContent>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SkyCrane.NetTest</StartupObject>
+    <StartupObject>SkyCrane.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Lidgren.Network">
-      <HintPath>..\..\..\..\..\..\..\Users\Alex\Desktop\lidgren-network-gen3-2012-05-26\Lidgren.Network\bin\Debug\Lidgren.Network.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
@@ -82,15 +79,15 @@
   <ItemGroup>
     <Compile Include="AIable.cs" />
     <Compile Include="Dudes\AttackingDude.cs" />
-    <Compile Include="Command.cs" />
-    <Compile Include="Client.cs" />
+    <Compile Include="NetCode\Command.cs" />
+    <Compile Include="NetCode\Client.cs" />
     <Compile Include="Dudes\Doctor.cs" />
     <Compile Include="Dudes\MageAttack.cs" />
     <Compile Include="Dudes\Enemy.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="GameState.cs" />
     <Compile Include="Level.cs" />
-    <Compile Include="NetworkWorkder.cs" />
+    <Compile Include="NetCode\NetworkWorker.cs" />
     <Compile Include="PhysicsAble.cs" />
     <Compile Include="Dudes\PlayerCharacter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -116,9 +113,9 @@
     <Compile Include="Screens\PauseMenuScreen.cs" />
     <Compile Include="Screens\PlayerIndexEventArgs.cs" />
     <Compile Include="Dudes\Skeleton.cs" />
-    <Compile Include="StateChange.cs" />
-    <Compile Include="StateChangeListener.cs" />
-    <Compile Include="Server.cs" />
+    <Compile Include="NetCode\StateChange.cs" />
+    <Compile Include="NetCode\StateChangeListener.cs" />
+    <Compile Include="NetCode\Server.cs" />
     <Compile Include="Dudes\Tank.cs" />
     <Compile Include="Dudes\Wizard.cs" />
   </ItemGroup>
