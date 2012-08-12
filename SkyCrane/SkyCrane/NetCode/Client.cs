@@ -98,8 +98,8 @@ namespace SkyCrane.NetCode
                 }
                 else
                 {
-                    Console.Write("Received packet of type: ");
-                    Console.WriteLine(newPacket.ptype);
+                    //Console.Write("Received packet of type: ");
+                    //Console.WriteLine(newPacket.ptype);
 
                     // Handle the new packet 
                     switch (newPacket.ptype)
@@ -129,7 +129,7 @@ namespace SkyCrane.NetCode
 
                             break;
                         case Packet.PacketType.STC:
-                            Console.WriteLine("STC received from the server");
+                            //Console.WriteLine("STC received from the server");
 
                             switch (curState)
                             {
@@ -155,7 +155,7 @@ namespace SkyCrane.NetCode
 
                             break;
                         case Packet.PacketType.MSC:
-                            Console.WriteLine("MSC received from the server");
+                            //Console.WriteLine("MSC received from the server");
 
                             switch (curState)
                             {
@@ -181,7 +181,7 @@ namespace SkyCrane.NetCode
 
                             break;
                         case Packet.PacketType.SYNC:
-                            Console.WriteLine("SYNC received from the server");
+                            //Console.WriteLine("SYNC received from the server");
                             
                             switch (curState)
                             {
@@ -199,7 +199,7 @@ namespace SkyCrane.NetCode
 
                             break;
                         case Packet.PacketType.PING:
-                            Console.WriteLine("PING received from the server");
+                            //Console.WriteLine("PING received from the server");
                             
                             switch (curState)
                             {

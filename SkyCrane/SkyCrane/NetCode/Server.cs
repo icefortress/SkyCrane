@@ -149,7 +149,7 @@ namespace SkyCrane.NetCode
                         break;
 
                     case Packet.PacketType.STC:
-                        Console.WriteLine("Server - Receivd State Change from client... who do they think they are?");
+                        //Console.WriteLine("Server - Receivd State Change from client... who do they think they are?");
                         Environment.Exit(1);
                         break;
 
@@ -180,14 +180,14 @@ namespace SkyCrane.NetCode
 
                     case Packet.PacketType.CMD:
                         //Actually handle this
-                        Console.WriteLine("Server - Got CMD from: " + connections[p.Dest].ID);
+                        //Console.WriteLine("Server - Got CMD from: " + connections[p.Dest].ID);
                         Command cmd = new Command(p.data);
                         lock (commandQ)
                             this.commandQ.Add(cmd);
                         break;
                     case Packet.PacketType.MSC:
                         //Actually handle this
-                        Console.WriteLine("Server - Got MSC from: " + connections[p.Dest].ID);
+                        //Console.WriteLine("Server - Got MSC from: " + connections[p.Dest].ID);
                         MenuState msc = new MenuState(p.data);
                         if (connections.ContainsKey(p.Dest))
                         {
@@ -233,7 +233,7 @@ namespace SkyCrane.NetCode
             {
                 foreach (KeyValuePair<IPEndPoint, ConnectionID> d in connections)
                 {
-                    Console.WriteLine("Server - Sent StateChange to: " + d.Value.ID);
+                    //Console.WriteLine("Server - Sent StateChange to: " + d.Value.ID);
                     STCPacket p = new STCPacket(sc);
                     p.Dest = d.Key;
                     this.nw.commitPacket(p);
@@ -264,7 +264,7 @@ namespace SkyCrane.NetCode
         {
             foreach (KeyValuePair<IPEndPoint, ConnectionID> d in connections)
             {
-                Console.WriteLine("Server - Sent MenuState to: " + d.Value.ID);
+                //Console.WriteLine("Server - Sent MenuState to: " + d.Value.ID);
                 MSCPacket p = new MSCPacket(m);
                 p.Dest = d.Key;
                 this.nw.commitPacket(p);

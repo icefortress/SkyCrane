@@ -445,7 +445,7 @@ namespace SkyCrane.Screens
                 // Push changes to clients
                 if (isMultiplayer && numPlayers > 1)
                 {
-                    Console.WriteLine(gameState.changes.Count);
+                    //Console.WriteLine(gameState.changes.Count);
                     serverReference.broadcastSC(gameState.changes);
                 }
                 
@@ -579,7 +579,7 @@ namespace SkyCrane.Screens
                 if (movement.Length() > 1)
                     movement.Normalize();
 
-                if (keyboardState.IsKeyDown(Keys.P))
+                if (keyboardState.IsKeyDown(Keys.P) && attackButtonOK)
                 {
                     Command c = new Command();
                     c.entity_id = gameState.usersPlayer.id;
@@ -587,6 +587,9 @@ namespace SkyCrane.Screens
                     c.ct = CommandType.SHOOT;
                     c.position = gameState.usersPlayer.worldPosition;
                     commandBuffer.Add(c);
+                    //Console.WriteLine("Shoot");
+                } else if (keyboardState.IsKeyUp(Keys.P)) {
+                    attackButtonOK = false;
                 }
 
                 if (keyboardState.IsKeyDown(Keys.X) && attackButtonOK)
