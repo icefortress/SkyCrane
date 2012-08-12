@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using SkyCrane.Screens;
 using SkyCrane.NetCode;
 
-namespace SkyCrane
+namespace SkyCrane.Engine
 {
 
     public class Entity
