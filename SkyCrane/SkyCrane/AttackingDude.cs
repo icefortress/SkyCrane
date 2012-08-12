@@ -9,7 +9,7 @@ namespace SkyCrane
 {
     public abstract class AttackingDude : Dude
     {
-        protected bool attacking = false;
+        public bool attacking = false;
         String textureAttackLeft;
         String textureAttackRight;
 
@@ -37,7 +37,7 @@ namespace SkyCrane
             return 160;
         }
 
-        internal void startAttack(GameTime gameTime)
+        public bool startAttack(GameTime gameTime)
         {
             // Check if ready to attack again
             TimeSpan diff = gameTime.TotalGameTime.Subtract(lastAttack);
@@ -45,7 +45,10 @@ namespace SkyCrane
                 lastAttack = gameTime.TotalGameTime;
                 attacking = true;
                 forceCheck = true;
+                return true;
             }
+
+            return false;
         }
 
         public override void setSpriteFromVelocity()
