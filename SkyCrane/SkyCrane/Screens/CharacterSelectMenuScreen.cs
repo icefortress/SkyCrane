@@ -169,6 +169,7 @@ namespace SkyCrane.Screens
 
             Vector2 titlePosition = new Vector2(graphics.Viewport.Width / 2, 80);
             Vector2 titleSize = font.MeasureString(MenuTitle);
+            
 
             spriteBatch.Begin();
 

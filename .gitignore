@@ -1,5 +1,6 @@
 SkyCrane.suo
 *.user
 *.cache
+*.cachefile
 bin
 obj
