@@ -21,7 +21,7 @@ namespace SkyCrane.Dudes
             Skeleton
         }
 
-        public static Vector2 HITBOX_SIZE = new Vector2(45, 20);
+        public static Vector2 HITBOX_SIZE = new Vector2(45, 45);
         public static float SCALE = 2;
 
         public Enemy(GameplayScreen g, int posX, int posY, int frameWidth, int attackFrameWidth,

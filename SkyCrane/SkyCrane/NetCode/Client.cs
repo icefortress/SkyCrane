@@ -100,7 +100,9 @@ namespace SkyCrane.NetCode
                             {
                                 if (this.sw_ping.IsRunning)
                                 {
-                                    this.curState = cState.DISCONNECTED;
+                                    //this.curState = cState.DISCONNECTED;
+                                    this.sw_ping.Stop();
+                                    this.lastPing = 501;
                                 }
                             }
                             break;
@@ -255,7 +257,7 @@ namespace SkyCrane.NetCode
 
         private void startPing()
         {
-            this.PingPacket_timeout_timer = new Timer(this.pingTimer, new AutoResetEvent(false), 1000, 1000);
+            this.PingPacket_timeout_timer = new Timer(this.pingTimer, new AutoResetEvent(false), 1000, 500);
         }
 
         private void pingTimer(Object stateInfo)

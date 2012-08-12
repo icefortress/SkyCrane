@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SkyCrane.Screens;
+using SkyCrane.Dudes;
 
 namespace SkyCrane.Engine
 {
@@ -146,11 +147,12 @@ namespace SkyCrane.Engine
                     // TODO: shouldn't get too far ahead of myself
                     if (index < bitmap.Length && bitmap[index])
                     {
-                        if (x - left < width / 2) hitLeft = true;
-                        if (x - left > width / 2) hitRight = true;
-                        if (y - top < height / 2) hitTop = true;
-                        if (y - top > height / 2) hitBottom = true;
+                        if (x - left <= width / 2) hitLeft = true;
+                        if (x - left >= width / 2) hitRight = true;
+                        if (y - top <= height / 2) hitTop = true;
+                        if (y - top >= height / 2) hitBottom = true;
                     }
+                    // Possible: delete if out of bounds
 
                 }
             }
