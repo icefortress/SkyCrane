@@ -365,7 +365,7 @@ namespace SkyCrane.Screens
                         switch (clientStates[i].MenuType)
                         {
                             case MenuState.Type.Connect: // Handle connection events
-                                if (clientStates[i].EventDetail == (int)MenuState.ConnectionDetails.Connected) // Assign our own player id
+                                if (clientStates[i].EventDetail == (int)MenuState.ConnectionDetails.IdReqest) // Assign our own player id
                                 {
                                     playerId = clientStates[i].PlayerId;
                                 }
