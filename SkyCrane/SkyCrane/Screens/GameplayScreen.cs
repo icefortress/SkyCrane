@@ -224,7 +224,7 @@ namespace SkyCrane.Screens
             playerEntityIds.Add(gameState.usersPlayer.id);
 
             // TODO: delete this
-            secondPlayer = gameState.createPlayer(1280 / 2, 720 / 2 - 50, PlayerCharacter.Type.Tank);
+            //secondPlayer = gameState.createPlayer(1280 / 2, 720 / 2 - 50, PlayerCharacter.Type.Tank);
 
             if (isMultiplayer)
             {
@@ -493,6 +493,11 @@ namespace SkyCrane.Screens
             if (input == null)
                 throw new ArgumentNullException("input");
 
+            if (gameState.usersPlayer == null)
+            {
+                return;
+            }
+
             // Look up inputs for the active player profile.
             int playerIndex = (int)ControllingPlayer.Value;
 
@@ -516,7 +521,7 @@ namespace SkyCrane.Screens
                 /* ===== COPY PASTE PLAYER 2 ====== */
 
                 // Otherwise move the player position.
-                Vector2 p2movement = Vector2.Zero;
+                /*Vector2 p2movement = Vector2.Zero;
 
                 if (keyboardState.IsKeyDown(Keys.A))
                     p2movement.X--;
@@ -547,7 +552,7 @@ namespace SkyCrane.Screens
                 c3.entity_id = secondPlayer.id;
                 c3.direction = p2movement;
                 c3.ct = CommandType.MOVE;
-                commandBuffer.Add(c3);
+                commandBuffer.Add(c3);*/
 
                 /* ===== COPY PASTE PLAYER 2 ====== */
 
