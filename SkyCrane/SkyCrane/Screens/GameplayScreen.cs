@@ -170,6 +170,8 @@ namespace SkyCrane.Screens
             textureDict.Add("doctorwall", doctorwall);
             Texture2D doctorwallh = content.Load<Texture2D>("Sprites/Doctor_Wall_Horizontal");
             textureDict.Add("doctorwallh", doctorwallh);
+            Texture2D realbull = content.Load<Texture2D>("Sprites/TheRealBullet");
+            textureDict.Add("realbull", realbull);
 
 
             Level l = Level.generateLevel(this);
@@ -275,10 +277,23 @@ namespace SkyCrane.Screens
                 PlayerCharacter attacker = (PlayerCharacter)gameState.entities[c.entity_id];
                 bool success = attacker.startAttack(g);
 
+                Vector2 vel = c.direction;
+                if (vel == Vector2.Zero)
+                {
+                    if (attacker.facingLeft)
+                    {
+                        vel = new Vector2(-1, 0);
+                    }
+                    else
+                    {
+                        vel = new Vector2(1, 0);
+                    }
+                }
+
                 if (gameState.entities[c.entity_id] is Wizard)
                 {
                     Vector2 pos = c.position;
-                    gameState.createMageAttack((int)pos.X, (int)pos.Y, c.direction * 8);
+                    if (success) gameState.createMageAttack((int)pos.X, (int)pos.Y, vel * 5);
                 }
                 else if (gameState.entities[c.entity_id] is Doctor)
                 {
@@ -286,7 +301,6 @@ namespace SkyCrane.Screens
                     Vector2 offset;
 
                     Vector2 pos = c.position;
-                    Vector2 vel = c.direction;
 
                     if (Math.Abs(vel.X) > Math.Abs(vel.Y))
                     {
@@ -314,8 +328,14 @@ namespace SkyCrane.Screens
 
                     pos += offset;
 
-                    gameState.createDoctorWall(c.entity_id, (int)pos.X, (int)pos.Y, hor);
+                    if(success) gameState.createDoctorWall(c.entity_id, (int)pos.X, (int)pos.Y, hor);
                 }
+                else if (gameState.entities[c.entity_id] is Rogue)
+                {
+                    Vector2 pos = c.position + new Vector2(0, 15);
+                    if (success) gameState.createRogueAttack((int)pos.X, (int)pos.Y, vel * 8);
+                }
+
             }
         }
 

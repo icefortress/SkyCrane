@@ -107,6 +107,15 @@ namespace SkyCrane.Engine
             changes.Add(sc);
         }
 
+        public void createRogueAttack(int posX, int posY, Vector2 velocity)
+        {
+            RealBullet m = new RealBullet(context, new Vector2(posX, posY), velocity);
+            addEntity(150, m);
+
+            StateChange sc = Entity.createEntityStateChange(m.id, posX, posY, RealBullet.frameWidth, RealBullet.textureName, m.scale);
+            changes.Add(sc);
+        }
+
         public void createDoctorWall(int entity_id, int posX, int posY, bool horizontal)
         {
             // Delete the player's old wall

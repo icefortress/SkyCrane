@@ -24,7 +24,7 @@ namespace SkyCrane.Dudes
 
         public override int getAttackCooldown()
         {
-            return 2000;
+            return 1500;
         }
 
         public override string getDefaultTexture()

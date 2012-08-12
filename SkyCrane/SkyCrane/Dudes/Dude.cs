@@ -17,7 +17,7 @@ namespace SkyCrane.Dudes
         Rectangle topRect;
         Rectangle bottomRect;
 
-        protected bool facingLeft = true;
+        public bool facingLeft = true;
         protected bool forceCheck = false;
 
         protected String textureLeft;

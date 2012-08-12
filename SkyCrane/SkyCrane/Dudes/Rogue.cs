@@ -24,12 +24,12 @@ namespace SkyCrane.Dudes
 
         public override int getAttackLength()
         {
-            return 400;
+            return 150;
         }
 
         public override int getAttackCooldown()
         {
-            return 1000;
+            return 150;
         }
 
         public override string getDefaultTexture()

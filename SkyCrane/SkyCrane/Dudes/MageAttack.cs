@@ -79,7 +79,7 @@ namespace SkyCrane.Dudes
 
                     // Do damage
                     Enemy e = (Enemy)entity;
-                    e.applyDamage(1);
+                    e.applyDamage(10);
 
                     // Bounce
                     lastHit = entity;
