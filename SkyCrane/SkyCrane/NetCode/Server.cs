@@ -203,11 +203,12 @@ namespace SkyCrane.NetCode
 
         public List<Command> getCMD()
         {
-            List<Command> ret;
+            List<Command> ret=new List<Command>();
             lock (commandQ)
             {
-                ret = new List<Command>(commandQ);
-                //commandQ.Clear();
+                foreach (Command c in this.commandQ)
+                    ret.Add(c);
+                commandQ.Clear();
             }
             return ret;
         }
