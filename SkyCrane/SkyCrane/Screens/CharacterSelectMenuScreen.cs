@@ -32,6 +32,10 @@ namespace SkyCrane.Screens
         bool[] characterSelectionsLocked;
         int playerNumber;
 
+        Texture2D aButtonTextured2D;
+        Texture2D dPadLeftTexture2D;
+        Texture2D dPadRightTexture2D;
+
         const int PLAYERS_PER_ROW = 2;
 
         #endregion
@@ -86,6 +90,9 @@ namespace SkyCrane.Screens
             ContentManager content = ScreenManager.Game.Content;
             characters = new Texture2D[] { content.Load<Texture2D>("Sprites/Wizard"),
                 content.Load<Texture2D>("Sprites/PinkWizard") };
+            aButtonTextured2D = content.Load<Texture2D>("XBox Buttons/button_a");
+            dPadLeftTexture2D = content.Load<Texture2D>("XBox Buttons/dpad_left");
+            dPadRightTexture2D = content.Load<Texture2D>("XBox Buttons/dpad_right");
             base.LoadContent();
             return;
         }
@@ -168,27 +175,45 @@ namespace SkyCrane.Screens
         {
             GraphicsDevice graphics = ScreenManager.GraphicsDevice;
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
-            SpriteFont font = ScreenManager.Font;
 
-            Vector2 titlePosition = new Vector2(graphics.Viewport.Width / 2, 80);
-            Vector2 titleSize = font.MeasureString(MenuTitle);
-
-            int numRows = (int)Math.Ceiling((float)ProjectSkyCrane.MAX_PLAYERS / (float)PLAYERS_PER_ROW); 
+            int numRows = (int)Math.Ceiling((float)ProjectSkyCrane.MAX_PLAYERS / (float)PLAYERS_PER_ROW);
+            float titleEnd = 80 + ScreenManager.Font.MeasureString(MenuTitle).Y;
+            int spacePerRow = (graphics.PresentationParameters.BackBufferHeight - (int)titleEnd) / numRows;
+            int spacePerColumn = graphics.PresentationParameters.BackBufferWidth / PLAYERS_PER_ROW;
 
             spriteBatch.Begin();
 
             for (int i = 0; i < numPlayers; i += 1) // Draw the individual characters
             {
+                int row = i / PLAYERS_PER_ROW;
+                int column = i % PLAYERS_PER_ROW;
+
                 Color drawColor;
-                if (characterSelectionsLocked[i])
+                if (characterSelectionsLocked[i]) // Shade out locked-in characters
                 {
                     drawColor = Color.Gray;
                 }
-                else
+                else // Alpha transition
                 {
                     drawColor = new Color(192, 192, 192) * TransitionAlpha;
                 }
-                spriteBatch.Draw(characters[characterSelections[i]], new Rectangle((int)(titlePosition.X - titleSize.X / 2), (int)(titlePosition.Y + titleSize.Y), 192, 192), drawColor);
+                int xBase = column * spacePerColumn;
+                int yBase = (int)titleEnd + row * spacePerRow;
+                int centerColumn = xBase + spacePerColumn / 2 - 92;
+                spriteBatch.Draw(characters[characterSelections[i]], new Rectangle(centerColumn, yBase, 192, 192),
+                    null, drawColor, 0, Vector2.Zero, SpriteEffects.None, 0);
+
+                int dPadBase = yBase + (92 - 32);
+                spriteBatch.Draw(dPadLeftTexture2D, new Rectangle(centerColumn - 64, dPadBase, 64, 64), drawColor);
+
+                if (!characterSelectionsLocked[i]) // Draw the selection items
+                {
+                    yBase += 192;
+                }
+                else if (host && AllLocked()) // Draw the "press to continue" message
+                {
+
+                }
             }
 
             spriteBatch.End();
