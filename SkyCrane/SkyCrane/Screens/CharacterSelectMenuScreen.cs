@@ -33,10 +33,12 @@ namespace SkyCrane.Screens
         // Game and player settings
         bool host;
         bool multiplayer;
-        int numPlayers = 4;
         PlayerCharacter.Type[] characterSelections;
         bool[] characterSelectionsLocked;
+        bool[] playersConnected;
         int playerId;
+        Queue<int> hostIds; // Ids the host can give away
+        Dictionary<ConnectionID, int> connectionToPlayerIdHash; // Connection id's the host can use
 
         // Textures used to draw characters and buttons
         Texture2D[] characters;
@@ -76,20 +78,27 @@ namespace SkyCrane.Screens
             // Set up the initial character selections
             characterSelections = new PlayerCharacter.Type[ProjectSkyCrane.MAX_PLAYERS];
             characterSelectionsLocked = new bool[ProjectSkyCrane.MAX_PLAYERS];
+            playersConnected = new bool[ProjectSkyCrane.MAX_PLAYERS];
             for (int i = 0; i < ProjectSkyCrane.MAX_PLAYERS; i += 1)
             {
                 characterSelections[i] = 0;
                 characterSelectionsLocked[i] = false;
+                playersConnected[i] = false;
             }
 
             if (host) // Set up which player slot this person currently fills
             {
                 playerId = 0;
+                hostIds = new Queue<int>(ProjectSkyCrane.MAX_PLAYERS - 1);
+                connectionToPlayerIdHash = new Dictionary<ConnectionID, int>(ProjectSkyCrane.MAX_PLAYERS - 1);
+                for (int i = 1; i < ProjectSkyCrane.MAX_PLAYERS; i += 1) // Serve up id's
+                {
+                    hostIds.Enqueue(i);
+                }
+                playersConnected[0] = true;
             }
-            else // This means we're definitely in multiplayer
+            else
             {
-                MenuState connectPacket = new MenuState(MenuState.Type.Connect);
-                ((ProjectSkyCrane)ScreenManager.Game).RawClient.sendMSC(connectPacket);
                 playerId = -1;
             }
 
@@ -104,6 +113,13 @@ namespace SkyCrane.Screens
         /// </summary>
         public override void LoadContent()
         {
+            if (!host && playerId < 0)
+            {
+                MenuState connectPacket = new MenuState(MenuState.Type.Connect);
+                ((ProjectSkyCrane)ScreenManager.Game).RawClient.sendMSC(connectPacket);
+                playerId = -1;
+            }
+
             ContentManager content = ScreenManager.Game.Content;
 
             // Dynamically load character types based on enum
@@ -155,7 +171,7 @@ namespace SkyCrane.Screens
                 }
                 else if (host && AllLocked())
                 {
-                    LoadingScreen.Load(ScreenManager, false, e.PlayerIndex, new GameplayScreen(host, multiplayer, numPlayers, playerId, characterSelections));
+                    LoadingScreen.Load(ScreenManager, false, e.PlayerIndex, new GameplayScreen(host, multiplayer, NumConnectedPlayers(), playerId, characterSelections));
                 }
                 menuSelectSoundEffect.Play();
             }
@@ -184,14 +200,30 @@ namespace SkyCrane.Screens
         /// </summary>
         private bool AllLocked()
         {
-            for (int i = 0; i < numPlayers; i += 1)
+            for (int i = 0; i < ProjectSkyCrane.MAX_PLAYERS; i += 1)
             {
-                if (!characterSelectionsLocked[i])
+                if (playersConnected[i] && !characterSelectionsLocked[i])
                 {
                     return false;
                 }
             }
             return true;
+        }
+
+        /// <summary>
+        /// Get the number of connected players.
+        /// </summary>
+        private int NumConnectedPlayers()
+        {
+            int numPlayers = 0;
+            for (int i = 0; i < playersConnected.Length; i += 1)
+            {
+                if (playersConnected[i])
+                {
+                    numPlayers += 1;
+                }
+            }
+            return numPlayers;
         }
 
         #endregion
@@ -203,62 +235,83 @@ namespace SkyCrane.Screens
         /// </summary>
         public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
-            if (host) // Have the host search for incoming client packets and respond to them
+            if (multiplayer) // Don't handle these cases in single player
             {
-                List<Tuple<ConnectionID, MenuState>> serverStates = ((ProjectSkyCrane)ScreenManager.Game).RawServer.getMSC();
-                for (int i = 0; i < serverStates.Count; i++)
+                if (host) // Have the host search for incoming client packets and respond to them
                 {
-                    switch (serverStates[i].Item2.MenuType)
+                    List<Tuple<ConnectionID, MenuState>> serverStates = ((ProjectSkyCrane)ScreenManager.Game).RawServer.getMSC();
+                    for (int i = 0; i < serverStates.Count; i++)
                     {
-                        case MenuState.Type.Connect:
-                            MenuState connectResponse = new MenuState(MenuState.Type.Connect, 2);
-                            ((ProjectSkyCrane)ScreenManager.Game).RawServer.signalMSC(connectResponse, serverStates[i].Item1);
-                            break;
-                        case MenuState.Type.SelectCharacter:
-                            throw new NotImplementedException();
-                        //break;
-                        case MenuState.Type.LockCharacter:
-                            throw new NotImplementedException();
-                        //break;
-                        case MenuState.Type.UnlockCharacter:
-                            throw new NotImplementedException();
-                        //break;
-                        case MenuState.Type.Disconnect:
-                            throw new NotImplementedException();
-                        //break;
-                        default:
-                            throw new ArgumentException();
+                        switch (serverStates[i].Item2.MenuType)
+                        {
+                            case MenuState.Type.Connect:
+                                int newId;
+                                if (connectionToPlayerIdHash.ContainsKey(serverStates[i].Item1)) // We've already seen this player and they haven't disconnected, resend their current id
+                                {
+                                    newId = connectionToPlayerIdHash[serverStates[i].Item1];
+                                }
+                                else // Send the player a new id
+                                {
+                                    newId = hostIds.Dequeue();
+                                    playersConnected[newId] = true;
+                                }
+                                MenuState connectResponse = new MenuState(MenuState.Type.Connect, newId, 0); // Inform connector of their Id
+                                ((ProjectSkyCrane)ScreenManager.Game).RawServer.signalMSC(connectResponse, serverStates[i].Item1);
+                                connectResponse.EventDetail = 1; // Inform everyone a player has connected
+                                ((ProjectSkyCrane)ScreenManager.Game).RawServer.broadcastMSC(connectResponse);
+                                break;
+                            case MenuState.Type.SelectCharacter:
+                                throw new NotImplementedException();
+                            //break;
+                            case MenuState.Type.LockCharacter:
+                                throw new NotImplementedException();
+                            //break;
+                            case MenuState.Type.UnlockCharacter:
+                                throw new NotImplementedException();
+                            //break;
+                            case MenuState.Type.Disconnect:
+                                throw new NotImplementedException();
+                            //break;
+                            default:
+                                throw new ArgumentException();
+                        }
+                    }
+                }
+                else // Handle authoritative updates from the server if we are a client
+                {
+                    List<MenuState> clientStates = ((ProjectSkyCrane)ScreenManager.Game).RawClient.rcvMenuState();
+                    for (int i = 0; i < clientStates.Count; i++)
+                    {
+                        switch (clientStates[i].MenuType)
+                        {
+                            case MenuState.Type.Connect:
+                                if (clientStates[i].EventDetail == 0) // Assign our own player id
+                                {
+                                    playerId = clientStates[i].PlayerId;
+                                }
+                                else if (clientStates[i].EventDetail == 1) // Assign a connected player
+                                {
+                                    playersConnected[clientStates[i].PlayerId] = true;
+                                }
+                                break;
+                            case MenuState.Type.SelectCharacter:
+                                throw new NotImplementedException();
+                            //break;
+                            case MenuState.Type.LockCharacter:
+                                throw new NotImplementedException();
+                            //break;
+                            case MenuState.Type.UnlockCharacter:
+                                throw new NotImplementedException();
+                            //break;
+                            case MenuState.Type.Disconnect:
+                                throw new NotImplementedException();
+                            //break;
+                            default:
+                                throw new ArgumentException();
+                        }
                     }
                 }
             }
-            else // Handle authoritative updates from the server if we are a client
-            {
-                List<MenuState> clientStates = ((ProjectSkyCrane)ScreenManager.Game).RawClient.rcvMenuState();
-                for (int i = 0; i < clientStates.Count; i++)
-                {
-                    switch (clientStates[i].MenuType)
-                    {
-                        case MenuState.Type.Connect:
-                            playerId = clientStates[i].PlayerId;
-                            break;
-                        case MenuState.Type.SelectCharacter:
-                            throw new NotImplementedException();
-                            //break;
-                        case MenuState.Type.LockCharacter:
-                            throw new NotImplementedException();
-                            //break;
-                        case MenuState.Type.UnlockCharacter:
-                            throw new NotImplementedException();
-                            //break;
-                        case MenuState.Type.Disconnect:
-                            throw new NotImplementedException();
-                            //break;
-                        default:
-                            throw new ArgumentException();
-                    }
-                }
-            }
-
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
             return;
         }
@@ -285,66 +338,6 @@ namespace SkyCrane.Screens
             Vector2 cancelMessageSize = ScreenManager.Font.MeasureString(cancelMessage);
             Vector2 startMessageSize = ScreenManager.Font.MeasureString(startMessage);
 
-            for (int i = 0; i < numPlayers; i += 1) // Draw the individual characters
-            {
-                int row = i / PLAYERS_PER_ROW;
-                int column = i % PLAYERS_PER_ROW;
-
-                Color drawColor;
-                if (characterSelectionsLocked[i]) // Shade out locked-in characters
-                {
-                    drawColor = Color.Gray;
-                }
-                else // Alpha transition
-                {
-                    drawColor = transitionColor;
-                }
-                int xBase = column * spacePerColumn;
-                int yBase = (int)titleEnd + row * spacePerRow;
-                int centerColumn = xBase + (spacePerColumn - 192) / 2;
-                int centerRow = yBase + (spacePerRow - (192 + (int)selectMessageSize.Y)) / 2;
-                spriteBatch.Draw(characters[(int)characterSelections[i]], new Rectangle(centerColumn, centerRow, 192, 192),
-                    null, drawColor, 0, Vector2.Zero, SpriteEffects.None, 0);
-                int selectBase = centerRow + 192;
-
-                if (i == playerId)
-                {
-                    string playerName = "Player " + (i + 1) + ": ";
-                    float playerNameSize = ScreenManager.Font.MeasureString(playerName).X;
-                    int dPadBase = centerRow + (192 - 64) / 2;
-                    
-                    if (!characterSelectionsLocked[i]) // Draw the selection items
-                    {
-                        spriteBatch.Draw(dPadLeftTexture2D, new Rectangle(centerColumn - (64 + 8), dPadBase, 64, 64), drawColor);
-                        spriteBatch.Draw(dPadRightTexture2D, new Rectangle(centerColumn + (192 + 8), dPadBase, 64, 64), drawColor);
-
-                        float finalMessageBase = centerColumn + (192 - (playerNameSize + selectMessageSize.X + 64)) / 2;
-                        spriteBatch.DrawString(ScreenManager.Font, playerName + selectMessage, new Vector2(finalMessageBase, selectBase), transitionColor);
-                        spriteBatch.Draw(aButtonTextured2D, new Vector2(finalMessageBase + playerNameSize + selectMessageSize.X, selectBase - 8), drawColor);
-                    }
-                    else // Draw the cancel selection button
-                    {
-                        float finalMessageBase = centerColumn + (192 - (playerNameSize + cancelMessageSize.X + 64)) / 2;
-                        spriteBatch.DrawString(ScreenManager.Font, playerName + cancelMessage, new Vector2(finalMessageBase, selectBase), transitionColor);
-                        spriteBatch.Draw(bButtonTextured2D, new Vector2(finalMessageBase + playerNameSize + cancelMessageSize.X, selectBase - 8), drawColor);
-                    }
-
-                    if (host && AllLocked()) // Draw the "press to continue" message
-                    {
-                        spriteBatch.DrawString(ScreenManager.Font, startMessage,
-                             new Vector2(graphics.PresentationParameters.BackBufferWidth - (startMessageSize.X + 64),
-                             graphics.PresentationParameters.BackBufferHeight - startMessageSize.Y), transitionColor);
-                        spriteBatch.Draw(aButtonTextured2D, new Vector2(graphics.PresentationParameters.BackBufferWidth - 64,
-                            graphics.PresentationParameters.BackBufferHeight - (64 - 8)), transitionColor);
-                    }
-                }
-                else // Draw the other player names
-                {
-                    string playerName = "Player " + (i + 1);
-                    spriteBatch.DrawString(ScreenManager.Font, playerName, new Vector2(centerColumn + (192 - ScreenManager.Font.MeasureString(playerName).X) / 2, selectBase), transitionColor);
-                }
-            }
-
             Vector2 slotMessageSize; // Get the size of the redundant slot messages
             if (multiplayer) // Insert slot messages
             {
@@ -355,24 +348,84 @@ namespace SkyCrane.Screens
                 slotMessageSize = ScreenManager.Font.MeasureString(closedSlotMessage);
             }
 
-            for (int i = numPlayers; i < ProjectSkyCrane.MAX_PLAYERS; i += 1) // Draw waiting messages for all remaining players
+            for (int i = 0; i < ProjectSkyCrane.MAX_PLAYERS; i += 1) // Draw the individual characters
             {
                 int row = i / PLAYERS_PER_ROW;
                 int column = i % PLAYERS_PER_ROW;
-                int xBase = column * spacePerColumn;
-                int yBase = (int)titleEnd + row * spacePerRow;
 
-                if (multiplayer) // Show that slots are open
+                if (playersConnected[i]) // Draw a connected player
                 {
-                    spriteBatch.DrawString(ScreenManager.Font, openSlotMessage,
-                        new Vector2(xBase + (spacePerColumn - slotMessageSize.X) / 2,
-                            yBase + (spacePerRow - slotMessageSize.Y) / 2), transitionColor);
+                    Color drawColor;
+                    if (characterSelectionsLocked[i]) // Shade out locked-in characters
+                    {
+                        drawColor = Color.Gray;
+                    }
+                    else // Alpha transition
+                    {
+                        drawColor = transitionColor;
+                    }
+                    int xBase = column * spacePerColumn;
+                    int yBase = (int)titleEnd + row * spacePerRow;
+                    int centerColumn = xBase + (spacePerColumn - 192) / 2;
+                    int centerRow = yBase + (spacePerRow - (192 + (int)selectMessageSize.Y)) / 2;
+                    spriteBatch.Draw(characters[(int)characterSelections[i]], new Rectangle(centerColumn, centerRow, 192, 192),
+                        null, drawColor, 0, Vector2.Zero, SpriteEffects.None, 0);
+                    int selectBase = centerRow + 192;
+
+                    if (i == playerId)
+                    {
+                        string playerName = "Player " + (i + 1) + ": ";
+                        float playerNameSize = ScreenManager.Font.MeasureString(playerName).X;
+                        int dPadBase = centerRow + (192 - 64) / 2;
+
+                        if (!characterSelectionsLocked[i]) // Draw the selection items
+                        {
+                            spriteBatch.Draw(dPadLeftTexture2D, new Rectangle(centerColumn - (64 + 8), dPadBase, 64, 64), drawColor);
+                            spriteBatch.Draw(dPadRightTexture2D, new Rectangle(centerColumn + (192 + 8), dPadBase, 64, 64), drawColor);
+
+                            float finalMessageBase = centerColumn + (192 - (playerNameSize + selectMessageSize.X + 64)) / 2;
+                            spriteBatch.DrawString(ScreenManager.Font, playerName + selectMessage, new Vector2(finalMessageBase, selectBase), transitionColor);
+                            spriteBatch.Draw(aButtonTextured2D, new Vector2(finalMessageBase + playerNameSize + selectMessageSize.X, selectBase - 8), drawColor);
+                        }
+                        else // Draw the cancel selection button
+                        {
+                            float finalMessageBase = centerColumn + (192 - (playerNameSize + cancelMessageSize.X + 64)) / 2;
+                            spriteBatch.DrawString(ScreenManager.Font, playerName + cancelMessage, new Vector2(finalMessageBase, selectBase), transitionColor);
+                            spriteBatch.Draw(bButtonTextured2D, new Vector2(finalMessageBase + playerNameSize + cancelMessageSize.X, selectBase - 8), drawColor);
+                        }
+
+                        if (host && AllLocked()) // Draw the "press to continue" message
+                        {
+                            spriteBatch.DrawString(ScreenManager.Font, startMessage,
+                                 new Vector2(graphics.PresentationParameters.BackBufferWidth - (startMessageSize.X + 64),
+                                 graphics.PresentationParameters.BackBufferHeight - startMessageSize.Y), transitionColor);
+                            spriteBatch.Draw(aButtonTextured2D, new Vector2(graphics.PresentationParameters.BackBufferWidth - 64,
+                                graphics.PresentationParameters.BackBufferHeight - (64 - 8)), transitionColor);
+                        }
+                    }
+                    else // Draw the other player names
+                    {
+                        string playerName = "Player " + (i + 1);
+                        spriteBatch.DrawString(ScreenManager.Font, playerName, new Vector2(centerColumn + (192 - ScreenManager.Font.MeasureString(playerName).X) / 2, selectBase), transitionColor);
+                    }
                 }
-                else // Show that the other slots are closed
+                else
                 {
-                    spriteBatch.DrawString(ScreenManager.Font, closedSlotMessage,
-                        new Vector2(xBase + (spacePerColumn - slotMessageSize.X) / 2,
-                            yBase + (spacePerRow - slotMessageSize.Y) / 2), transitionColor);
+                    int xBase = column * spacePerColumn;
+                    int yBase = (int)titleEnd + row * spacePerRow;
+
+                    if (multiplayer) // Show that slots are open
+                    {
+                        spriteBatch.DrawString(ScreenManager.Font, openSlotMessage,
+                            new Vector2(xBase + (spacePerColumn - slotMessageSize.X) / 2,
+                                yBase + (spacePerRow - slotMessageSize.Y) / 2), transitionColor);
+                    }
+                    else // Show that the other slots are closed
+                    {
+                        spriteBatch.DrawString(ScreenManager.Font, closedSlotMessage,
+                            new Vector2(xBase + (spacePerColumn - slotMessageSize.X) / 2,
+                                yBase + (spacePerRow - slotMessageSize.Y) / 2), transitionColor);
+                    }
                 }
             }
 

@@ -252,14 +252,21 @@ namespace SkyCrane.NetCode
         {
             foreach (MenuState msc in list)
             {
-                foreach (KeyValuePair<IPEndPoint, ConnectionID> d in connections)
-                {
-                    Console.WriteLine("Server - Sent MenuState to: " + d.Value.ID);
-                    MSCPacket p = new MSCPacket(msc);
-                    p.Dest = d.Key;
-                    this.nw.commitPacket(p);
-                }
+                broadcastMSC(msc);
             }
+            return;
+        }
+
+        public void broadcastMSC(MenuState m)
+        {
+            foreach (KeyValuePair<IPEndPoint, ConnectionID> d in connections)
+            {
+                Console.WriteLine("Server - Sent MenuState to: " + d.Value.ID);
+                MSCPacket p = new MSCPacket(m);
+                p.Dest = d.Key;
+                this.nw.commitPacket(p);
+            }
+            return;
         }
 
         public void signalMSC(List<MenuState> list, ConnectionID cid)

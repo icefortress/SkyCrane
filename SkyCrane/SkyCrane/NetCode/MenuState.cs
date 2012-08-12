@@ -50,7 +50,7 @@ namespace SkyCrane.NetCode
         public Type MenuType
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace SkyCrane.NetCode
         public int PlayerId
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace SkyCrane.NetCode
         public int EventDetail
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>
