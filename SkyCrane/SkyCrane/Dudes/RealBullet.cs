@@ -33,7 +33,6 @@ namespace SkyCrane.Dudes
             if (entity is Level)
             {
                 destroy();
-                Console.WriteLine("Destroyed");
             }
             else if (entity is Enemy)
             {

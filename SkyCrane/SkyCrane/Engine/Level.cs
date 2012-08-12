@@ -157,11 +157,6 @@ namespace SkyCrane.Engine
                 }
             }
 
-            if (entity is RealBullet)
-            {
-                Console.WriteLine(hitTop || hitLeft || hitRight || hitBottom);
-            }
-
             if (hitLeft && hitTop)
             {
                 return CollisionDirection.TOPLEFT;
