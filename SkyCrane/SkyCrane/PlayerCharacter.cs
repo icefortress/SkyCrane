@@ -8,8 +8,11 @@ using SkyCrane.Screens;
 
 namespace SkyCrane
 {
-    public class PlayerCharacter : Dude
+
+    public class PlayerCharacter : AttackingDude
     {
+        public static Vector2 HITBOX_SIZE = new Vector2(45, 20);
+
         public static StateChange createPlayerStateChange(int posX, int posY, int frameWidth, String textureName, String animationName)
         {
             StateChange sc = new StateChange();
@@ -23,9 +26,13 @@ namespace SkyCrane
             return sc;
         }
 
-        public PlayerCharacter(GameplayScreen g, int posX, int posY, int frameWidth, String textureLeft, String textureRight, String animationName) : base(g, posX, posY, frameWidth, textureLeft, textureRight, animationName)
+        public PlayerCharacter(GameplayScreen g, int posX, int posY, int frameWidth,
+            String textureLeft, String textureRight, String textureAttackLeft, String textureAttackRight) :
+            base(g, posX, posY, frameWidth, textureLeft, textureRight, textureAttackLeft, textureAttackRight)
         {
             scale = 2;
+
+            physicsSize = HITBOX_SIZE;
         }
 
         public override void HandleCollision(CollisionDirection cd, PhysicsAble entity)

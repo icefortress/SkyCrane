@@ -38,7 +38,7 @@ namespace SkyCrane
         }
         public Vector2 drawingPosition;
 
-        private Vector2 velocityBack;
+        protected Vector2 velocityBack;
         public Vector2 velocity
         {
             get { return velocityBack; }
@@ -74,7 +74,7 @@ namespace SkyCrane
         public bool active = false;
         public bool looping;
 
-        public static StateChange createEntityStateChange(int entity_id, int posX, int posY, int frameWidth, String textureName, String animationName)
+        public static StateChange createEntityStateChange(int entity_id, int posX, int posY, int frameWidth, String textureName)
         {
             StateChange sc = new StateChange();
             sc.type = StateChangeType.CREATE_ENTITY;
@@ -83,12 +83,11 @@ namespace SkyCrane
             sc.intProperties.Add(StateProperties.POSITION_Y, posY);
             sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
             sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureName);
-            sc.stringProperties.Add(StateProperties.ANIMATION_NAME, animationName);
 
             return sc;
         }
 
-        public Entity(GameplayScreen g, int posX, int posY, int frameWidth, String textureName, String animationName)
+        public Entity(GameplayScreen g, int posX, int posY, int frameWidth, String textureName)
         {
             this.context = g;
 
@@ -97,10 +96,10 @@ namespace SkyCrane
 
             worldPosBack= new Vector2(posX, posY);
 
-            changeAnimation(frameWidth, textureName, animationName);
+            changeAnimation(frameWidth, textureName);
         }
 
-        public void changeAnimation(int frameWidth, String textureName, String animationName)
+        public void changeAnimation(int frameWidth, String textureName)
         {
             Texture2D chara = context.textureDict[textureName];
 
@@ -111,6 +110,8 @@ namespace SkyCrane
             }
             InitDrawable(chara, frameWidth, chara.Height, animationFrames, 200, Color.White, this.scale, true);
             active = true;
+
+            currentFrame = 0;
         }
 
         public void notifyStateChangeListeners(StateChange sc)
@@ -142,7 +143,7 @@ namespace SkyCrane
             this.animationFrames = frs;
         }
 
-        public void UpdateSprite(GameTime gameTime)
+        public virtual void UpdateSprite(GameTime gameTime)
         {
             // Do not update the game if we are not active
             if (active == false)

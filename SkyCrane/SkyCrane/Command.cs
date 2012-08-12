@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace SkyCrane
 {
-    enum CommandType { MOVE, SHOOT }
+    enum CommandType { MOVE, SHOOT, ATTACK }
 
     class Command
     {
