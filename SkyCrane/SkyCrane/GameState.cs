@@ -43,14 +43,20 @@ namespace SkyCrane
         public SortedDictionary<int, List<Entity>> drawLists = new SortedDictionary<int, List<Entity>>();
 
         // Should be called by the server to create a player entity in the current game state
-        public PlayerCharacter createPlayer(int posX, int posY, int frameWidth,
-            String textureLeft, String textureRight, String textureAttackLeft, String textureAttackRight)
+        public PlayerCharacter createPlayer(int posX, int posY, int frameWidth, String type)
         {
-            PlayerCharacter pc = new PlayerCharacter(context, posX, posY, frameWidth,
-                textureLeft, textureRight, textureAttackLeft, textureAttackRight);
+            PlayerCharacter pc = null;
+            if (type == "tank")
+            {
+                pc = new Tank(context, posX, posY);
+            }
+            else if (type == "wizard")
+            {
+                pc = new Wizard(context, posX, posY);
+            }
             addEntity(100, pc);
 
-            StateChange sc = Entity.createEntityStateChange(pc.id, posX, posY, frameWidth, textureLeft);
+            StateChange sc = Entity.createEntityStateChange(pc.id, posX, posY, pc.frameWidth, pc.getDefaultTexture());
             changes.Add(sc);
 
             return pc;

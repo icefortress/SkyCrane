@@ -116,6 +116,8 @@
     <Compile Include="StateChange.cs" />
     <Compile Include="StateChangeListener.cs" />
     <Compile Include="Server.cs" />
+    <Compile Include="Tank.cs" />
+    <Compile Include="Wizard.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

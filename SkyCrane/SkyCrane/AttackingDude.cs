@@ -13,13 +13,16 @@ namespace SkyCrane
         String textureAttackLeft;
         String textureAttackRight;
 
+        int attackFrameWidth;
+
         TimeSpan lastAttack = new TimeSpan(0);
 
-        public AttackingDude(GameplayScreen g, int posX, int posY, int frameWidth, String textureLeft, String textureRight, String textureAttackLeft, String textureAttackRight) :
+        public AttackingDude(GameplayScreen g, int posX, int posY, int frameWidth, int attackFrameWidth, String textureLeft, String textureRight, String textureAttackLeft, String textureAttackRight) :
             base(g, posX, posY, frameWidth, textureLeft, textureRight)
         {
             this.textureAttackLeft = textureAttackLeft;
             this.textureAttackRight = textureAttackRight;
+            this.attackFrameWidth = attackFrameWidth;
         }
 
         // Milleseconds
@@ -54,7 +57,7 @@ namespace SkyCrane
                     StateChange sc = new StateChange();
                     sc.type = StateChangeType.CHANGE_SPRITE;
                     sc.intProperties.Add(StateProperties.ENTITY_ID, id);
-                    sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
+                    sc.intProperties.Add(StateProperties.FRAME_WIDTH, attackFrameWidth);
                     sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureAttackLeft);
 
                     notifyStateChangeListeners(sc);
@@ -64,7 +67,7 @@ namespace SkyCrane
                     StateChange sc = new StateChange();
                     sc.type = StateChangeType.CHANGE_SPRITE;
                     sc.intProperties.Add(StateProperties.ENTITY_ID, id);
-                    sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
+                    sc.intProperties.Add(StateProperties.FRAME_WIDTH, attackFrameWidth);
                     sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureAttackRight);
 
                     notifyStateChangeListeners(sc);

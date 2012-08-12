@@ -92,10 +92,18 @@ namespace SkyCrane.Screens
 
             Texture2D testLevel = content.Load<Texture2D>("Levels/room3");
             Texture2D testMap = content.Load<Texture2D>("Levels/room3-collision_map");
+
+            // Load characters
             Texture2D tankl = content.Load<Texture2D>("Sprites/Tank_Animated");
             Texture2D tankr = content.Load<Texture2D>("Sprites/Tank_Animated_Right");
             Texture2D tankal = content.Load<Texture2D>("Sprites/Tank_Attack");
             Texture2D tankar = content.Load<Texture2D>("Sprites/Tank_Attack_Right");
+
+            Texture2D wizardl = content.Load<Texture2D>("Sprites/Wizard_Animated");
+            Texture2D wizardr = content.Load<Texture2D>("Sprites/Wizard_Animated_Right");
+            Texture2D wizardal = content.Load<Texture2D>("Sprites/Wizard_Attack");
+            Texture2D wizardar = content.Load<Texture2D>("Sprites/Wizard_Attack_Right");
+            
             
             textureDict.Add("room2", testLevel);
             textureDict.Add("room2-collision-map", testMap);
@@ -103,6 +111,10 @@ namespace SkyCrane.Screens
             textureDict.Add("tankr", tankr);
             textureDict.Add("tankal", tankal);
             textureDict.Add("tankar", tankar);
+            textureDict.Add("wizardl", wizardl);
+            textureDict.Add("wizardr", wizardr);
+            textureDict.Add("wizardal", wizardal);
+            textureDict.Add("wizardar", wizardar);
 
             Level l = Level.generateLevel(this);
             gameState.currentLevel = l;
@@ -141,7 +153,7 @@ namespace SkyCrane.Screens
 
         public void serverStartGame()
         {
-            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, 45, "tankl", "tankr", "tankal", "tankar");
+            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, 45, "wizard");
 
             if (isMultiplayer)
             {
@@ -149,7 +161,7 @@ namespace SkyCrane.Screens
                 List<int> playerIds = new List<int>();
                 for (int i = 1; i < numPlayers; i++)
                 {
-                    PlayerCharacter pc = gameState.createPlayer(1280 / 2 + 20 * i, 720 / 2 + 50, 45, "tankl", "tankr", "tankal", "tankar");
+                    PlayerCharacter pc = gameState.createPlayer(1280 / 2 + 20 * i, 720 / 2 + 50, 45, "tank");
                     playerIds.Add(pc.id);
                 }
             }
