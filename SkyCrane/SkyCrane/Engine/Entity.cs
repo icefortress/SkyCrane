@@ -81,13 +81,14 @@ namespace SkyCrane.Engine
         public bool active = false;
         public bool looping;
 
-        public static StateChange createEntityStateChange(int entity_id, int posX, int posY, int frameWidth, String textureName, float scale)
+        public static StateChange createEntityStateChange(int entity_id, int posX, int posY, int frameWidth, String textureName, float scale, int drawPriority)
         {
             StateChange sc = new StateChange();
             sc.type = StateChangeType.CREATE_ENTITY;
             sc.intProperties.Add(StateProperties.ENTITY_ID, entity_id);
             sc.intProperties.Add(StateProperties.POSITION_X, posX);
             sc.intProperties.Add(StateProperties.POSITION_Y, posY);
+            sc.intProperties.Add(StateProperties.DRAW_PRIORITY, drawPriority);
             sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
             sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureName);
             sc.doubleProperties.Add(StateProperties.SCALE, scale);
