@@ -47,11 +47,12 @@ namespace SkyCrane
 
         //Main routine, this does all the processing
         private void ClientstartFunc()
-        {
-            //Do I want another busy loop that just polls the connection?
-            //Event loop
+        {   
+            // Event Loop
+            // Pull packets out of the network layer and handle them
             while (this.go)
             {
+                // Connect to the server, if this has not already been done
                 if (curState == cState.TRYCONNECT)
                 {
                     //Spawn the client reader/writer threads
@@ -59,9 +60,41 @@ namespace SkyCrane
                     this.handshake();
                     this.curState = cState.CONNECTED;
                 }
+                
+                // Once the client has been connected, get packets
                 if (curState == cState.CONNECTED)
                 {
+                    Packet newPacket = nw.getNext(); // This is a blocking call! 
 
+                    // Handle the new packet 
+                    switch (newPacket.ptype)
+                    {
+                        case Packet.PacketType.CMD:
+                            Console.WriteLine("Should not be getting CMD packets from the server...");
+                            Environment.Exit(1);
+                            break;
+                        case Packet.PacketType.HANDSHAKE:
+                            Console.WriteLine("Handshake received from the server");
+                            break;
+                        case Packet.PacketType.STC:
+                            Console.WriteLine("STC received from the server");
+                            // Marshall the state change packet into an object
+                            StateChange newSTC = new StateChange(newPacket.data);
+
+                            // Add the state change object to the buffer for the UI
+                            lock (this.buffer)
+                            {
+                                buffer.Enqueue(newSTC);
+                            }
+                            break;
+                        case Packet.PacketType.SYNC:
+                            Console.WriteLine("SYNC received from the server");
+                            break;
+                        default:
+                            Console.WriteLine("Unknown packet type from the server...");
+                            Environment.Exit(1);
+                            break;
+                    }
                 }
             }
         }
@@ -74,7 +107,7 @@ namespace SkyCrane
             SYNCPacket sp = new SYNCPacket();
             STCPacket stcp = new STCPacket(s);
             stcp.setDest(server);
-            sp.setDest(server);
+            sp.setDest(server); 
             hs.setDest(server);
 
             this.nw.commitPacket(sp);
@@ -86,6 +119,14 @@ namespace SkyCrane
         //OPERATORS
         public void sendCMD(List<Command> cmds)
         {
+            foreach (Command c in cmds)
+            {
+                // Create the CMD Packet
+                CMDPacket newCMD = new CMDPacket(c);
+
+                // Add the CMD packet to the network worker's send queue
+                this.nw.commitPacket(newCMD);
+            }
         }
 
         // Called by the UI to acquire the latest state from the server
