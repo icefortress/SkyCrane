@@ -111,6 +111,11 @@ namespace SkyCrane.Screens
             Texture2D wizardr = content.Load<Texture2D>("Sprites/Wizard_Animated_Right");
             Texture2D wizardal = content.Load<Texture2D>("Sprites/Wizard_Attack");
             Texture2D wizardar = content.Load<Texture2D>("Sprites/Wizard_Attack_Right");
+
+            Texture2D doctorl = content.Load<Texture2D>("Sprites/Doctor_Animated");
+            Texture2D doctorr = content.Load<Texture2D>("Sprites/Doctor_Animated_Right");
+            Texture2D doctoral = content.Load<Texture2D>("Sprites/Doctor_Attack");
+            Texture2D doctorar = content.Load<Texture2D>("Sprites/Doctor_Attack_Right");
             
             textureDict.Add("tankl", tankl);
             textureDict.Add("tankr", tankr);
@@ -120,6 +125,10 @@ namespace SkyCrane.Screens
             textureDict.Add("wizardr", wizardr);
             textureDict.Add("wizardal", wizardal);
             textureDict.Add("wizardar", wizardar);
+            textureDict.Add("doctorl", doctorl);
+            textureDict.Add("doctorr", doctorr);
+            textureDict.Add("doctoral", doctoral);
+            textureDict.Add("doctorar", doctorar);
 
             // Load enemies
             Texture2D skeletonl = content.Load<Texture2D>("Sprites/Skeleton_Animated");
@@ -137,6 +146,8 @@ namespace SkyCrane.Screens
             textureDict.Add("bullet", bullet);
             Texture2D mageAttack = content.Load<Texture2D>("Sprites/Beam");
             textureDict.Add("wand", mageAttack);
+            Texture2D doctorwall = content.Load<Texture2D>("Sprites/Doctor_Wall");
+            textureDict.Add("doctorwall", doctorwall);
 
 
             Level l = Level.generateLevel(this);
@@ -176,7 +187,7 @@ namespace SkyCrane.Screens
 
         public void serverStartGame()
         {
-            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, "wizard");
+            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, "doctor");
 
             // TODO: delete this
             secondPlayer = gameState.createPlayer(1280 / 2, 720 / 2 - 50, "tank");
@@ -194,8 +205,6 @@ namespace SkyCrane.Screens
 
             // Get the players from the server and send them each a notification of who the fuck theyare
 
-            // TODO: add an enemy for testing
-            gameState.createEnemy(1280 / 2, 720 / 2 + 200, 45, "skeleton");
 
             goodtogo = true;
 
@@ -277,6 +286,42 @@ namespace SkyCrane.Screens
                         {
                             Vector2 pos = c.position;
                             gameState.createMageAttack((int)pos.X, (int)pos.Y, c.direction * 8);
+                        }
+                        else if (gameState.entities[c.entity_id] is Doctor)
+                        {
+                            bool hor = false;
+                            Vector2 offset;
+
+                            Vector2 pos = c.position;
+                            Vector2 vel = c.direction;
+
+                            if (Math.Abs(vel.X) > Math.Abs(vel.Y))
+                            {
+                                if (vel.X > 0)
+                                {
+                                    offset = new Vector2(80, 0);
+                                }
+                                else
+                                {
+                                    offset = new Vector2(-80, 0);
+                                }
+                            }
+                            else
+                            {
+                                hor = true;
+                                if (vel.Y > 0)
+                                {
+                                    offset = new Vector2(0, 80);
+                                }
+                                else
+                                {
+                                    offset = new Vector2(0, -80);
+                                }
+                            }
+
+                            pos += offset;
+
+                            gameState.createDoctorWall(c.entity_id, (int)pos.X, (int)pos.Y, hor);
                         }
                     }
                 }

@@ -15,6 +15,8 @@ namespace SkyCrane
 
         public List<StateChange> changes = new List<StateChange>();
 
+        public Dictionary<int, DoctorWall> walls = new Dictionary<int, DoctorWall>();
+
         public GameState(GameplayScreen g)
         {
             context = g;
@@ -55,6 +57,10 @@ namespace SkyCrane
             {
                 pc = new Wizard(context, posX, posY);
             }
+            else if (type == "doctor")
+            {
+                pc = new Doctor(context, posX, posY);
+            }
             addEntity(100, pc);
 
             StateChange sc = Entity.createEntityStateChange(pc.id, posX, posY, pc.frameWidth, pc.getDefaultTexture());
@@ -90,9 +96,27 @@ namespace SkyCrane
         public void createMageAttack(int posX, int posY, Vector2 velocity)
         {
             MageAttack m = new MageAttack(context, new Vector2(posX, posY), velocity);
-            addEntity(200, m);
+            addEntity(150, m);
 
             StateChange sc = Entity.createEntityStateChange(m.id, posX, posY, MageAttack.frameWidth, MageAttack.textureName);
+            changes.Add(sc);
+        }
+
+        public void createDoctorWall(int entity_id, int posX, int posY, bool horizontal)
+        {
+            // Delete the player's old wall
+            if (walls.ContainsKey(entity_id))
+            {
+                walls[entity_id].destroy();
+            }
+
+            DoctorWall d = new DoctorWall(context, new Vector2(posX, posY), horizontal);
+            addEntity(200, d);
+
+            // Keep track of one wall per player
+            walls[entity_id] = d;
+
+            StateChange sc = Entity.createEntityStateChange(d.id, posX, posY, DoctorWall.frameWidth, DoctorWall.textureName);
             changes.Add(sc);
         }
 
