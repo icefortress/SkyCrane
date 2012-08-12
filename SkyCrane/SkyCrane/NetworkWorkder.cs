@@ -23,6 +23,8 @@ namespace SkyCrane
         private Semaphore sendSem = new Semaphore(0, 100);
         private Semaphore nextSem = new Semaphore(0, 100);
 
+        private static int TIMEOUT = 5000;
+
         //This is the server side
         public NetworkWorker(int port = 0)
             : base(port)
@@ -65,14 +67,20 @@ namespace SkyCrane
 
         public Packet getNext()
         {
-            this.nextSem.WaitOne();
-            Packet ret;
-            lock (readBuffer)
+            if (this.nextSem.WaitOne(TIMEOUT))
             {
-                ret = readBuffer.Dequeue();
-            }
+                Packet ret;
+                lock (readBuffer)
+                {
+                    ret = readBuffer.Dequeue();
+                }
 
-            return ret;
+                return ret;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private void thread_do_recv()
@@ -117,7 +125,7 @@ namespace SkyCrane
 
     public class Packet
     {
-        public enum PacketType { HANDSHAKE, CMD, STC, SYNC };
+        public enum PacketType { HANDSHAKE, CMD, STC, SYNC, PING };
         public PacketType ptype;
         public IPEndPoint Dest = null;
         public byte[] data = new byte[200];
@@ -181,6 +189,16 @@ namespace SkyCrane
         public SYNCPacket()
         {
             this.ptype = PacketType.SYNC;
+            this.addHeader(ptype);
+            this.finalize();
+        }
+    }
+
+    public class PingPacket : Packet
+    {
+        public PingPacket()
+        {
+            this.ptype = PacketType.PING;
             this.addHeader(ptype);
             this.finalize();
         }

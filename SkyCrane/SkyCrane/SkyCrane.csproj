@@ -60,7 +60,7 @@
     <XnaCompressContent>true</XnaCompressContent>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SkyCrane.Program</StartupObject>
+    <StartupObject>SkyCrane.NetTest</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Lidgren.Network">
