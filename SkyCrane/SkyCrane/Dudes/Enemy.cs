@@ -21,7 +21,7 @@ namespace SkyCrane.Dudes
         {
         }
 
-        public override Vector2 getHitbox()
+        public override Vector2 GetPhysicsSize()
         {
             return HITBOX_SIZE;
         }

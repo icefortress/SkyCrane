@@ -259,7 +259,21 @@ namespace SkyCrane.Screens
             }
             else if (c.ct == CommandType.SHOOT)
             {
-                Vector2 velocity = c.direction * 8;
+                PlayerCharacter attacker = (PlayerCharacter)gameState.entities[c.entity_id];
+                Vector2 vel = c.direction;
+                if (vel == Vector2.Zero)
+                {
+                    if (attacker.facingLeft)
+                    {
+                        vel = new Vector2(-1, 0);
+                    }
+                    else
+                    {
+                        vel = new Vector2(1, 0);
+                    }
+                }
+
+                Vector2 velocity = vel * 8;
                 if (bulletExists)
                 {
                     PlayerCharacter shooter = (PlayerCharacter)gameState.entities[c.entity_id];

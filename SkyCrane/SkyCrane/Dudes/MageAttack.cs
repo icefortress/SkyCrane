@@ -32,7 +32,7 @@ namespace SkyCrane.Dudes
             return textureName;
         }
 
-        public override Vector2 getHitbox()
+        public override Vector2 GetPhysicsSize()
         {
             return HITBOX_SIZE;
         }

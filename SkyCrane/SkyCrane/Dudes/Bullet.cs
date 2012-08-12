@@ -18,6 +18,8 @@ namespace SkyCrane.Dudes
 
         int payload = 1;
 
+        private List<PhysicsAble> hits = new List<PhysicsAble>();
+
         public PlayerCharacter owner = null;
         public PlayerCharacter lastOwner = null;
 
@@ -32,7 +34,7 @@ namespace SkyCrane.Dudes
             return textureName;
         }
 
-        public override Vector2 getHitbox()
+        public override Vector2 GetPhysicsSize()
         {
             return HITBOX_SIZE;
         }
@@ -58,6 +60,7 @@ namespace SkyCrane.Dudes
                 lastOwner = owner;
                 owner = null;
                 this.velocity = velocity;
+                hits.Clear();
             }
         }
 
@@ -77,9 +80,10 @@ namespace SkyCrane.Dudes
             }
             else if (entity is Enemy)
             {
+                if(hits.Contains(entity)) return;
                 Enemy e = (Enemy)entity;
                 e.applyDamage(payload);
-                destroy();
+                hits.Add(entity);
             }
         }
     }

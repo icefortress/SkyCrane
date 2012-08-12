@@ -32,10 +32,9 @@ namespace SkyCrane.Dudes
             String textureLeft, String textureRight, String textureAttackLeft, String textureAttackRight) :
             base(g, posX, posY, frameWidth, attackFrameWidth, textureLeft, textureRight, textureAttackLeft, textureAttackRight, 2)
         {
-            physicsSize = HITBOX_SIZE;
         }
 
-        public override Vector2 getHitbox()
+        public override Vector2 GetPhysicsSize()
         {
             return HITBOX_SIZE;
         }

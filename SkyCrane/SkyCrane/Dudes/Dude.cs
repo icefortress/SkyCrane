@@ -23,8 +23,6 @@ namespace SkyCrane.Dudes
         protected String textureLeft;
         protected String textureRight;
 
-        public Vector2 physicsSize;
-
         private int health;
 
         public Dude(GameplayScreen g, int posX, int posY, int frameWidth, String textureLeft, String textureRight, float scale) : base(g, posX, posY, frameWidth, textureLeft, scale)
@@ -32,12 +30,9 @@ namespace SkyCrane.Dudes
             this.textureLeft = textureLeft;
             this.textureRight = textureRight;
 
-            physicsSize = getHitbox();
-
             health = getMaxHealth();
         }
 
-        public abstract Vector2 getHitbox();
         public abstract String getDefaultTexture();
 
         public virtual int getMaxHealth()
@@ -56,7 +51,7 @@ namespace SkyCrane.Dudes
 
         public void UpdatePhysics()
         {
-            size = GetPhysicsSize();
+            size = this.GetPhysicsSize();
 
             worldBounds = new Rectangle((int)(worldPosition.X - size.X / 2),
                 (int)(worldPosition.Y - size.Y / 2),
@@ -68,10 +63,7 @@ namespace SkyCrane.Dudes
             bottomRect = new Rectangle(worldBounds.X, worldBounds.Y + worldBounds.Height / 2, worldBounds.Width, worldBounds.Height / 2);
         }
 
-        public Vector2 GetPhysicsSize()
-        {
-            return physicsSize;
-        }
+        public abstract Vector2 GetPhysicsSize();
 
         public Vector2 GetPhysicsPosition()
         {
