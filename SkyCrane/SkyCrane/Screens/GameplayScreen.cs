@@ -42,12 +42,14 @@ namespace SkyCrane.Screens
 
         public GameState gameState;
 
+        // Server and player data
         public bool isServer;
         public bool isMultiplayer;
         public int numPlayers;
         public int playerId;
         public PlayerCharacter.Type[] characterSelections;
         List<int> playerEntityIds = new List<int>();
+        Dictionary<int, ConnectionID> playerIdToConnectionHash; // Player id to connection id mapping for the host
 
         public Dictionary<int, int> serverIDLookup = new Dictionary<int, int>();
 
@@ -64,6 +66,7 @@ namespace SkyCrane.Screens
 
         float pauseAlpha;
 
+        // References to client variables
         RawServer serverReference = null;
         RawClient clientReference = null;
 
@@ -78,18 +81,19 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Constructor.
         /// </summary>
-        public GameplayScreen(bool isServer, bool isMultiplayer, int numPlayers, int playerId, PlayerCharacter.Type[] characterSelections)
+        public GameplayScreen(bool isServer, bool isMultiplayer, int numPlayers, int playerId,
+            PlayerCharacter.Type[] characterSelections, Dictionary<int, ConnectionID> playerIdToConnectionHash)
         {
             this.isServer = isServer;
             this.isMultiplayer = isMultiplayer;
             this.numPlayers = numPlayers;
             this.characterSelections = characterSelections;
+            this.playerIdToConnectionHash = playerIdToConnectionHash;
 
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
 
             gameState = new GameState(this);
-
 
             return;
         }
@@ -100,6 +104,9 @@ namespace SkyCrane.Screens
         /// </summary>
         public override void LoadContent()
         {
+            serverReference = ((ProjectSkyCrane)ScreenManager.Game).RawServer;
+            clientReference = ((ProjectSkyCrane)ScreenManager.Game).RawClient;
+
             if (content == null)
             {
                 content = new ContentManager(ScreenManager.Game.Services, "Content");
