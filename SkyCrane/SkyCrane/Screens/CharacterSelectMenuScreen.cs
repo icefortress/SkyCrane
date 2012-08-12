@@ -157,7 +157,7 @@ namespace SkyCrane.Screens
                     playersConnected[playerId] = false;
                     if (host) // Broadcast disconnect of host to all players
                     {
-                        HostBroadcastLocks();
+                        HostBroadcastConnected();
                     }
                     else // Inform the host of a disconnect
                     {
