@@ -14,6 +14,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using Microsoft.Xna.Framework.Audio;
 using SkyCrane.Dudes;
+using SkyCrane.NetCode;
 #endregion
 
 namespace SkyCrane.Screens
@@ -164,6 +165,9 @@ namespace SkyCrane.Screens
                 {
                     characterSelections[playerId] = 0;
                 }
+
+                // TODO: Send a packet to the server from here
+
                 menuScrollSoundEffect.Play();
             }
 
@@ -194,7 +198,10 @@ namespace SkyCrane.Screens
         /// </summary>
         public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
+            
+
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
+            return;
         }
 
         /// <summary>
