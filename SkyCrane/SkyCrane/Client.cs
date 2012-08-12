@@ -19,6 +19,9 @@ namespace SkyCrane
         public enum cState { DISCONNECTED, CONNECTED, TRYCONNECT };
         cState curState = cState.DISCONNECTED;
 
+        // Semaphore to wait on for the server info to be known
+        private Semaphore ready = new Semaphore(0, 1);
+
         // Queue of state changes to be passed off the the UI
         private Queue<StateChange> buffer = new Queue<StateChange>();
 
@@ -26,8 +29,10 @@ namespace SkyCrane
         {
             System.Console.WriteLine("Client Started");
 
+            // Create the thread
             clientThread = new Thread(this.ClientstartFunc);
             clientThread.Name = "mainClientThread";
+
             clientThread.Start();
         }
 
@@ -41,6 +46,9 @@ namespace SkyCrane
 
             //Spawn the client reader/writer threads
             this.nw = new NetworkWorker(server);
+
+            // Inform the client thread that the server info is ready
+            ready.Release();
 
             // Send the handshake request to the server
             this.handshake();
@@ -60,7 +68,7 @@ namespace SkyCrane
         private void ClientstartFunc()
         {
             // Hold here until the server information has been provided
-            // TODO
+            ready.WaitOne();
 
             // Event Loop
             // Pull packets out of the network layer and handle them
@@ -75,12 +83,18 @@ namespace SkyCrane
                     switch (curState)
                     {
                         case cState.TRYCONNECT:
+                            // Did not receive the expected HANDSHAKE message
+                            // Restart the handshake
+                            this.handshake();
                             break;
                         case cState.CONNECTED:
+                            // The server may have died, ping the server to find out
+                            this.pingServer();
                             break;
                         case cState.DISCONNECTED:
-                            break;
                         default:
+                            // This should not happen, die screaming!
+                            Environment.Exit(1);
                             break;
                     }
                 }
@@ -95,20 +109,66 @@ namespace SkyCrane
                             break;
                         case Packet.PacketType.HANDSHAKE:
                             Console.WriteLine("Handshake received from the server");
+
+                            switch (curState)
+                            {
+                                case cState.TRYCONNECT:
+                                    // The connection has succeeded!
+                                    this.curState = cState.CONNECTED;
+                                    break;
+                                case cState.CONNECTED:
+                                    // Repeat? This can be ignored ( I hope...)
+                                    break;
+                                case cState.DISCONNECTED:
+                                default:
+                                    // This should not happen, die screaming!
+                                    Environment.Exit(1);
+                                    break;
+                            }
+
                             break;
                         case Packet.PacketType.STC:
                             Console.WriteLine("STC received from the server");
-                            // Marshall the state change packet into an object
-                            StateChange newSTC = new StateChange(newPacket.data);
 
-                            // Add the state change object to the buffer for the UI
-                            lock (this.buffer)
+                            switch (curState)
                             {
-                                buffer.Enqueue(newSTC);
+                                case cState.TRYCONNECT:
+                                    break;
+                                case cState.CONNECTED:
+                                    // Marshall the state change packet into an object
+                                    StateChange newSTC = new StateChange(newPacket.data);
+
+                                    // Add the state change object to the buffer for the UI
+                                    lock (this.buffer)
+                                    {
+                                        buffer.Enqueue(newSTC);
+                                    }
+
+                                    break;
+                                case cState.DISCONNECTED:
+                                default:
+                                    // This should not happen, die screaming!
+                                    Environment.Exit(1);
+                                    break;
                             }
+
                             break;
                         case Packet.PacketType.SYNC:
                             Console.WriteLine("SYNC received from the server");
+                            
+                            switch (curState)
+                            {
+                                case cState.TRYCONNECT:
+                                    break;
+                                case cState.CONNECTED:
+                                    break;
+                                case cState.DISCONNECTED:
+                                default:
+                                    // This should not happen, die screaming!
+                                    Environment.Exit(1);
+                                    break;
+                            }
+
                             break;
                         default:
                             Console.WriteLine("Unknown packet type from the server...");
@@ -124,6 +184,13 @@ namespace SkyCrane
             HandshakePacket hs = new HandshakePacket();
             hs.setDest(server);
             this.nw.commitPacket(hs);
+        }
+
+        private void pingServer()
+        {
+            PingPacket pp = new PingPacket();
+            pp.setDest(server);
+            this.nw.commitPacket(pp);
         }
 
         //OPERATORS
