@@ -71,7 +71,7 @@ namespace SkyCrane.Engine
         protected float rotation = 0;
 
         Rectangle sourceRect = new Rectangle();
-        Rectangle destinationRect = new Rectangle();
+        protected Rectangle destinationRect = new Rectangle();
 
         public int frameWidth;
         public int frameHeight;
@@ -191,11 +191,6 @@ namespace SkyCrane.Engine
             }
 
             int drawFrame = animationFrames[currentFrame];
-            if (this.GetFrameTime() == 100)
-            {
-                Console.WriteLine("Current frame: " + drawFrame);
-            }
-
 
             // Grab the correct frame in the image strip by multiplying the currentFrame index by the frame width
             sourceRect = new Rectangle(drawFrame * frameWidth, 0, frameWidth, frameHeight);
@@ -213,7 +208,7 @@ namespace SkyCrane.Engine
             notifyStateChangeListeners(sc);
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch sb)
+        public virtual void Draw(GameTime gameTime, SpriteBatch sb)
         {
             if (active)
             {
