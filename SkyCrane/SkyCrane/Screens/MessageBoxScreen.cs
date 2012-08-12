@@ -197,10 +197,10 @@ namespace SkyCrane.Screens
 
             if (includeUsageText) // If there is usage text, draw accompanying buttons
             {
-                spriteBatch.Draw(aButtonTexture, new Rectangle((int)(textPosition.X + okSize.X) + 2,
-                    (int)(textPosition.Y + baseSize.Y), (int)okSize.Y, (int)okSize.Y), color);
-                spriteBatch.Draw(bButtonTexture, new Rectangle((int)(textPosition.X + cancelSize.X) + 2,
-                    (int)(textPosition.Y + textSize.Y - cancelSize.Y), (int)cancelSize.Y, (int)cancelSize.Y), color);
+                spriteBatch.Draw(aButtonTexture, new Rectangle((int)(textPosition.X + okSize.X),
+                    (int)(textPosition.Y + baseSize.Y - 14), 64, 64), color);
+                spriteBatch.Draw(bButtonTexture, new Rectangle((int)(textPosition.X + cancelSize.X),
+                    (int)(textPosition.Y + baseSize.Y + okSize.Y - 14), 64, 64), color);
             }
 
             spriteBatch.End();

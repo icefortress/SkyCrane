@@ -78,6 +78,15 @@ namespace SkyCrane.Screens
             set { menuTitle = value; }
         }
 
+        /// <summary>
+        /// The item currently selected in the menu.
+        /// </summary>
+        protected int SelectedEntry
+        {
+            get { return selectedEntry; }
+            set { selectedEntry = value; }
+        }
+
         #endregion
 
         #region Initialization

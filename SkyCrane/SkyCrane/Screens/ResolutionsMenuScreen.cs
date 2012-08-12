@@ -31,6 +31,8 @@ namespace SkyCrane.Screens
             "1366x768", "1400x1050", "1440x900", "1680x1050", "1920x1080" };
         static readonly char[] resolutionDelimiters = { 'x' };
 
+        static string currentResolution = "1280x720";
+
         #endregion
 
         #region Initialization
@@ -47,6 +49,11 @@ namespace SkyCrane.Screens
                 MenuEntry resolution = new MenuEntry(resolutions[i]);
                 resolution.Selected += ResolutionMenuEntrySelected;
                 MenuEntries.Add(resolution);
+
+                if (string.Compare(resolutions[i], currentResolution) == 0) // Select the most recent entry
+                {
+                    SelectedEntry = i;
+                }
             }
 
             // Set up the back menu option
@@ -67,7 +74,8 @@ namespace SkyCrane.Screens
         /// <param name="e">Event arguments.</param>
         void ResolutionMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
-            string[] dimensions = ((MenuEntry)(sender)).Text.Split(resolutionDelimiters);
+            currentResolution = ((MenuEntry)sender).Text;
+            string[] dimensions = currentResolution.Split(resolutionDelimiters);
             int width = int.Parse(dimensions[0]), height = int.Parse(dimensions[1]);
             Form gameWindow = Form.FromHandle(((ProjectSkyCrane)ScreenManager.Game).Window.Handle).FindForm();
             gameWindow.Size = new Size(width, height); // Set the window size

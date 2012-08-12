@@ -81,28 +81,28 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AIable.cs" />
-    <Compile Include="AttackingDude.cs" />
+    <Compile Include="Dudes\AttackingDude.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="Client.cs" />
-    <Compile Include="Doctor.cs" />
-    <Compile Include="MageAttack.cs" />
-    <Compile Include="Enemy.cs" />
+    <Compile Include="Dudes\Doctor.cs" />
+    <Compile Include="Dudes\MageAttack.cs" />
+    <Compile Include="Dudes\Enemy.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="GameState.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="NetworkWorkder.cs" />
     <Compile Include="PhysicsAble.cs" />
-    <Compile Include="PlayerCharacter.cs" />
+    <Compile Include="Dudes\PlayerCharacter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProjectSkyCrane.cs" />
     <Compile Include="GameStateManager\GameScreen.cs" />
     <Compile Include="GameStateManager\InputState.cs" />
     <Compile Include="GameStateManager\ScreenManager.cs" />
     <Compile Include="Screens\BackgroundScreen.cs" />
-    <Compile Include="Dude.cs" />
-    <Compile Include="Bullet.cs" />
+    <Compile Include="Dudes\Dude.cs" />
+    <Compile Include="Dudes\Bullet.cs" />
     <Compile Include="Screens\CharacterSelectMenuScreen.cs" />
-    <Compile Include="Screens\DoctorWall.cs" />
+    <Compile Include="Dudes\DoctorWall.cs" />
     <Compile Include="Screens\HostSettingsMenuScreen.cs" />
     <Compile Include="Screens\MultiplayerMenuScreen.cs" />
     <Compile Include="Screens\ResolutionsMenuScreen.cs" />
@@ -115,12 +115,12 @@
     <Compile Include="Screens\OptionsMenuScreen.cs" />
     <Compile Include="Screens\PauseMenuScreen.cs" />
     <Compile Include="Screens\PlayerIndexEventArgs.cs" />
-    <Compile Include="Skeleton.cs" />
+    <Compile Include="Dudes\Skeleton.cs" />
     <Compile Include="StateChange.cs" />
     <Compile Include="StateChangeListener.cs" />
     <Compile Include="Server.cs" />
-    <Compile Include="Tank.cs" />
-    <Compile Include="Wizard.cs" />
+    <Compile Include="Dudes\Tank.cs" />
+    <Compile Include="Dudes\Wizard.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

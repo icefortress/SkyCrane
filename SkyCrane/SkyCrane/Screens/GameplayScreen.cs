@@ -18,6 +18,7 @@ using SkyCrane.GameStateManager;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
+using SkyCrane.Dudes;
 #endregion
 
 namespace SkyCrane.Screens
@@ -163,10 +164,10 @@ namespace SkyCrane.Screens
             aiAbles.Add(e);*/
 
             // Some test music
-            /*MediaPlayer.Stop();
+            MediaPlayer.Stop();
             Song bgMusic = content.Load<Song>("Music/Nero - Doomsday");
             MediaPlayer.Volume = 0.3f;
-            MediaPlayer.Play(bgMusic);*/
+            MediaPlayer.Play(bgMusic);
 
             // once the load has finished, we use ResetElapsedTime to tell the game's
             // timing mechanism that we have just finished a very long frame, and that
