@@ -195,6 +195,7 @@ namespace SkyCrane.Screens
             textureDict.Add("bowbolt", content.Load<Texture2D>("Sprites/bowbolt"));
             textureDict.Add("healthbar", content.Load<Texture2D>("Sprites/HealthBar"));
             textureDict.Add("healthchunk", content.Load<Texture2D>("Sprites/HealthPoint"));
+            textureDict.Add("laser", content.Load<Texture2D>("Sprites/Laser"));
 
 
             Level l = Level.generateLevel(this);
@@ -373,6 +374,11 @@ namespace SkyCrane.Screens
                 {
                     Vector2 pos = c.position + new Vector2(0, 15);
                     if (success) gameState.createRogueAttack((int)pos.X, (int)pos.Y, vel * 8);
+                }
+                else if (gameState.entities[c.entity_id] is JarCat)
+                {
+                    Vector2 pos = c.position - new Vector2(0, 30);
+                    if (success) gameState.createLaser((int)pos.X, (int)pos.Y, vel * 5);
                 }
 
             }
