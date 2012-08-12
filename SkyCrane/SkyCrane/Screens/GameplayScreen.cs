@@ -45,6 +45,8 @@ namespace SkyCrane.Screens
         public bool isServer;
         public bool isMultiplayer;
         public int numPlayers;
+        public int playerId;
+        public PlayerCharacter.Type[] characterSelections;
         public Dictionary<int, int> serverIDLookup = new Dictionary<int, int>();
 
         public PlayerCharacter secondPlayer = null;
@@ -70,7 +72,7 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Constructor.
         /// </summary>
-        public GameplayScreen(bool isServer, bool isMultiplayer, int numPlayers)
+        public GameplayScreen(bool isServer, bool isMultiplayer, int numPlayers, int playerId, PlayerCharacter.Type[] characterSelections)
         {
             this.isServer = isServer;
             this.isMultiplayer = isMultiplayer;
@@ -84,6 +86,7 @@ namespace SkyCrane.Screens
             if (isServer)
             {
             }
+            return;
         }
 
 
@@ -192,10 +195,10 @@ namespace SkyCrane.Screens
 
         public void serverStartGame()
         {
-            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, "doctor");
+            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, PlayerCharacter.Type.Doctor);
 
             // TODO: delete this
-            secondPlayer = gameState.createPlayer(1280 / 2, 720 / 2 - 50, "tank");
+            secondPlayer = gameState.createPlayer(1280 / 2, 720 / 2 - 50, PlayerCharacter.Type.Tank);
 
             if (isMultiplayer)
             {
@@ -203,7 +206,7 @@ namespace SkyCrane.Screens
                 List<int> playerIds = new List<int>();
                 for (int i = 1; i < numPlayers; i++)
                 {
-                    PlayerCharacter pc = gameState.createPlayer(1280 / 2 + 20 * i, 720 / 2 + 50, "tank");
+                    PlayerCharacter pc = gameState.createPlayer(1280 / 2 + 20 * i, 720 / 2 + 50, PlayerCharacter.Type.Tank);
                     playerIds.Add(pc.id);
                 }
             }
@@ -333,7 +336,7 @@ namespace SkyCrane.Screens
                 commandBuffer.Clear(); // Important!
 
                 // Apply commands from the client
-                if (isMultiplayer)
+                if (isMultiplayer && numPlayers > 1)
                 {
                     List<Command> clientCommands = serverReference.getCMD();
                     foreach (Command c in clientCommands)
@@ -381,7 +384,10 @@ namespace SkyCrane.Screens
                 }
 
                 // Push changes to clients
-                if(isMultiplayer) serverReference.broadcastSC(gameState.changes);
+                if (isMultiplayer && numPlayers > 1)
+                {
+                    serverReference.broadcastSC(gameState.changes);
+                }
                 
                 // Commit changes locally
                 gameState.commitChanges();

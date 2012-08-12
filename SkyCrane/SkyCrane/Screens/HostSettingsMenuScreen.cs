@@ -211,8 +211,16 @@ namespace SkyCrane.Screens
         /// </summary>
         void ContinueMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
-            // TODO: Connect with the host
-            ScreenManager.AddScreen(new CharacterSelectMenuScreen(host, true), e.PlayerIndex);
+            if (host) // We are hosting, immediately jump into the character select
+            {
+                // TODO: Start up the netcode either in here or the character select that will listen on incoming connections
+                ScreenManager.AddScreen(new CharacterSelectMenuScreen(true, true, 0), e.PlayerIndex);
+            }
+            else
+            {
+                // TODO: Connect to the host from here (so we can check the server connection settings before changing menus)
+                ScreenManager.AddScreen(new CharacterSelectMenuScreen(false, true, -1), e.PlayerIndex);
+            }
             return;
         }
 

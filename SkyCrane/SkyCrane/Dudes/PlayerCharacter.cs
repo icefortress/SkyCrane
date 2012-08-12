@@ -12,6 +12,18 @@ namespace SkyCrane.Dudes
 
     public abstract class PlayerCharacter : AttackingDude
     {
+
+        /// <summary>
+        /// The types of possible player characters.
+        /// </summary>
+        public enum Type
+        {
+            Doctor,
+            Rogue,
+            Tank,
+            Wizard
+        }
+
         public static Vector2 HITBOX_SIZE = new Vector2(45, 45);
         Bullet bulletRef = null;
 
@@ -20,7 +32,6 @@ namespace SkyCrane.Dudes
             base(g, posX, posY, frameWidth, attackFrameWidth, textureLeft, textureRight, textureAttackLeft, textureAttackRight)
         {
             scale = 2;
-
             physicsSize = HITBOX_SIZE;
         }
 

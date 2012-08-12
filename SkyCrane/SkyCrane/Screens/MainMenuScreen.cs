@@ -55,7 +55,7 @@ namespace SkyCrane.Screens
         /// </summary>
         void NewGameMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
-            ScreenManager.AddScreen(new CharacterSelectMenuScreen(true, false), e.PlayerIndex);
+            ScreenManager.AddScreen(new CharacterSelectMenuScreen(true, false, 0), e.PlayerIndex);
             return;
         }
 

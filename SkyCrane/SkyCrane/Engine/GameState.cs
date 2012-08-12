@@ -46,26 +46,32 @@ namespace SkyCrane.Engine
         public SortedDictionary<int, List<Entity>> drawLists = new SortedDictionary<int, List<Entity>>();
 
         // Should be called by the server to create a player entity in the current game state
-        public PlayerCharacter createPlayer(int posX, int posY, String type)
+        public PlayerCharacter createPlayer(int posX, int posY, PlayerCharacter.Type type)
         {
-            PlayerCharacter pc = null;
-            if (type == "tank")
+            PlayerCharacter pc;
+            switch (type) // Create a new character based on the type
             {
-                pc = new Tank(context, posX, posY);
+                case PlayerCharacter.Type.Doctor:
+                    pc = new Doctor(context, posX, posY);
+                    break;
+                case PlayerCharacter.Type.Rogue:
+                    // TODO: Change this call
+                    throw new NotImplementedException();
+                    //break;
+                case PlayerCharacter.Type.Tank:
+                    pc = new Tank(context, posX, posY);
+                    break;
+                case PlayerCharacter.Type.Wizard:
+                    pc = new Wizard(context, posX, posY);
+                    break;
+                default:
+                    throw new ArgumentException();
             }
-            else if (type == "wizard")
-            {
-                pc = new Wizard(context, posX, posY);
-            }
-            else if (type == "doctor")
-            {
-                pc = new Doctor(context, posX, posY);
-            }
-            addEntity(100, pc);
 
+            // Add the new entity and create an appropriate state to accompany it
+            addEntity(100, pc);
             StateChange sc = Entity.createEntityStateChange(pc.id, posX, posY, pc.frameWidth, pc.getDefaultTexture());
             changes.Add(sc);
-
             return pc;
         }
 

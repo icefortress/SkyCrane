@@ -13,6 +13,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Microsoft.Xna.Framework.Audio;
+using SkyCrane.Dudes;
 #endregion
 
 namespace SkyCrane.Screens
@@ -29,9 +30,9 @@ namespace SkyCrane.Screens
         bool host;
         bool multiplayer;
         int numPlayers = 1;
-        int[] characterSelections;
+        PlayerCharacter.Type[] characterSelections;
         bool[] characterSelectionsLocked;
-        int playerNumber;
+        int playerId;
 
         // Textures used to draw characters and buttons
         Texture2D[] characters;
@@ -57,7 +58,7 @@ namespace SkyCrane.Screens
         /// </summary>
         /// <param name="host">Whether or not this player is the host.</param>
         /// <param name="multiplayer">Whether or not this game is multiplayer.</param>
-        public CharacterSelectMenuScreen(bool host, bool multiplayer, int playerNumber = -1)
+        public CharacterSelectMenuScreen(bool host, bool multiplayer, int playerId)
             : base("Character Select", true)
         {
             this.host = host;
@@ -69,7 +70,7 @@ namespace SkyCrane.Screens
             MenuEntries.Add(startGameMenuEntry);
 
             // Set up the initial character selections
-            characterSelections = new int[ProjectSkyCrane.MAX_PLAYERS];
+            characterSelections = new PlayerCharacter.Type[ProjectSkyCrane.MAX_PLAYERS];
             characterSelectionsLocked = new bool[ProjectSkyCrane.MAX_PLAYERS];
             for (int i = 0; i < ProjectSkyCrane.MAX_PLAYERS; i += 1)
             {
@@ -79,11 +80,11 @@ namespace SkyCrane.Screens
 
             if (host) // Set up which player slot this person currently fills
             {
-                this.playerNumber = 0;
+                this.playerId = 0;
             }
             else
             {
-                this.playerNumber = playerNumber;
+                this.playerId = playerId;
             }
 
             return;
@@ -98,8 +99,15 @@ namespace SkyCrane.Screens
         public override void LoadContent()
         {
             ContentManager content = ScreenManager.Game.Content;
-            characters = new Texture2D[] { content.Load<Texture2D>("Sprites/Tank"), content.Load<Texture2D>("Sprites/Wizard"),
-                content.Load<Texture2D>("Sprites/Rogue"), content.Load<Texture2D>("Sprites/Doctor") };
+
+            // Dynamically load character types based on enum
+            Array characterTypes = Enum.GetValues(typeof(PlayerCharacter.Type));
+            characters = new Texture2D[characterTypes.Length];
+            for (int i = 0; i < characters.Length; i += 1)
+            {
+                characters[i] = content.Load<Texture2D>("Sprites/" + characterTypes.GetValue(i));
+            }
+
             aButtonTextured2D = content.Load<Texture2D>("XBox Buttons/button_a");
             bButtonTextured2D = content.Load<Texture2D>("XBox Buttons/button_b");
             dPadLeftTexture2D = content.Load<Texture2D>("XBox Buttons/dpad_left");
@@ -117,13 +125,13 @@ namespace SkyCrane.Screens
         /// </summary>
         protected override void OnCancel(PlayerIndex playerIndex)
         {
-            if (!characterSelectionsLocked[playerNumber])
+            if (!characterSelectionsLocked[playerId])
             {
                 base.OnCancel(playerIndex);
             }
             else
             {
-                characterSelectionsLocked[playerNumber] = false;
+                characterSelectionsLocked[playerId] = false;
             }
             return;
         }
@@ -135,26 +143,26 @@ namespace SkyCrane.Screens
         {
             if (e.MenuAccept) // Handle character selection and game starting
             {
-                if (!characterSelectionsLocked[playerNumber])
+                if (!characterSelectionsLocked[playerId])
                 {
-                    characterSelectionsLocked[playerNumber] = true;
+                    characterSelectionsLocked[playerId] = true;
                 }
                 else if (host && AllLocked())
                 {
-                    LoadingScreen.Load(ScreenManager, false, e.PlayerIndex, new GameplayScreen(host, multiplayer, numPlayers));
+                    LoadingScreen.Load(ScreenManager, false, e.PlayerIndex, new GameplayScreen(host, multiplayer, numPlayers, playerId, characterSelections));
                 }
                 menuSelectSoundEffect.Play();
             }
-            else if (!characterSelectionsLocked[playerNumber] && e.ToggleDirection != 0) // Do some toggling
+            else if (!characterSelectionsLocked[playerId] && e.ToggleDirection != 0) // Do some toggling
             {
-                characterSelections[playerNumber] += e.ToggleDirection;
-                if (characterSelections[playerNumber] < 0)
+                characterSelections[playerId] += e.ToggleDirection;
+                if (characterSelections[playerId] < 0)
                 {
-                    characterSelections[playerNumber] = characters.Length - 1;
+                    characterSelections[playerId] = (PlayerCharacter.Type)(characters.Length - 1);
                 }
-                else if (characterSelections[playerNumber] >= characters.Length)
+                else if ((int)characterSelections[playerId] >= characters.Length)
                 {
-                    characterSelections[playerNumber] = 0;
+                    characterSelections[playerId] = 0;
                 }
                 menuScrollSoundEffect.Play();
             }
@@ -221,11 +229,11 @@ namespace SkyCrane.Screens
                 int yBase = (int)titleEnd + row * spacePerRow;
                 int centerColumn = xBase + (spacePerColumn - 192) / 2;
                 int centerRow = yBase + (spacePerRow - (192 + (int)selectMessageSize.Y)) / 2;
-                spriteBatch.Draw(characters[characterSelections[i]], new Rectangle(centerColumn, centerRow, 192, 192),
+                spriteBatch.Draw(characters[(int)characterSelections[i]], new Rectangle(centerColumn, centerRow, 192, 192),
                     null, drawColor, 0, Vector2.Zero, SpriteEffects.None, 0);
                 int selectBase = centerRow + 192;
 
-                if (i == playerNumber)
+                if (i == playerId)
                 {
                     string playerName = "Player " + (i + 1) + ": ";
                     float playerNameSize = ScreenManager.Font.MeasureString(playerName).X;
