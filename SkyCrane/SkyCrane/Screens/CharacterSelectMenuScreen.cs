@@ -490,7 +490,7 @@ namespace SkyCrane.Screens
                                 }
                                 break;
                             case MenuState.Type.GameStart:
-                                LoadingScreen.Load(ScreenManager, false, PlayerIndex.One, new GameplayScreen(host, multiplayer, NumConnectedPlayers(), playerId, characterSelections, null));
+                                LoadingScreen.Load(ScreenManager, false, new GameplayScreen(host, multiplayer, NumConnectedPlayers(), playerId, characterSelections, null));
                                 break;
                             default:
                                 throw new ArgumentException();
