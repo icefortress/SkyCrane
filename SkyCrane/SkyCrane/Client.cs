@@ -21,7 +21,6 @@ namespace SkyCrane
 
         // Queue of state changes to be passed off the the UI
         private Queue<StateChange> buffer = new Queue<StateChange>();
-        // Lock protecting the buffer queue
 
         public RawClient()
         {
@@ -94,11 +93,15 @@ namespace SkyCrane
         {
             List<StateChange> newStates = new List<StateChange>();
 
-            // TODO: Acquire a the buffer lock well emptying the buffer
-            // Iterate over the buffer of states that have been acquired from the server
-            while (buffer.Count > 0)
+            // Acquire a the buffer lock well emptying the buffer
+
+            lock (this.buffer)
             {
-                newStates.Add(buffer.Dequeue());
+                // Iterate over the buffer of states that have been acquired from the server
+                while (buffer.Count > 0)
+                {
+                    newStates.Add(buffer.Dequeue());
+                }
             }
 
             return newStates;
