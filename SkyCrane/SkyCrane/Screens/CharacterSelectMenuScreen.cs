@@ -287,6 +287,7 @@ namespace SkyCrane.Screens
                             case MenuState.Type.Connect:
                                 if (clientStates[i].EventDetail == 0) // Assign our own player id
                                 {
+                                    playersConnected[0] = true; // Obviously the host is connected
                                     playerId = clientStates[i].PlayerId;
                                 }
                                 else if (clientStates[i].EventDetail == 1) // Assign a connected player
