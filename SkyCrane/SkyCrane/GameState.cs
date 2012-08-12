@@ -43,12 +43,14 @@ namespace SkyCrane
         public SortedDictionary<int, List<Entity>> drawLists = new SortedDictionary<int, List<Entity>>();
 
         // Should be called by the server to create a player entity in the current game state
-        public PlayerCharacter createPlayer(int posX, int posY, int frameWidth, String textureLeft, String textureRight, String animationName)
+        public PlayerCharacter createPlayer(int posX, int posY, int frameWidth,
+            String textureLeft, String textureRight, String textureAttackLeft, String textureAttackRight)
         {
-            PlayerCharacter pc = new PlayerCharacter(context, posX, posY, frameWidth, textureLeft, textureRight, animationName);
+            PlayerCharacter pc = new PlayerCharacter(context, posX, posY, frameWidth,
+                textureLeft, textureRight, textureAttackLeft, textureAttackRight);
             addEntity(100, pc);
 
-            StateChange sc = Entity.createEntityStateChange(pc.id, posX, posY, frameWidth, textureLeft, animationName);
+            StateChange sc = Entity.createEntityStateChange(pc.id, posX, posY, frameWidth, textureLeft);
             changes.Add(sc);
 
             return pc;
@@ -59,7 +61,7 @@ namespace SkyCrane
             Bullet b = new Bullet(context, new Vector2(posX, posY), velocity);
             addEntity(200, b);
 
-            StateChange sc = Entity.createEntityStateChange(b.id, posX, posY, Bullet.frameWidth, Bullet.textureName, "poop");
+            StateChange sc = Entity.createEntityStateChange(b.id, posX, posY, Bullet.frameWidth, Bullet.textureName);
             changes.Add(sc);
         }
 
@@ -114,9 +116,8 @@ namespace SkyCrane
                 int frame_width = s.intProperties[StateProperties.FRAME_WIDTH];
                 int draw_priority = s.intProperties[StateProperties.DRAW_PRIORITY];
                 String texture_name = s.stringProperties[StateProperties.SPRITE_NAME];
-                String animation_name = s.stringProperties[StateProperties.ANIMATION_NAME];
 
-                Entity e = new Entity(context, pos_x, pos_y, frame_width, texture_name, animation_name);
+                Entity e = new Entity(context, pos_x, pos_y, frame_width, texture_name);
                 e.id = entity;
                 
                 addEntity(draw_priority, e);
@@ -133,9 +134,8 @@ namespace SkyCrane
             {
                 int frame_width = s.intProperties[StateProperties.FRAME_WIDTH];
                 String texture_name = s.stringProperties[StateProperties.SPRITE_NAME];
-                String animation_name = s.stringProperties[StateProperties.ANIMATION_NAME];
 
-                entities[entity].changeAnimation(frame_width, texture_name, animation_name);
+                entities[entity].changeAnimation(frame_width, texture_name);
             }
         }
         

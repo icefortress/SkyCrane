@@ -82,6 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AIable.cs" />
+    <Compile Include="AttackingDude.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="Enemy.cs" />

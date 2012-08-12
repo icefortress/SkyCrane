@@ -14,12 +14,15 @@ namespace SkyCrane.Screens
         Rectangle topRect;
         Rectangle bottomRect;
 
-        bool facingLeft = true;
+        protected bool facingLeft = true;
+        protected bool forceCheck = false;
 
-        String textureLeft;
-        String textureRight;
+        protected String textureLeft;
+        protected String textureRight;
 
-        public Dude(GameplayScreen g, int posX, int posY, int frameWidth, String textureLeft, String textureRight, String animationName) : base(g, posX, posY, frameWidth, textureLeft, animationName)
+        public Vector2 physicsSize;
+
+        public Dude(GameplayScreen g, int posX, int posY, int frameWidth, String textureLeft, String textureRight) : base(g, posX, posY, frameWidth, textureLeft)
         {
             this.textureLeft = textureLeft;
             this.textureRight = textureRight;
@@ -41,7 +44,7 @@ namespace SkyCrane.Screens
 
         public Vector2 GetPhysicsSize()
         {
-            return size;
+            return physicsSize;
         }
 
         public Vector2 GetPhysicsPosition()
@@ -59,11 +62,19 @@ namespace SkyCrane.Screens
             velocity = Vector2.Zero;
         }
 
-        public override void setVelocity(Vector2 val)
+        public virtual void setSpriteFromVelocity()
         {
-            base.setVelocity(val);
+            if (forceCheck) forceCheck = false;
 
-            if (val.X < 0 && !facingLeft)
+            bool go_left = false;
+            bool go_right = false;
+            if (velocity.X == 0)
+            {
+                go_left = facingLeft;
+                go_right = !facingLeft;
+            }
+
+            if (velocity.X < 0 || go_left)
             {
                 facingLeft = true;
                 StateChange sc = new StateChange();
@@ -71,11 +82,10 @@ namespace SkyCrane.Screens
                 sc.intProperties.Add(StateProperties.ENTITY_ID, id);
                 sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
                 sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureLeft);
-                sc.stringProperties.Add(StateProperties.ANIMATION_NAME, "poop");
 
                 notifyStateChangeListeners(sc);
             }
-            else if (val.X > 0 && facingLeft)
+            else if (velocity.X > 0 || go_right)
             {
                 facingLeft = false;
                 StateChange sc = new StateChange();
@@ -83,10 +93,15 @@ namespace SkyCrane.Screens
                 sc.intProperties.Add(StateProperties.ENTITY_ID, id);
                 sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
                 sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureRight);
-                sc.stringProperties.Add(StateProperties.ANIMATION_NAME, "poop");
 
                 notifyStateChangeListeners(sc);
             }
+        }
+
+        public override void UpdateSprite(GameTime gameTime)
+        {
+            if ((velocity.X != 0 && velocity.X < 0 != facingLeft) || forceCheck) setSpriteFromVelocity();
+            base.UpdateSprite(gameTime);
         }
 
         public CollisionDirection CheckCollision(PhysicsAble entity)
