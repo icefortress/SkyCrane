@@ -290,19 +290,13 @@ namespace SkyCrane.NetCode
         private static short ids = 1;
         public short ID;
         public IPEndPoint endpt;
-        public System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
         public long lastSYNC = -1;
-
-        public static ConnectionID newConnectionID(IPEndPoint ep)
-        {
-            ConnectionID c = new ConnectionID(ep);
-            c.ID = ids++;
-            return c;
-        }
 
         public ConnectionID(IPEndPoint ep)
         {
+            ID = ids++;
             this.endpt = ep;
+            return;
         }
     }
 }
