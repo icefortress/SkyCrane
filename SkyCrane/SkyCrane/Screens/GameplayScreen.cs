@@ -139,7 +139,12 @@ namespace SkyCrane.Screens
             Texture2D roguer = content.Load<Texture2D>("Sprites/Rogue_Animated_Right");
             Texture2D rogueal = content.Load<Texture2D>("Sprites/Rogue_Attack");
             Texture2D roguear = content.Load<Texture2D>("Sprites/Rogue_Attack_Right");
-            
+
+            textureDict.Add("jarcatl", content.Load<Texture2D>("Sprites/Jar_Cat_Animated"));
+            textureDict.Add("jarcatr", content.Load<Texture2D>("Sprites/Jar_Cat_Animated_Right"));
+            textureDict.Add("jarcatal", content.Load<Texture2D>("Sprites/Jar_Cat_Attack_Right"));
+            textureDict.Add("jarcatar", content.Load<Texture2D>("Sprites/Jar_Cat_Attack"));
+
             textureDict.Add("tankl", tankl);
             textureDict.Add("tankr", tankr);
             textureDict.Add("tankal", tankal);

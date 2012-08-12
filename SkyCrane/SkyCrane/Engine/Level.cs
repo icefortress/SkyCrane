@@ -16,16 +16,17 @@ namespace SkyCrane.Engine
         int bitmapHeight;
         Vector2 levelSize; // in pixels, after scaling
 
-        public static float LEVEL_SCALE = 1;
+        public static float LEVEL_SCALE = 2;
 
         // TODO: we can use this to build levels with various params
         public static Level generateLevel(GameplayScreen g)
         {
-            return new Level(g, "room2", "room2-collision-map", 1920, 1800);
+            //return new Level(g, "room2", "room2-collision-map", 1920, 1800);
+            return new Level(g, "room2", "room2-collision-map", 1920 * 2, 1800 * 2);
         }
 
         public Level(GameplayScreen g, String bgKey, String bmKey, int size_x, int size_y)
-            : base(g, 1280 / 2, 720 / 2, size_x, 300, bgKey, LEVEL_SCALE)
+            : base(g, 1280 / 2, 720 / 2, (int)(size_x / LEVEL_SCALE), 300, bgKey, LEVEL_SCALE)
         {
             this.background = g.textureDict["room2"];
             Texture2D bitmap = g.textureDict["room2-collision-map"];
@@ -119,8 +120,8 @@ namespace SkyCrane.Engine
             Vector2 position = entity.GetPhysicsPosition() + entity.GetPhysicsVelocity();
             Vector2 size = entity.GetPhysicsSize();
 
-            float half_scaled_bg_w = levelSize.X * scale / 2;
-            float half_scaled_bg_h = levelSize.Y * scale / 2;
+            float half_scaled_bg_w = levelSize.X / 2;
+            float half_scaled_bg_h = levelSize.Y / 2;
             Vector2 levelPosition = this.worldPosition - new Vector2(half_scaled_bg_w, half_scaled_bg_h);
             Vector2 characterInLevel = position - levelPosition;
 
