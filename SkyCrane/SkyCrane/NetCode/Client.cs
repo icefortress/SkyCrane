@@ -95,6 +95,9 @@ namespace SkyCrane.NetCode
                 }
                 else
                 {
+                    Console.Write("Received packet of type: ");
+                    Console.WriteLine(newPacket.ptype);
+
                     // Handle the new packet 
                     switch (newPacket.ptype)
                     {
