@@ -588,8 +588,9 @@ namespace SkyCrane.Screens
                     c.position = gameState.usersPlayer.worldPosition;
                     commandBuffer.Add(c);
                     //Console.WriteLine("Shoot");
-                } else if (keyboardState.IsKeyUp(Keys.P)) {
                     attackButtonOK = false;
+                } else if (keyboardState.IsKeyUp(Keys.P)) {
+                    attackButtonOK = true;
                 }
 
                 if (keyboardState.IsKeyDown(Keys.X) && attackButtonOK)
