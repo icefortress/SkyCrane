@@ -28,6 +28,7 @@ namespace SkyCrane.Screens
 
         // TODO: Pretend that id's are nicely handled all over the place until I actually handle them niceley later after sleep
         // TODO: Prevent spoofing to clients if necessary
+        // TODO: Play sounds incurred by other players
 
         #region Fields
 
@@ -42,7 +43,7 @@ namespace SkyCrane.Screens
         Dictionary<int, int> connectionToPlayerIdHash; // Connection id to player id mapping
         Dictionary<int, ConnectionID> playerIdToConnectionHash; // Player id to connection id mapping
 
-        // Textures used to draw characters and buttons
+        // Textures used to draw characters and buttons and related variables
         Texture2D[] characters;
         Texture2D aButtonTextured2D;
         Texture2D bButtonTextured2D;
@@ -69,9 +70,11 @@ namespace SkyCrane.Screens
         public CharacterSelectMenuScreen(bool host, bool multiplayer)
             : base("Character Select", true)
         {
+
+            // Set up the host and multiplayer settings
             this.host = host;
             this.multiplayer = multiplayer;
-
+            
             // Create the single invisible menu entry
             MenuEntry startGameMenuEntry = new MenuEntry(string.Empty, true);
             startGameMenuEntry.Selected += StartGameMenuEntrySelected;
@@ -516,6 +519,7 @@ namespace SkyCrane.Screens
             int spacePerColumn = graphics.PresentationParameters.BackBufferWidth / PLAYERS_PER_ROW;
 
             Color transitionColor = new Color(192, 192, 192) * TransitionAlpha;
+            Color lockedTransitionColor = Color.Gray * TransitionAlpha;
 
             spriteBatch.Begin();
 
@@ -544,7 +548,7 @@ namespace SkyCrane.Screens
                     Color drawColor;
                     if (characterSelectionsLocked[i]) // Shade out locked-in characters
                     {
-                        drawColor = Color.Gray;
+                        drawColor = lockedTransitionColor;
                     }
                     else // Alpha transition
                     {
