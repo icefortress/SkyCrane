@@ -190,6 +190,14 @@ namespace SkyCrane.Screens
         #region Draw and Update
 
         /// <summary>
+        /// Run a regular update loop on the menu.
+        /// </summary>
+        public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
+        {
+            base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
+        }
+
+        /// <summary>
         /// Draw various graphical elements on the character select screen.
         /// </summary>
         public override void Draw(GameTime gameTime)

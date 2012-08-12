@@ -79,7 +79,7 @@
   <ItemGroup>
     <Compile Include="Engine\AIable.cs" />
     <Compile Include="Dudes\AttackingDude.cs" />
-    <Compile Include="NetCode\Command.cs" />
+    <Compile Include="NetCode\MenuState.cs" />
     <Compile Include="NetCode\Client.cs" />
     <Compile Include="Dudes\Doctor.cs" />
     <Compile Include="Dudes\MageAttack.cs" />
@@ -87,6 +87,7 @@
     <Compile Include="Engine\Entity.cs" />
     <Compile Include="Engine\GameState.cs" />
     <Compile Include="Engine\Level.cs" />
+    <Compile Include="NetCode\Command.cs" />
     <Compile Include="NetCode\NetworkWorker.cs" />
     <Compile Include="Engine\PhysicsAble.cs" />
     <Compile Include="Dudes\PlayerCharacter.cs" />

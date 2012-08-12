@@ -65,6 +65,10 @@ namespace SkyCrane.Screens
         RawServer serverReference = null;
         RawClient clientReference = null;
 
+        // Sound and music variables
+        Song backGroundSong;
+        SoundEffect pauseSoundEffect;
+
         #endregion
 
         #region Initialization
@@ -169,11 +173,13 @@ namespace SkyCrane.Screens
             physicsAbles.Add(e);
             aiAbles.Add(e);*/
 
-            // Some test music
+            // Set up the background music
             MediaPlayer.Stop();
-            Song bgMusic = content.Load<Song>("Music/Nero - Doomsday");
-            MediaPlayer.Volume = 0.3f;
-            MediaPlayer.Play(bgMusic);
+            backGroundSong = content.Load<Song>("Music/Nero - Doomsday");
+            MediaPlayer.Play(backGroundSong);
+
+            // Set up any generic sound effects that will be needed
+            pauseSoundEffect = content.Load<SoundEffect>("SoundFX/menu_cancel");
 
             // once the load has finished, we use ResetElapsedTime to tell the game's
             // timing mechanism that we have just finished a very long frame, and that
@@ -450,6 +456,7 @@ namespace SkyCrane.Screens
 
             if (input.IsPauseGame(ControllingPlayer) || gamePadDisconnected)
             {
+                pauseSoundEffect.Play();
                 ScreenManager.AddScreen(new PauseMenuScreen(), ControllingPlayer);
             }
             else
