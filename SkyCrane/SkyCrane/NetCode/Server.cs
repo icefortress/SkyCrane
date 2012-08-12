@@ -90,7 +90,7 @@ namespace SkyCrane.NetCode
         //}
     }
 
-    class RawServer
+    public class RawServer
     {
         private Thread serverThread;
         private bool go = true;
@@ -264,12 +264,17 @@ namespace SkyCrane.NetCode
 
         public void signalMSC(List<MenuState> list, ConnectionID cid)
         {
-            foreach (MenuState msc in list)
+            foreach (MenuState m in list)
             {
-                MSCPacket p = new MSCPacket(msc);
-                p.Dest = cid.endpt;
-                nw.commitPacket(p);
+                signalMSC(m, cid);
             }
+        }
+
+        public void signalMSC(MenuState m, ConnectionID cid)
+        {
+            MSCPacket p = new MSCPacket(m);
+            p.Dest = cid.endpt;
+            nw.commitPacket(p);
         }
     }
 

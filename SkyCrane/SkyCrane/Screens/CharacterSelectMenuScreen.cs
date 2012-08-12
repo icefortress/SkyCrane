@@ -15,6 +15,7 @@ using System;
 using Microsoft.Xna.Framework.Audio;
 using SkyCrane.Dudes;
 using SkyCrane.NetCode;
+using System.Collections.Generic;
 #endregion
 
 namespace SkyCrane.Screens
@@ -25,12 +26,14 @@ namespace SkyCrane.Screens
     class CharacterSelectMenuScreen : MenuScreen
     {
 
+        // TODO: Pretend that id's are nicely handled all over the place until I actually handle them niceley later after sleep
+
         #region Fields
 
         // Game and player settings
         bool host;
         bool multiplayer;
-        int numPlayers = 1;
+        int numPlayers = 4;
         PlayerCharacter.Type[] characterSelections;
         bool[] characterSelectionsLocked;
         int playerId;
@@ -59,7 +62,7 @@ namespace SkyCrane.Screens
         /// </summary>
         /// <param name="host">Whether or not this player is the host.</param>
         /// <param name="multiplayer">Whether or not this game is multiplayer.</param>
-        public CharacterSelectMenuScreen(bool host, bool multiplayer, int playerId)
+        public CharacterSelectMenuScreen(bool host, bool multiplayer)
             : base("Character Select", true)
         {
             this.host = host;
@@ -81,11 +84,13 @@ namespace SkyCrane.Screens
 
             if (host) // Set up which player slot this person currently fills
             {
-                this.playerId = 0;
+                playerId = 0;
             }
-            else
+            else // This means we're definitely in multiplayer
             {
-                this.playerId = playerId;
+                MenuState connectPacket = new MenuState(MenuState.Type.Connect);
+                ((ProjectSkyCrane)ScreenManager.Game).RawClient.sendMSC(connectPacket);
+                playerId = -1;
             }
 
             return;
@@ -198,7 +203,61 @@ namespace SkyCrane.Screens
         /// </summary>
         public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
-            
+            if (host) // Have the host search for incoming client packets and respond to them
+            {
+                List<Tuple<ConnectionID, MenuState>> serverStates = ((ProjectSkyCrane)ScreenManager.Game).RawServer.getMSC();
+                for (int i = 0; i < serverStates.Count; i++)
+                {
+                    switch (serverStates[i].Item2.MenuType)
+                    {
+                        case MenuState.Type.Connect:
+                            MenuState connectResponse = new MenuState(MenuState.Type.Connect, 2);
+                            ((ProjectSkyCrane)ScreenManager.Game).RawServer.signalMSC(connectResponse, serverStates[i].Item1);
+                            break;
+                        case MenuState.Type.SelectCharacter:
+                            throw new NotImplementedException();
+                        //break;
+                        case MenuState.Type.LockCharacter:
+                            throw new NotImplementedException();
+                        //break;
+                        case MenuState.Type.UnlockCharacter:
+                            throw new NotImplementedException();
+                        //break;
+                        case MenuState.Type.Disconnect:
+                            throw new NotImplementedException();
+                        //break;
+                        default:
+                            throw new ArgumentException();
+                    }
+                }
+            }
+            else // Handle authoritative updates from the server if we are a client
+            {
+                List<MenuState> clientStates = ((ProjectSkyCrane)ScreenManager.Game).RawClient.rcvMenuState();
+                for (int i = 0; i < clientStates.Count; i++)
+                {
+                    switch (clientStates[i].MenuType)
+                    {
+                        case MenuState.Type.Connect:
+                            playerId = clientStates[i].PlayerId;
+                            break;
+                        case MenuState.Type.SelectCharacter:
+                            throw new NotImplementedException();
+                            //break;
+                        case MenuState.Type.LockCharacter:
+                            throw new NotImplementedException();
+                            //break;
+                        case MenuState.Type.UnlockCharacter:
+                            throw new NotImplementedException();
+                            //break;
+                        case MenuState.Type.Disconnect:
+                            throw new NotImplementedException();
+                            //break;
+                        default:
+                            throw new ArgumentException();
+                    }
+                }
+            }
 
             base.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
             return;

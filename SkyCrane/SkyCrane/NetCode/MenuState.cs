@@ -95,7 +95,7 @@ namespace SkyCrane.NetCode
         /// <param name="menuType">The type associated with this packet.</param>
         /// <param name="playerId">The id of the player that performed the action.</param>
         /// <param name="eventDetail">The extra detail associated with this event.</param>
-        public MenuState(Type menuType, int playerId, int eventDetail = 0)
+        public MenuState(Type menuType, int playerId = 0, int eventDetail = 0)
         {
             MenuType = menuType;
             PlayerId = playerId;

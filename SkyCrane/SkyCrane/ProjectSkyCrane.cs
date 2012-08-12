@@ -7,6 +7,7 @@ using SkyCrane.Screens;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Audio;
+using SkyCrane.NetCode;
 
 namespace SkyCrane
 {
@@ -37,6 +38,24 @@ namespace SkyCrane
         GraphicsDeviceManager graphics;
 
         /// <summary>
+        /// The netcode client used by clients when connecting to a server.
+        /// </summary>
+        public RawClient RawClient
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// The netcode server used when hosting games.
+        /// </summary>
+        public RawServer RawServer
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Create the main instance of the project and run.
         /// </summary>
         public ProjectSkyCrane()
@@ -60,6 +79,10 @@ namespace SkyCrane
             // Activate a few initial screens
             screenManager.AddScreen(new BackgroundScreen(), null);
             screenManager.AddScreen(new MainMenuScreen(), null);
+
+            // Server and client data
+            RawClient = null;
+            RawServer = null;
 
             return;
         }

@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace SkyCrane.NetCode
 {
-    class RawClient
+    public class RawClient
     {
         private Thread clientThread;
         private NetworkWorker nw;
@@ -263,13 +263,18 @@ namespace SkyCrane.NetCode
         {
             foreach (MenuState m in mscs)
             {
-                // Create the MSC Packet
-                MSCPacket newMSC = new MSCPacket(m);
-                newMSC.Dest = server;
-
-                // Add the MSC packe to the network worker's send queue
-                this.nw.commitPacket(newMSC);
+                sendMSC(m);
             }
+        }
+
+        public void sendMSC(MenuState m)
+        {
+            // Create the MSC Packet
+            MSCPacket newMSC = new MSCPacket(m);
+            newMSC.Dest = server;
+
+            // Add the MSC packe to the network worker's send queue
+            this.nw.commitPacket(newMSC);
         }
 
         // Called by the UI to acquire the latest state from the server
