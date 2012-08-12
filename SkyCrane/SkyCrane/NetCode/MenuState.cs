@@ -32,15 +32,45 @@ namespace SkyCrane.NetCode
             /// </summary>
             LockCharacter,
 
-            /// <summary>
-            /// Unlock a particular character on the menu screen.
-            /// </summary>
-            UnlockCharacter,
+        }
+
+        /// <summary>
+        /// Details about a connection packet.
+        /// </summary>
+        public enum ConnectionDetails
+        {
 
             /// <summary>
-            /// Disconnect from the session.
+            /// A request for an id from the server or a response assigning an id.
             /// </summary>
-            Disconnect
+            IdReqest = 0,
+
+            /// <summary>
+            /// Information about connected clients.
+            /// </summary>
+            Connected,
+
+            /// <summary>
+            /// Request for disconnect or information about unconnected clients.
+            /// </summary>
+            Disconnected
+
+        }
+
+        /// <summary>
+        /// Details about a lock packet.
+        /// </summary>
+        public enum LockCharacterDetails
+        {
+            /// <summary>
+            /// Request to lock or information that a character is locked.
+            /// </summary>
+            Locked = 0,
+
+            /// <summary>
+            /// Request to unlock or information that a character is unlocked.
+            /// </summary>
+            Unlocked
 
         }
 

@@ -18,7 +18,7 @@ namespace SkyCrane.Dudes
         /// </summary>
         public enum Type
         {
-            Doctor,
+            Doctor = 0,
             Rogue,
             Tank,
             Wizard
