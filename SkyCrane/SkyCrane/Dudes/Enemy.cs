@@ -12,6 +12,15 @@ namespace SkyCrane.Dudes
     public abstract class Enemy : AttackingDude, AIable
     {
 
+        /// <summary>
+        /// The possible types of enemies.
+        /// </summary>
+        public enum Type
+        {
+            Goblin,
+            Skeleton
+        }
+
         public static Vector2 HITBOX_SIZE = new Vector2(45, 20);
         public static float SCALE = 2;
 
