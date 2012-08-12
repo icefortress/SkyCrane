@@ -24,14 +24,14 @@ namespace SkyCrane.Dudes
         public PlayerCharacter lastOwner = null;
 
         public Bullet(GameplayScreen g, Vector2 position, Vector2 velocity) :
-            base(g, (int)position.X, (int)position.Y, frameWidth, textureName, textureName, SCALE)
+            base(g, (int)position.X, (int)position.Y, frameWidth, textureName, SCALE)
         {
             this.velocity = velocity;
         }
 
-        public override string getDefaultTexture()
+        public override int GetFrameTime()
         {
-            return textureName;
+            return 50;
         }
 
         public override Vector2 GetPhysicsSize()

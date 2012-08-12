@@ -16,15 +16,10 @@ namespace SkyCrane.Dudes
         public static float SCALE = 0.5F;
 
         public RealBullet(GameplayScreen g, Vector2 position, Vector2 velocity) :
-            base(g, (int)position.X, (int)position.Y, frameWidth, textureName, textureName, SCALE)
+            base(g, (int)position.X, (int)position.Y, frameWidth, textureName, SCALE)
         {
             this.velocity = velocity;
             this.frameTime = 30;
-        }
-
-        public override string getDefaultTexture()
-        {
-            return textureName;
         }
 
         public override Vector2 GetPhysicsSize()

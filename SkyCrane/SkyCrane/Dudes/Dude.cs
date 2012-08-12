@@ -28,7 +28,7 @@ namespace SkyCrane.Dudes
             this.defaultTexture = defaultTexture;
         }
 
-        public override string getDefaultTexture()
+        public virtual string getDefaultTexture()
         {
             return defaultTexture;
         }

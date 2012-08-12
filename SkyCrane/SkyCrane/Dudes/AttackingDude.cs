@@ -8,7 +8,7 @@ using SkyCrane.NetCode;
 
 namespace SkyCrane.Dudes
 {
-    public abstract class AttackingDude : Dude
+    public abstract class AttackingDude : OrientalDude
     {
         public bool attacking = false;
         String textureAttackLeft;

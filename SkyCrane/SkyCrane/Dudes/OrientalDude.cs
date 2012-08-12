@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using SkyCrane.Screens;
+using SkyCrane.NetCode;
 
 namespace SkyCrane.Dudes
 {
-    class OrientalDude : Dude
+    public abstract class OrientalDude : Dude
     {
 
         public bool facingLeft = true;
@@ -38,25 +39,13 @@ namespace SkyCrane.Dudes
             if (velocity.X < 0 || go_left)
             {
                 facingLeft = true;
-                createChangeSpriteStateChange(id, frameWidth, textureLeft, 
-                StateChange sc = new StateChange();
-                sc.type = StateChangeType.CHANGE_SPRITE;
-                sc.intProperties.Add(StateProperties.ENTITY_ID, id);
-                sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
-                sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureLeft);
-
+                StateChange sc = StateChangeFactory.createChangeSpriteStateChange(id, frameWidth, textureLeft, this.GetFrameTime());
                 notifyStateChangeListeners(sc);
             }
             else if (velocity.X > 0 || go_right)
             {
                 facingLeft = false;
-                StateChange sc = new StateChange();
-                sc.type = StateChangeType.CHANGE_SPRITE;
-                sc.intProperties.Add(StateProperties.ENTITY_ID, id);
-                sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
-                sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureRight);
-
-                notifyStateChangeListeners(sc);
+                StateChange sc = StateChangeFactory.createChangeSpriteStateChange(id, frameWidth, textureRight, this.GetFrameTime()); notifyStateChangeListeners(sc);
             }
         }
 

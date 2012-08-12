@@ -10,7 +10,7 @@ using SkyCrane.NetCode;
 namespace SkyCrane.Engine
 {
 
-    public abstract class Entity
+    public class Entity
     {
         public static int next_id = 0;
 
@@ -58,10 +58,7 @@ namespace SkyCrane.Engine
             get { return scaleBack; }
             set
             {
-                StateChange sc = new StateChange();
-                sc.type = StateChangeType.CHANGE_SCALE;
-                sc.intProperties.Add(StateProperties.ENTITY_ID, id);
-                sc.doubleProperties.Add(StateProperties.SCALE, value);
+                StateChange sc = StateChangeFactory.createScaleStateChange(this.id, value);
                 notifyStateChangeListeners(sc);
             }
         }
@@ -95,7 +92,10 @@ namespace SkyCrane.Engine
             changeAnimation(frameWidth, textureName);
         }
 
-        public abstract int GetFrameTime();
+        public virtual int GetFrameTime()
+        {
+            return 200;
+        }
 
         public void changeAnimation(int frameWidth, String textureName)
         {
@@ -106,7 +106,7 @@ namespace SkyCrane.Engine
             {
                 animationFrames.Add(i);
             }
-            InitDrawable(chara, frameWidth, chara.Height, animationFrames, 200, Color.White, this.scale, true);
+            InitDrawable(chara, frameWidth, chara.Height, animationFrames, GetFrameTime(), Color.White, this.scale, true);
             active = true;
 
             currentFrame = 0;
@@ -186,9 +186,7 @@ namespace SkyCrane.Engine
 
         public void destroy()
         {
-            StateChange sc = new StateChange();
-            sc.type = StateChangeType.DELETE_ENTITY;
-            sc.intProperties.Add(StateProperties.ENTITY_ID, id);
+            StateChange sc = StateChangeFactory.createDeleteStateChange(this.id);
             notifyStateChangeListeners(sc);
         }
 

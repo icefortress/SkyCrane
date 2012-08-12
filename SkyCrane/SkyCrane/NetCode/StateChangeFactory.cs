@@ -7,7 +7,7 @@ namespace SkyCrane.NetCode
 {
     class StateChangeFactory
     {
-        public static StateChange createEntityStateChange(int entity_id, int posX, int posY, int frameWidth, String textureName, float scale, int drawPriority)
+        public static StateChange createEntityStateChange(int entity_id, int posX, int posY, int frameWidth, int frameTime, String textureName, float scale, int drawPriority)
         {
             StateChange sc = new StateChange();
             sc.type = StateChangeType.CREATE_ENTITY;
@@ -16,6 +16,7 @@ namespace SkyCrane.NetCode
             sc.intProperties.Add(StateProperties.POSITION_Y, posY);
             sc.intProperties.Add(StateProperties.DRAW_PRIORITY, drawPriority);
             sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
+            sc.intProperties.Add(StateProperties.FRAME_TIME, frameTime);
             sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureName);
             sc.doubleProperties.Add(StateProperties.SCALE, scale);
 
@@ -30,6 +31,34 @@ namespace SkyCrane.NetCode
             sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
             sc.intProperties.Add(StateProperties.FRAME_TIME, frameTime);
             sc.stringProperties.Add(StateProperties.SPRITE_NAME, texture);
+
+            return sc;
+        }
+
+        public static StateChange createScaleStateChange(int id, float value)
+        {
+            StateChange sc = new StateChange();
+            sc.type = StateChangeType.CHANGE_SCALE;
+            sc.intProperties.Add(StateProperties.ENTITY_ID, id);
+            sc.doubleProperties.Add(StateProperties.SCALE, value);
+
+            return sc;
+        }
+
+        public static StateChange createDeleteStateChange(int id)
+        {
+            StateChange sc = new StateChange();
+            sc.type = StateChangeType.DELETE_ENTITY;
+            sc.intProperties.Add(StateProperties.ENTITY_ID, id);
+
+            return sc;
+        }
+
+        public static StateChange createSetPlayerStateChange(int id)
+        {
+            StateChange sc = new StateChange();
+            sc.type = StateChangeType.SET_PLAYER;
+            sc.intProperties.Add(StateProperties.ENTITY_ID, id);
 
             return sc;
         }

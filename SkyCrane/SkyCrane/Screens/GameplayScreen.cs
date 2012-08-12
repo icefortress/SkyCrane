@@ -235,9 +235,7 @@ namespace SkyCrane.Screens
                     playerEntityIds.Add(pc.id);
 
                     // send notification to player of their entity
-                    StateChange sc = new StateChange();
-                    sc.type = StateChangeType.SET_PLAYER;
-                    sc.intProperties.Add(StateProperties.ENTITY_ID, pc.id);
+                    StateChange sc = StateChangeFactory.createSetPlayerStateChange(pc.id);
 
                     List<StateChange> l = new List<StateChange>();
                     l.Add(sc);

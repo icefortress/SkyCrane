@@ -24,11 +24,6 @@ namespace SkyCrane.Dudes
         {
         }
 
-        public override string getDefaultTexture()
-        {
-            return TEXTURE_LEFT;
-        }
-
         public override void UpdateAI(GameTime time)
         {
             List<PlayerCharacter> targets = context.gameState.players;

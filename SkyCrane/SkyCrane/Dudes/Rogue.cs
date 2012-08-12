@@ -31,10 +31,5 @@ namespace SkyCrane.Dudes
         {
             return 150;
         }
-
-        public override string getDefaultTexture()
-        {
-            return TEXTURE_LEFT;
-        }
     }
 }

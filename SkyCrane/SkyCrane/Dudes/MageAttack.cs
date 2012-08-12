@@ -21,15 +21,15 @@ namespace SkyCrane.Dudes
         public PhysicsAble lastHit = null;
 
         public MageAttack(GameplayScreen g, Vector2 position, Vector2 velocity) :
-            base(g, (int)position.X, (int)position.Y, frameWidth, textureName, textureName, 3)
+            base(g, (int)position.X, (int)position.Y, frameWidth, textureName, 3)
         {
             this.velocity = velocity;
             this.frameTime = 30;
         }
 
-        public override string getDefaultTexture()
+        public override int GetFrameTime()
         {
-            return textureName;
+            return 100;
         }
 
         public override Vector2 GetPhysicsSize()
