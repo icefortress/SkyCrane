@@ -77,6 +77,7 @@ namespace SkyCrane.Screens
             this.isServer = isServer;
             this.isMultiplayer = isMultiplayer;
             this.numPlayers = numPlayers;
+            this.characterSelections = characterSelections;
 
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
@@ -195,10 +196,10 @@ namespace SkyCrane.Screens
 
         public void serverStartGame()
         {
-            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, PlayerCharacter.Type.Doctor);
+            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, characterSelections[0]);
 
             // TODO: delete this
-            secondPlayer = gameState.createPlayer(1280 / 2, 720 / 2 - 50, PlayerCharacter.Type.Tank);
+            secondPlayer = gameState.createPlayer(1280 / 2, 720 / 2 - 50, characterSelections[1]);
 
             if (isMultiplayer)
             {
