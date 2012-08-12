@@ -11,7 +11,7 @@ namespace SkyCrane.Engine
     public class Level : Entity, PhysicsAble
     {
         Texture2D background;
-        Color[] bitmap; // For checking collisions
+        bool[] bitmap; // For checking collisions
         int bitmapWidth;
         int bitmapHeight;
         Vector2 levelSize; // in pixels, after scaling
@@ -30,8 +30,20 @@ namespace SkyCrane.Engine
 
             scale = (float)size_x / (float)background.Width;
 
-            this.bitmap = new Color[bitmap.Width * bitmap.Height];
-            bitmap.GetData<Color>(this.bitmap);
+            Color[] colormap = new Color[bitmap.Width * bitmap.Height];
+            this.bitmap = new bool[bitmap.Width * bitmap.Height];
+            bitmap.GetData<Color>(colormap);
+
+            for (int i = 0; i < colormap.Length; i++)
+            {
+                if (colormap[i] == Color.Black)
+                {
+                    this.bitmap[i] = true;
+                } else {
+                    this.bitmap[i] = false;
+                }
+            }
+
             bitmapWidth = bitmap.Width;
             bitmapHeight = bitmap.Height;
 
@@ -131,7 +143,7 @@ namespace SkyCrane.Engine
                     int index = y * bitmapWidth + x;
 
                     // TODO: shouldn't get too far ahead of myself
-                    if (index < bitmap.Length && bitmap[index] == Color.Black)
+                    if (index < bitmap.Length && bitmap[index])
                     {
                         if (x - left < width / 2) hitLeft = true;
                         if (x - left > width / 2) hitRight = true;
