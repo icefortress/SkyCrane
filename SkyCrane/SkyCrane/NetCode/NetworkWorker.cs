@@ -92,10 +92,11 @@ namespace SkyCrane.NetCode
                 byte[] data = this.Receive(ref srv);
                 //Console.WriteLine("NW-" + myID + " Recv: " + data.Length + " bytes");
                 Packet p = new Packet();
+                //p.data = new byte[200];
                 p.Dest = srv;
                 ms = new MemoryStream(data);
                 p.ptype = (Packet.PacketType)ms.ReadByte();
-                ms.Read(p.data, 1, (int)ms.Length - 1);
+                ms.Read(p.data, 0, (int)ms.Length - 1);
                 lock (readBuffer)
                 {
                     readBuffer.Enqueue(p);

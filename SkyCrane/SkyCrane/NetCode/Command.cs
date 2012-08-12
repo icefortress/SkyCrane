@@ -32,7 +32,7 @@ namespace SkyCrane.NetCode
         {
             MemoryStream ms = new MemoryStream();
             BinaryWriter bb = new BinaryWriter(ms);
-            bb.Write(entity_id);
+            bb.Write((int)entity_id);
             bb.Write((byte)ct);
             bb.Write((double)position.X);
             bb.Write((double)position.Y);
