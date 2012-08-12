@@ -17,6 +17,8 @@ namespace SkyCrane
 
         ScreenManager screenManager;
         public const int MAX_PLAYERS = 4;
+        public const int WIDTH = 1280;
+        public const int HEIGHT = 720;
 
         /// <summary>
         /// The GraphicsDeviceManager currently associated with the game.
@@ -36,8 +38,8 @@ namespace SkyCrane
 
             // Initialize the graphics manager
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = 1280; // 1280x720 is the XBox 360 default
-            graphics.PreferredBackBufferHeight = 720;
+            graphics.PreferredBackBufferWidth = WIDTH; // 1280x720 is the XBox 360 default
+            graphics.PreferredBackBufferHeight = HEIGHT;
             graphics.SynchronizeWithVerticalRetrace = false; // Turn off vsync by default
 
             // Initialize the screen manager
