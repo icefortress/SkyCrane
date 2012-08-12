@@ -445,6 +445,7 @@ namespace SkyCrane.Screens
                 // Push changes to clients
                 if (isMultiplayer && numPlayers > 1)
                 {
+                    Console.WriteLine(gameState.changes.Count);
                     serverReference.broadcastSC(gameState.changes);
                 }
                 
@@ -457,6 +458,7 @@ namespace SkyCrane.Screens
                 
                 // Send our input to the server
                 clientReference.sendCMD(commandBuffer);
+                commandBuffer.Clear();
 
                 // Flush our gamestatemanager changes, we don't trust ourselves
                 gameState.changes.Clear();
@@ -610,14 +612,11 @@ namespace SkyCrane.Screens
                     canCreate = true;
                 }
 
-                if (movement != Vector2.Zero)
-                {
-                    Command c2 = new Command();
-                    c2.entity_id = gameState.usersPlayer.id;
-                    c2.direction = movement;
-                    c2.ct = CommandType.MOVE;
-                    commandBuffer.Add(c2);
-                }
+                Command c2 = new Command();
+                c2.entity_id = gameState.usersPlayer.id;
+                c2.direction = movement;
+                c2.ct = CommandType.MOVE;
+                commandBuffer.Add(c2);
             }
         }
 
