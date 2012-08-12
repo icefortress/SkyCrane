@@ -5,6 +5,7 @@ using System.Text;
 using System.Net.Sockets;
 using System.Threading;
 using System.Net;
+using System.IO;
 
 namespace SkyCrane
 {
@@ -13,18 +14,19 @@ namespace SkyCrane
         private Thread rcvThread, sendThread;
         private bool go = true;
 
-        private IPEndPoint echo;
         private Queue<Packet> buffer = new Queue<Packet>();
         private Queue<Packet> readBuffer = new Queue<Packet>();
 
         private static int id = 0;
         private int myID;
 
+        private Semaphore sendSem;
+
         //This is the server side
         public NetworkWorker(int port = 0)
             : base(port)
         {
-            Console.WriteLine("Started NW on port: " + this.Client.LocalEndPoint);
+            Console.WriteLine("Started NW-Server on port: " + this.Client.LocalEndPoint);
             this.rcvThread = new Thread(thread_do_recv);
             this.sendThread = new Thread(thread_do_send);
             rcvThread.Name = "Receive Thread ID: " + id;
@@ -40,7 +42,7 @@ namespace SkyCrane
         public NetworkWorker(IPEndPoint endpt)
             : base(0)
         {
-            Console.WriteLine("Started NW on port: " + this.Client.LocalEndPoint);
+            Console.WriteLine("Started NW-Client on port: " + this.Client.LocalEndPoint);
             this.rcvThread = new Thread(thread_do_recv);
             this.sendThread = new Thread(thread_do_send);
             rcvThread.Name = "Receive Thread ID: " + id;
@@ -51,12 +53,9 @@ namespace SkyCrane
             NetworkWorker.id++;
         }
 
-        public void commitPacket(IPEndPoint dest, byte[] data)
+        public void commitPacket(Packet p)
         {
-            Packet p = new Packet();
-            p.data = data;
-            p.Dest = dest;
-            lock (this)
+            lock (this.buffer)
             {
                 this.buffer.Enqueue(p);
             }
@@ -72,23 +71,31 @@ namespace SkyCrane
 
         public bool hasNext()
         {
-            return (this.readBuffer.Count > 0) ? true : false;
+            bool ret;
+            lock (this.readBuffer)
+            {
+                ret = (this.readBuffer.Count > 0) ? true : false;
+            }
+            return ret;
         }
 
         private void thread_do_recv()
         {
             Thread.CurrentThread.IsBackground = true;
             IPEndPoint srv = new IPEndPoint(IPAddress.Any, 0);
+            MemoryStream ms;
             while (this.go)
             {
+                Console.WriteLine("waiting..."+Thread.CurrentThread.Name);
                 byte[] data = this.Receive(ref srv);
-                echo = srv;
                 Console.WriteLine("NW-" + myID + " Recv: "+data.Length+" bytes");
-                lock (this)
+                Packet p = new Packet();
+                p.Dest = srv;
+                ms = new MemoryStream(data);
+                p.ptype = (Packet.PacketType)ms.ReadByte();
+                ms.Read(p.data, 1, (int)ms.Length - 1);
+                lock (readBuffer)
                 {
-                    Packet p = new Packet();
-                    p.Dest = srv;
-                    p.data = data;
                     readBuffer.Enqueue(p);
                 }
             }
@@ -97,15 +104,17 @@ namespace SkyCrane
         private void thread_do_send()
         {
             Thread.CurrentThread.IsBackground = true;
+            Thread.Sleep(3000);
             while (this.go)
             {
-                lock (this)
+                lock (this.buffer)
                 {
                     if (buffer.Count > 0)
                     {
-                        Console.WriteLine("NW-" + myID + " Send");
+                        //Console.WriteLine("NW-" + myID + " Send");
                         Packet pkt = buffer.Dequeue();
-                        this.Send(pkt.data, pkt.data.Length, pkt.Dest);
+                        int i = this.Send(pkt.data, pkt.data.Length, pkt.Dest);
+                        //Console.WriteLine(i);
                     }
                 }
             }
@@ -114,7 +123,72 @@ namespace SkyCrane
 
     public class Packet
     {
+        public enum PacketType { HANDSHAKE, CMD, STC, SYNC };
+        public PacketType ptype;
         public IPEndPoint Dest = null;
-        public byte[] data = null;
+        public byte[] data = new byte[200];
+        private MemoryStream ms = new MemoryStream();
+
+        protected void addHeader(PacketType p)
+        {
+            ms.WriteByte((byte)p);
+        }
+
+        protected void addContent(byte[] content)
+        {
+            ms.Write(content, 0, content.Length);
+        }
+
+        protected void finalize()
+        {
+            this.data = ms.ToArray();
+        }
+
+        public void setDest(IPEndPoint p)
+        {
+            this.Dest = p;
+        }
     }
+
+    public class CMDPacket : Packet
+    {
+        public CMDPacket()
+        {
+            this.ptype = PacketType.CMD;
+            this.addHeader(ptype);
+            this.finalize();
+        }
+    }
+
+    public class STCPacket : Packet
+    {
+        public STCPacket(StateChange s)
+        {
+            this.ptype = PacketType.STC;
+            this.addHeader(ptype);
+            this.addContent(s.getPacketData());
+            this.finalize();
+        }
+    }
+
+    public class HandshakePacket : Packet
+    {
+        public HandshakePacket()
+        {
+            this.ptype = PacketType.HANDSHAKE;
+            this.addHeader(ptype);
+            this.finalize();
+        }
+    }
+
+    public class SYNCPacket : Packet
+    {
+        public SYNCPacket()
+        {
+            this.ptype = PacketType.SYNC;
+            this.addHeader(ptype);
+            this.finalize();
+        }
+    }
+
 }

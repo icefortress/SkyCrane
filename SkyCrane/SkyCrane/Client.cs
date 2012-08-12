@@ -14,7 +14,7 @@ namespace SkyCrane
     {
         private Thread clientThread;
         private NetworkWorker nw;
-        private IPEndPoint endPt;
+        private IPEndPoint server;
         private bool go = true;
         public enum cState { DISCONNECTED, CONNECTED, TRYCONNECT,SEND,RECV,SYNC };
         cState curState = cState.DISCONNECTED;
@@ -33,7 +33,7 @@ namespace SkyCrane
          
         public bool connect(string host, int port)
         {
-            this.endPt = new IPEndPoint(IPAddress.Parse(host), port);
+            this.server = new IPEndPoint(IPAddress.Parse(host), port);
 
             this.curState = cState.TRYCONNECT;
             while (this.curState == cState.TRYCONNECT) ;
@@ -55,23 +55,30 @@ namespace SkyCrane
                 if (curState == cState.TRYCONNECT)
                 {
                     //Spawn the client reader/writer threads
-                    this.nw = new NetworkWorker(endPt);
+                    this.nw = new NetworkWorker(server);
+                    this.handshake();
                     this.curState = cState.CONNECTED;
                 }
                 if (curState == cState.CONNECTED)
                 {
-                    StateChange sc = new StateChange();
-                    sc.type = StateChangeType.MOVED;
-                    sc.intProperties.Add(StateProperties.POSITION_X,10);
-                    nw.commitPacket(endPt,sc.getPacketData());
+
                 }
-                Thread.Sleep(1000);
             }
         }
 
-        private bool thread_connect()
+        private bool handshake()
         {
-            System.Console.WriteLine("Attempting to connect to "+endPt);
+            StateChange s = new StateChange();
+            s.stringProperties[StateProperties.POSITION_X] = "Bacon";
+            HandshakePacket hs = new HandshakePacket();
+            SYNCPacket sp = new SYNCPacket();
+            STCPacket stcp = new STCPacket(s);
+            stcp.setDest(server);
+            sp.setDest(server);
+            hs.setDest(server);
+                this.nw.commitPacket(sp);
+                this.nw.commitPacket(stcp);
+                this.nw.commitPacket(hs);
             return true;
         }
 
