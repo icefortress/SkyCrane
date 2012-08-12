@@ -26,6 +26,8 @@ namespace SkyCrane.Dudes
             return HITBOX_SIZE;
         }
 
+        public abstract void UpdateAI(GameTime time); 
+
         public override void HandleCollision(CollisionDirection cd, PhysicsAble entity)
         {
             if (entity is MageAttack)
@@ -39,39 +41,6 @@ namespace SkyCrane.Dudes
                 velocity = Vector2.Zero;
             }
             
-        }
-
-        public void UpdateAI(GameTime time)
-        {
-            List<Entity> targets = new List<Entity>();
-            
-            // TODO: need to add all player characters
-            targets.Add(context.gameState.usersPlayer);
-
-            // Find closest target
-            Entity target = null;
-            float currentLength = 0;
-            foreach(Entity e in targets) {
-                float sl = (e.worldPosition - worldPosition).Length();
-                if (target == null || sl < currentLength)
-                {
-                    currentLength = sl;
-                    target = e;
-                }
-            }
-
-            // Move towards target
-            velocity = (target.worldPosition - worldPosition);
-
-            if (velocity.Length() < 50)
-            {
-                startAttack(time);
-            }
-            else
-            {
-                velocity.Normalize();
-                velocity *= 2;
-            }
         }
     }
 }

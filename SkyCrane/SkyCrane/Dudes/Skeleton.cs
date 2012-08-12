@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SkyCrane.Screens;
+using Microsoft.Xna.Framework;
+using SkyCrane.Engine;
 
 namespace SkyCrane.Dudes
 {
@@ -25,6 +27,37 @@ namespace SkyCrane.Dudes
         public override string getDefaultTexture()
         {
             return TEXTURE_LEFT;
+        }
+
+        public override void UpdateAI(GameTime time)
+        {
+            List<PlayerCharacter> targets = context.gameState.players;
+
+            // Find closest target
+            Entity target = null;
+            float currentLength = 0;
+            foreach (Entity e in targets)
+            {
+                float sl = (e.worldPosition - worldPosition).Length();
+                if (target == null || sl < currentLength)
+                {
+                    currentLength = sl;
+                    target = e;
+                }
+            }
+
+            // Move towards target
+            velocity = (target.worldPosition - worldPosition);
+
+            if (velocity.Length() < 50)
+            {
+                startAttack(time);
+            }
+            else
+            {
+                velocity.Normalize();
+                velocity *= 2;
+            }
         }
     }
 }

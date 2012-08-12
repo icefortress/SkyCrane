@@ -16,6 +16,7 @@ namespace SkyCrane.Engine
         public GameplayScreen context;
 
         public List<StateChange> changes = new List<StateChange>();
+        public List<PlayerCharacter> players = new List<PlayerCharacter>();
 
         public Dictionary<int, DoctorWall> walls = new Dictionary<int, DoctorWall>();
 
@@ -71,6 +72,8 @@ namespace SkyCrane.Engine
 
             // Add the new entity and create an appropriate state to accompany it
             addEntity(100, pc);
+            players.Add(pc);
+
             StateChange sc = Entity.createEntityStateChange(pc.id, posX, posY, pc.frameWidth, pc.getDefaultTexture(), pc.scale, 100);
             changes.Add(sc);
             return pc;
