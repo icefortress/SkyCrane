@@ -36,7 +36,7 @@ namespace SkyCrane.NetCode
             serverThread.Name = "Main Server";
             serverThread.IsBackground = true;
 
-            System.Console.WriteLine("Starting test ");
+            System.Console.WriteLine("Starting Server");
             this.nw = new NetworkWorker(port);
             serverThread.Start();
         }
@@ -86,7 +86,7 @@ namespace SkyCrane.NetCode
                     case Packet.PacketType.SYNC:
                         if (connections.ContainsKey(p.Dest))
                         {
-                            Console.WriteLine("Server - SYNC Reply from: " + connections[p.Dest].ID);
+                            //Console.WriteLine("Server - SYNC Reply from: " + connections[p.Dest].ID);
                         }
                         else
                         {
@@ -97,7 +97,7 @@ namespace SkyCrane.NetCode
                     case Packet.PacketType.PING:
                         if (connections.ContainsKey(p.Dest))
                         {
-                            Console.WriteLine("Server - Ping from connection: " + connections[p.Dest].ID);
+                            //Console.WriteLine("Server - Ping from connection: " + connections[p.Dest].ID);
                             PingPacket ps = new PingPacket();
                             ps.Dest = p.Dest;
                             nw.commitPacket(ps); //ACK the ping
