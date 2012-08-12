@@ -5,7 +5,7 @@ using SkyCrane.Dudes;
 using SkyCrane.Screens;
 using SkyCrane.NetCode;
 
-namespace SkyCrane
+namespace SkyCrane.Engine
 {
     public class GameState : StateChangeListener
     {

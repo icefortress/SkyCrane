@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SkyCrane.Screens;
 
-namespace SkyCrane
+namespace SkyCrane.Engine
 {
     public class Level : Entity, PhysicsAble
     {
