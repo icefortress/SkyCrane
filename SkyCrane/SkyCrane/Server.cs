@@ -80,7 +80,12 @@ namespace SkyCrane
                 p = nw.getNext();
                 if (p == null)
                 {
-                    //Sanity stuff
+                    foreach (IPEndPoint ep in connections.Keys)
+                    {
+                        SYNCPacket p = new SYNCPacket();
+                        p.Dest = ep;
+                        this.nw.commitPacket(p);
+                    }
                     continue;
                 }
                 Console.WriteLine(p.ptype);
@@ -106,12 +111,14 @@ namespace SkyCrane
                         break;
 
                     case Packet.PacketType.PING:
+                        Console.WriteLine("Ping from connection: " + connections[p.Dest].ID);
+                        nw.commitPacket(p); //ACK the ping
                         break;
 
                     case Packet.PacketType.CMD:
                         //Actually handle this
                         Command cmd = new Command(p.data);
-                        lock(commandQ)
+                        lock (commandQ)
                             this.commandQ.Add(cmd);
                         break;
                 }
@@ -131,10 +138,24 @@ namespace SkyCrane
 
         public void broadcastSC(List<StateChange> list)
         {
+            foreach (StateChange sc in list)
+            {
+                foreach (KeyValuePair<IPEndPoint, ConnectionID> d in connections)
+                {
+                    STCPacket p = new STCPacket(sc);
+                    p.Dest = d.Key;
+                    this.nw.commitPacket(p);
+                }
+            }
         }
 
         public void signalSC(List<StateChange> list, ConnectionID cid)
         {
+            foreach (StateChange sc in list)
+            {
+                STCPacket p = new STCPacket(sc);
+                p.Dest = cid.endpt;
+            }
         }
     }
 
@@ -142,7 +163,9 @@ namespace SkyCrane
     {
         private static short ids = 1;
         public short ID;
-        private IPEndPoint endpt;
+        public IPEndPoint endpt;
+        public System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+        public long lastSYNC = -1;
 
         public static ConnectionID newConnectionID(IPEndPoint ep)
         {
