@@ -473,6 +473,9 @@ namespace SkyCrane.Screens
                 
                 // Send our input to the server
                 clientReference.sendCMD(commandBuffer);
+
+                Console.WriteLine(commandBuffer.Count);
+
                 commandBuffer.Clear();
 
                 // Flush our gamestatemanager changes, we don't trust ourselves
@@ -631,11 +634,16 @@ namespace SkyCrane.Screens
                     canCreate = true;
                 }
 
-                Command c2 = new Command();
-                c2.entity_id = gameState.usersPlayer.id;
-                c2.direction = movement;
-                c2.ct = CommandType.MOVE;
-                commandBuffer.Add(c2);
+                if (movement != Vector2.Zero || gameState.isMoving)
+                {
+                        Command c2 = new Command();
+                        c2.entity_id = gameState.usersPlayer.id;
+                        c2.direction = movement;
+                        c2.ct = CommandType.MOVE;
+                        commandBuffer.Add(c2);
+                        gameState.isMoving = false;
+                }
+                
             }
         }
 

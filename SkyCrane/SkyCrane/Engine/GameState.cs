@@ -23,6 +23,8 @@ namespace SkyCrane.Engine
         public List<int> healthBarWaiters = new List<int>();
         public Dictionary<int, HealthBar> healthBars = new Dictionary<int, HealthBar>();
 
+        public bool isMoving = false;
+
         public GameState(GameplayScreen g)
         {
             context = g;
@@ -243,6 +245,11 @@ namespace SkyCrane.Engine
             }
             else if (s.type == StateChangeType.MOVED)
             {
+                if (entity == usersEntity)
+                {
+                    isMoving = true;
+                }
+
                 int pos_x = s.intProperties[StateProperties.POSITION_X];
                 int pos_y = s.intProperties[StateProperties.POSITION_Y];
                 entities[entity].worldPosBack = new Vector2(pos_x, pos_y); // do a change without triggering a statechange
