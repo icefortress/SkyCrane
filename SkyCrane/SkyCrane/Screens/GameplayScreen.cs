@@ -242,7 +242,7 @@ namespace SkyCrane.Screens
                     List<StateChange> l = new List<StateChange>();
                     l.Add(sc);
 
-                    //serverReference.signalSC(l, new ConnectionID());
+                    serverReference.signalSC(l, playerIdToConnectionHash[i]);
                 }
             }
 
