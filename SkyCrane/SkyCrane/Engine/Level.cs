@@ -17,13 +17,13 @@ namespace SkyCrane.Engine
         int bitmapHeight;
         Vector2 levelSize; // in pixels, after scaling
 
-        public static float LEVEL_SCALE = 2;
+        public static float LEVEL_SCALE = 1;
 
         // TODO: we can use this to build levels with various params
         public static Level generateLevel(GameplayScreen g)
         {
             //return new Level(g, "room2", "room2-collision-map", 1920, 1800);
-            return new Level(g, "room2", "room2-collision-map", 1920 * 2, 1800 * 2);
+            return new Level(g, "room2", "room2-collision-map", 1826,1530);
         }
 
         public Level(GameplayScreen g, String bgKey, String bmKey, int size_x, int size_y)
