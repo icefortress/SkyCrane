@@ -114,11 +114,11 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Method for raising the Selected event.
         /// </summary>
-        protected internal virtual void OnSelectEntry(PlayerIndex playerIndex, bool menuAccepted, bool menuCancelled, int toggleDirection)
+        protected internal virtual void OnSelectEntry(bool menuAccepted, bool menuCancelled, int toggleDirection)
         {
             if (Selected != null)
             {
-                Selected(this, new PlayerInputEventArgs(playerIndex, menuAccepted, menuCancelled, toggleDirection));
+                Selected(this, new PlayerInputEventArgs(menuAccepted, menuCancelled, toggleDirection));
             }
             return;
         }
@@ -126,11 +126,11 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Method for raising the Typed event.
         /// </summary>
-        protected internal virtual void OnInputTyped(PlayerIndex playerIndex, bool typingAccepted, bool typingCancelled, bool typingBackspace, String keysTyped)
+        protected internal virtual void OnInputTyped(bool typingAccepted, bool typingCancelled, bool typingBackspace, String keysTyped)
         {
             if (Typed != null)
             {
-                Typed(this, new PlayerInputEventArgs(playerIndex, false, false, 0, typingAccepted, typingCancelled, typingBackspace, keysTyped));
+                Typed(this, new PlayerInputEventArgs(false, false, 0, typingAccepted, typingCancelled, typingBackspace, keysTyped));
             }
             return;
         }

@@ -77,8 +77,8 @@ namespace SkyCrane
             Components.Add(screenManager);
 
             // Activate a few initial screens
-            screenManager.AddScreen(new BackgroundScreen(), null);
-            screenManager.AddScreen(new MainMenuScreen(), null);
+            screenManager.AddScreen(new BackgroundScreen());
+            screenManager.AddScreen(new MainMenuScreen());
 
             // Server and client data
             RawClient = null;

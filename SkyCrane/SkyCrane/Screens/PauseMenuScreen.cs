@@ -68,10 +68,10 @@ namespace SkyCrane.Screens
         /// </summary>
         /// <param name="sender">Object sender.</param>
         /// <param name="e">Event arguments.</param>
-        protected override void OnCancel(PlayerIndex playerIndex)
+        protected override void OnCancel()
         {
             MediaPlayer.Resume();
-            base.OnCancel(playerIndex);
+            base.OnCancel();
             return;
         }
 
@@ -83,7 +83,7 @@ namespace SkyCrane.Screens
             const string message = "Quit to main menu?";
             MessageBoxScreen confirmQuitMessageBox = new MessageBoxScreen(message);
             confirmQuitMessageBox.Accepted += ConfirmQuitMessageBoxAccepted;
-            ScreenManager.AddScreen(confirmQuitMessageBox, ControllingPlayer);
+            ScreenManager.AddScreen(confirmQuitMessageBox);
             return;
         }
 
@@ -106,7 +106,7 @@ namespace SkyCrane.Screens
         /// <param name="e">The player indices involved with picking the option.</param>
         void OptionsMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
-            ScreenManager.AddScreen(new OptionsMenuScreen(), e.PlayerIndex);
+            ScreenManager.AddScreen(new OptionsMenuScreen());
             return;
         }
 

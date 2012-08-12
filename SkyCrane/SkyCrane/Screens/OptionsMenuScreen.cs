@@ -196,7 +196,7 @@ namespace SkyCrane.Screens
         /// <param name="e">Event arguments.</param>
         void ResolutionMenuEntrySelected(object sender, PlayerInputEventArgs e)
         {
-            ScreenManager.AddScreen(new ResolutionsMenuScreen(), e.PlayerIndex);
+            ScreenManager.AddScreen(new ResolutionsMenuScreen());
             return;
         }
 

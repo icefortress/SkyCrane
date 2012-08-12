@@ -140,21 +140,6 @@ namespace SkyCrane.GameStateManager
         ScreenManager screenManager;
 
         /// <summary>
-        /// Gets the index of the player who is currently controlling this screen,
-        /// or null if it is accepting input from any player. This is used to lock
-        /// the game to a specific player profile. The main menu responds to input
-        /// from any connected gamepad, but whichever player makes a selection from
-        /// this menu is given control over all subsequent screens, so other gamepads
-        /// are inactive until the controlling player returns to the main menu.
-        /// </summary>
-        public PlayerIndex? ControllingPlayer
-        {
-            get { return controllingPlayer; }
-            internal set { controllingPlayer = value; }
-        }
-        PlayerIndex? controllingPlayer;
-
-        /// <summary>
         /// Load graphics content for the screen.
         /// </summary>
         public virtual void LoadContent() { }

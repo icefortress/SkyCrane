@@ -129,15 +129,14 @@ namespace SkyCrane.Screens
         public override void HandleInput(InputState input)
         {
             // Variables that will be set during input checking
-            PlayerIndex playerIndex;
             int toggleDirection;
 
             if (typingInput) // The user is typing input
             {
-                bool inputAccepted = input.IsMenuSelect(ControllingPlayer, out playerIndex);
-                bool inputCancelled = input.IsMenuCancel(ControllingPlayer, out playerIndex);
-                bool inputBackspace = input.IsBackspace(ControllingPlayer, out playerIndex);
-                String keysTyped = input.TypeableInput(ControllingPlayer, out playerIndex);
+                bool inputAccepted = input.IsMenuSelect();
+                bool inputCancelled = input.IsMenuCancel();
+                bool inputBackspace = input.IsBackspace();
+                String keysTyped = input.TypeableInput();
 
                 if (inputAccepted || inputCancelled)
                 {
@@ -145,13 +144,13 @@ namespace SkyCrane.Screens
                 }
                 if (inputAccepted || inputCancelled || inputBackspace || keysTyped != String.Empty)
                 {
-                    OnTyped(selectedEntry, playerIndex, inputAccepted, inputCancelled, inputBackspace, keysTyped);
+                    OnTyped(selectedEntry, inputAccepted, inputCancelled, inputBackspace, keysTyped);
                 }
             }
             else // The user is performing normal menu input
             {
                 // Move to the previous menu entry?
-                if (input.IsMenuUp(ControllingPlayer))
+                if (input.IsMenuUp())
                 {
                     if (!graphicalSelect)
                     {
@@ -168,7 +167,7 @@ namespace SkyCrane.Screens
                 }
 
                 // Move to the next menu entry?
-                if (input.IsMenuDown(ControllingPlayer))
+                if (input.IsMenuDown())
                 {
                     if (!graphicalSelect)
                     {
@@ -184,31 +183,27 @@ namespace SkyCrane.Screens
                     } while (!menuEntries[selectedEntry].Enabled);
                 }
 
-                // Accept or cancel the menu? We pass in our ControllingPlayer, which may
-                // either be null (to accept input from any player) or a specific index.
-                // If we pass a null controlling player, the InputState helper returns to
-                // us which player actually provided the input. We pass that through to
-                // OnSelectEntry and OnCancel, so they can tell which player triggered them.
-                if (menuEntries[selectedEntry].Toggleable && input.IsMenuToggle(ControllingPlayer, out playerIndex, out toggleDirection))
+                // Accept or cancel the menu?
+                if (menuEntries[selectedEntry].Toggleable && input.IsMenuToggle(out toggleDirection))
                 {
                     if (!graphicalSelect)
                     {
                         menuSelectSoundEffect.Play();
                     }
-                    OnSelectEntry(selectedEntry, playerIndex, input.IsMenuSelect(ControllingPlayer, out playerIndex), false, toggleDirection);
+                    OnSelectEntry(selectedEntry, input.IsMenuSelect(), false, toggleDirection);
                 }
-                else if (input.IsMenuSelect(ControllingPlayer, out playerIndex))
+                else if (input.IsMenuSelect())
                 {
                     if (!graphicalSelect)
                     {
                         menuSelectSoundEffect.Play();
                     }
-                    OnSelectEntry(selectedEntry, playerIndex, true, false, 0);
+                    OnSelectEntry(selectedEntry, true, false, 0);
                 }
-                else if (input.IsMenuCancel(ControllingPlayer, out playerIndex))
+                else if (input.IsMenuCancel())
                 {
                     menuCancelSoundEffect.Play();
-                    OnCancel(playerIndex);
+                    OnCancel();
                 }
             }
             return;
@@ -217,11 +212,11 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Handler for when the user has chosen a menu entry.
         /// </summary>
-        protected virtual void OnSelectEntry(int entryIndex, PlayerIndex playerIndex, bool menuAccepted, bool menuCancelled, int toggleDirection)
+        protected virtual void OnSelectEntry(int entryIndex, bool menuAccepted, bool menuCancelled, int toggleDirection)
         {
             if (menuEntries[entryIndex].Enabled)
             {
-                menuEntries[entryIndex].OnSelectEntry(playerIndex, menuAccepted, menuCancelled, toggleDirection);
+                menuEntries[entryIndex].OnSelectEntry(menuAccepted, menuCancelled, toggleDirection);
             }
             return;
         }
@@ -229,7 +224,7 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Handler for when the user has cancelled the menu.
         /// </summary>
-        protected virtual void OnCancel(PlayerIndex playerIndex)
+        protected virtual void OnCancel()
         {
             ExitScreen();
             return;
@@ -241,16 +236,16 @@ namespace SkyCrane.Screens
         /// </summary>
         protected virtual void OnCancel(object sender, PlayerInputEventArgs e)
         {
-            OnCancel(e.PlayerIndex);
+            OnCancel();
             return;
         }
 
         /// <summary>
         /// Handler for when the user types data into a text-accepting menu entry.
         /// </summary>
-        protected virtual void OnTyped(int entryIndex, PlayerIndex playerIndex, bool typingAccepted, bool typingCancelled, bool typingBackspace, String keysTyped)
+        protected virtual void OnTyped(int entryIndex, bool typingAccepted, bool typingCancelled, bool typingBackspace, String keysTyped)
         {
-            menuEntries[entryIndex].OnInputTyped(playerIndex, typingAccepted, typingCancelled, typingBackspace, keysTyped);
+            menuEntries[entryIndex].OnInputTyped(typingAccepted, typingCancelled, typingBackspace, keysTyped);
             return;
         }
 
