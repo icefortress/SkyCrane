@@ -483,8 +483,6 @@ namespace SkyCrane.Screens
                 // Send our input to the server
                 clientReference.sendCMD(commandBuffer);
 
-                Console.WriteLine(commandBuffer.Count);
-
                 commandBuffer.Clear();
 
                 // Flush our gamestatemanager changes, we don't trust ourselves

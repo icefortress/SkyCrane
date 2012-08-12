@@ -202,7 +202,7 @@ namespace SkyCrane.Engine
             (int)(frameHeight * scale));
         }
 
-        public void destroy()
+        public virtual void destroy()
         {
             StateChange sc = StateChangeFactory.createDeleteStateChange(this.id);
             notifyStateChangeListeners(sc);
