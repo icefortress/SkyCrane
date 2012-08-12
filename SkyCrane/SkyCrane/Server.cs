@@ -35,9 +35,9 @@ namespace SkyCrane
 
         public static void Main(string[] args)
         {
-            //RawClient c = new RawClient();
+            RawClient c = new RawClient();
             RawServer s = new RawServer(9999);
-            //c.connect("127.0.0.1", 9999);
+            c.connect("127.0.0.1", 9999);
         }
 
         //public void exit()
