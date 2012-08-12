@@ -52,6 +52,12 @@ namespace SkyCrane.Dudes
             bulletRef = null;
         }
 
+        public override void destroy()
+        {
+            applyDamage(-10);
+            this.worldPosBack = new Vector2(1280 / 2, 720 / 2);
+        }
+
         public override void HandleCollision(CollisionDirection cd, PhysicsAble entity)
         {
             if (entity is Bullet)
