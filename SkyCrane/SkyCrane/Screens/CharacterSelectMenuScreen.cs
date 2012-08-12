@@ -27,6 +27,7 @@ namespace SkyCrane.Screens
     {
 
         // TODO: Pretend that id's are nicely handled all over the place until I actually handle them niceley later after sleep
+        // TODO: Prevent spoofing by ensuring that requests are coming from the right places
 
         #region Fields
 
@@ -187,14 +188,17 @@ namespace SkyCrane.Screens
                     characterSelections[playerId] = 0;
                 }
 
-                if (host) // Broadcast sprite changes to all players
+                if (multiplayer)
                 {
-                    HostBroadcastSprites();
-                }
-                else // Inform the host of a sprite change
-                {
-                    MenuState spritePacket = new MenuState(MenuState.Type.SelectCharacter, playerId, (int)characterSelections[playerId]);
-                    ((ProjectSkyCrane)ScreenManager.Game).RawClient.sendMSC(spritePacket);
+                    if (host) // Broadcast sprite changes to all players
+                    {
+                        HostBroadcastSprites();
+                    }
+                    else // Inform the host of a sprite change
+                    {
+                        MenuState spritePacket = new MenuState(MenuState.Type.SelectCharacter, playerId, (int)characterSelections[playerId]);
+                        ((ProjectSkyCrane)ScreenManager.Game).RawClient.sendMSC(spritePacket);
+                    }
                 }
 
                 menuScrollSoundEffect.Play();
@@ -344,9 +348,19 @@ namespace SkyCrane.Screens
                                 }
                                 break;
                             case MenuState.Type.SelectCharacter:
-                                HostBroadcastSprites();
+                                if (connectionToPlayerIdHash.ContainsKey(serverStates[i].Item1)) // We've already seen this player and they haven't disconnected, resend their current id
+                                {
+                                    int requestingId = connectionToPlayerIdHash[serverStates[i].Item1];
+                                    if (requestingId == serverStates[i].Item2.PlayerId) // Prevent spoofing and sillyness
+                                    {
+                                        characterSelections[serverStates[i].Item2.PlayerId] = (PlayerCharacter.Type)serverStates[i].Item2.EventDetail;
+                                    }
+                                    HostBroadcastSprites();
+                                }
                                 break;
                             case MenuState.Type.LockCharacter:
+                                //if (serverStates[i].Item2.EventDetail == 
+                                //characterSelectionsLocked[serverStates[i].Item2.PlayerId] = (PlayerCharacter.Type)serverStates[i].Item2.EventDetail;
                                 throw new NotImplementedException();
                                 break;
                             default:
@@ -362,7 +376,7 @@ namespace SkyCrane.Screens
                         switch (clientStates[i].MenuType)
                         {
                             case MenuState.Type.Connect: // Handle connection events
-                                if (clientStates[i].EventDetail == (int)MenuState.ConnectionDetails.Connected) // Assign our own player id
+                                if (clientStates[i].EventDetail == (int)MenuState.ConnectionDetails.IdReqest) // Assign our own player id
                                 {
                                     playerId = clientStates[i].PlayerId;
                                 }
