@@ -18,6 +18,7 @@ namespace SkyCrane.NetCode
         //Stopwatch for pinging
         private Stopwatch sw_ping = new Stopwatch();
         private long lastPing = -1;
+        private Timer PingPacket_timeout_timer;
 
         // Semaphore to wait on for the server info to be known
         private Semaphore ready = new Semaphore(0, 1);
@@ -95,6 +96,13 @@ namespace SkyCrane.NetCode
                             // The server may have died, ping the server to find out
                             //this.pingServer();
                    //TODO Should probably not silently ignore this....
+                            lock (this)
+                            {
+                                if (this.sw_ping.IsRunning)
+                                {
+                                    this.curState = cState.DISCONNECTED;
+                                }
+                            }
                             break;
                         case cState.DISCONNECTED:
                         default:
@@ -214,9 +222,12 @@ namespace SkyCrane.NetCode
                                 case cState.TRYCONNECT:
                                     break;
                                 case cState.CONNECTED:
-                                    sw_ping.Stop();
                                     lock (this)
+                                    {
+                                        sw_ping.Stop();
                                         this.lastPing = sw_ping.ElapsedMilliseconds;
+                                    }
+                                    //Console.WriteLine("Ping"+lastPing);
                                     break;
                                 case cState.DISCONNECTED:
                                 default:
@@ -244,18 +255,22 @@ namespace SkyCrane.NetCode
 
         private void startPing()
         {
-            Timer t = new Timer(this.pingTimer, new AutoResetEvent(false), 1000, 1000);
+            this.PingPacket_timeout_timer = new Timer(this.pingTimer, new AutoResetEvent(false), 1000, 1000);
         }
 
         private void pingTimer(Object stateInfo)
         {
-            if (sw_ping.IsRunning)
-                return;
-            PingPacket pp = new PingPacket();
-            sw_ping.Reset();
-            pp.setDest(server);
-            this.nw.commitPacket(pp);
-            sw_ping.Start();
+            lock (this)
+            {
+                if (sw_ping.IsRunning)
+                    return;
+                //Console.WriteLine("Sending ping");
+                PingPacket pp = new PingPacket();
+                sw_ping.Reset();
+                pp.setDest(server);
+                this.nw.commitPacket(pp);
+                sw_ping.Start();
+            }
         }
 
         private void syncServer()
