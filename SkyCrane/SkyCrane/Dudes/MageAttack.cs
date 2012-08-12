@@ -77,10 +77,28 @@ namespace SkyCrane.Dudes
                         return;
                     }
 
+                    // Do damage
+                    Enemy e = (Enemy)entity;
+                    e.applyDamage(1);
+
                     // Bounce
                     lastHit = entity;
-                    Vector2 newVelocity = getClosestEnemy().worldPosition - this.worldPosition;
+
+                    Entity closestEnemy = getClosestEnemy();
+                    Vector2 newVelocity = Vector2.Zero;
+                    if (closestEnemy == null)
+                    {
+                        Random r = new Random();
+                        newVelocity = new Vector2(r.Next(0, 10) - 5, r.Next(0, 10) - 5);
+                    }
+                    else
+                    {
+                        newVelocity = getClosestEnemy().worldPosition - this.worldPosition;
+                    }
+
                     newVelocity.Normalize();
+
+                    
 
                     velocity = newVelocity * 8;
 

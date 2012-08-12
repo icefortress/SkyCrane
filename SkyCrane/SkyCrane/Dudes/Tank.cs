@@ -26,5 +26,15 @@ namespace SkyCrane.Dudes
         {
             return TEXTURE_LEFT;
         }
+
+        public override void HandleCollision(Engine.CollisionDirection cd, Engine.PhysicsAble entity)
+        {
+            if (entity is Enemy && attacking && !damageApplied)
+            {
+                Enemy e = (Enemy)entity;
+                e.applyDamage(3);
+                damageApplied = true;
+            }
+        }
     }
 }

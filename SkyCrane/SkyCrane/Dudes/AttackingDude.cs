@@ -14,6 +14,9 @@ namespace SkyCrane.Dudes
         String textureAttackLeft;
         String textureAttackRight;
 
+        public bool damageApplied = false; // makes sure an attack only does damage once
+        // will unfortunately need to be re-implemented on all attacks, as they do not inherit from some "attack" class
+
         int attackFrameWidth;
 
         TimeSpan lastAttack = new TimeSpan(0);
@@ -46,6 +49,7 @@ namespace SkyCrane.Dudes
                 lastAttack = gameTime.TotalGameTime;
                 attacking = true;
                 forceCheck = true;
+                damageApplied = false;
                 return true;
             }
 

@@ -55,9 +55,8 @@ namespace SkyCrane.Engine
                     pc = new Doctor(context, posX, posY);
                     break;
                 case PlayerCharacter.Type.Rogue:
-                    // TODO: Change this call
-                    throw new NotImplementedException();
-                    //break;
+                    pc = new Rogue(context, posX, posY);
+                    break;
                 case PlayerCharacter.Type.Tank:
                     pc = new Tank(context, posX, posY);
                     break;

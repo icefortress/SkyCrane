@@ -54,22 +54,17 @@ namespace SkyCrane.Dudes
                 bulletRef = (Bullet)entity;
                 bulletRef.attach(this);
             }
-            else if (entity is Enemy)
-            {
-                Enemy e = (Enemy)entity;
-                if (attacking)
-                {
-                    Console.WriteLine("Hit enemy!");
-                }
-                else if (e.attacking)
-                {
-                    Console.WriteLine("Hit by enemy!"); 
-                    velocity = entity.GetPhysicsVelocity() * 2;
-                }
-            }
             else if (entity is Level)
             {
                 velocity = Vector2.Zero;
+            }
+            else if (entity is Enemy)
+            {
+                if (((Enemy)entity).attacking)
+                {
+                    Console.WriteLine("Hit by enemy!");
+                    velocity = entity.GetPhysicsVelocity() * 2;
+                }
             }
 
         }

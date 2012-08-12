@@ -25,16 +25,34 @@ namespace SkyCrane.Dudes
 
         public Vector2 physicsSize;
 
+        private int health;
+
         public Dude(GameplayScreen g, int posX, int posY, int frameWidth, String textureLeft, String textureRight) : base(g, posX, posY, frameWidth, textureLeft)
         {
             this.textureLeft = textureLeft;
             this.textureRight = textureRight;
 
             physicsSize = getHitbox();
+
+            health = getMaxHealth();
         }
 
         public abstract Vector2 getHitbox();
         public abstract String getDefaultTexture();
+
+        public virtual int getMaxHealth()
+        {
+            return 10;
+        }
+
+        public void applyDamage(int dmg)
+        {
+            health -= dmg;
+            if (health < 0)
+            {
+                destroy();
+            }
+        }
 
         public void UpdatePhysics()
         {
