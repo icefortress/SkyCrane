@@ -44,13 +44,15 @@ namespace SkyCrane
             }
             else if (entity is Enemy)
             {
+                Enemy e = (Enemy)entity;
                 if (attacking)
                 {
                     Console.WriteLine("Hit enemy!");
                 }
-                else
+                else if (e.attacking)
                 {
-                    Console.WriteLine("Enemy hit player!");
+                    Console.WriteLine("Hit by enemy!"); 
+                    velocity = entity.GetPhysicsVelocity() * 2;
                 }
             }
             else if (entity is Level)

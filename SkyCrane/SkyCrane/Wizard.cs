@@ -22,6 +22,11 @@ namespace SkyCrane
         {
         }
 
+        public override int getAttackCooldown()
+        {
+            return 2000;
+        }
+
         public override string getDefaultTexture()
         {
             return TEXTURE_LEFT;

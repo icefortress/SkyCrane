@@ -69,11 +69,7 @@ namespace SkyCrane.Screens
             // Die if you hit a wall
             if (entity is Level)
             {
-                StateChange sc = new StateChange();
-                sc.type = StateChangeType.DELETE_ENTITY;
-                sc.intProperties.Add(StateProperties.ENTITY_ID, id);
-                notifyStateChangeListeners(sc);
-
+                destroy();
                 context.bulletExists = false;
             }
         }

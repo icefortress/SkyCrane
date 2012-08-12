@@ -25,6 +25,21 @@ namespace SkyCrane
             return HITBOX_SIZE;
         }
 
+        public override void HandleCollision(CollisionDirection cd, PhysicsAble entity)
+        {
+            if (entity is MageAttack)
+            {
+            }
+            else if (entity is Enemy)
+            {
+            }
+            else
+            {
+                velocity = Vector2.Zero;
+            }
+            
+        }
+
         public void UpdateAI(GameTime time)
         {
             List<Entity> targets = new List<Entity>();

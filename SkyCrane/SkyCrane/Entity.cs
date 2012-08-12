@@ -178,6 +178,14 @@ namespace SkyCrane
             (int)(frameHeight * scale));
         }
 
+        public void destroy()
+        {
+            StateChange sc = new StateChange();
+            sc.type = StateChangeType.DELETE_ENTITY;
+            sc.intProperties.Add(StateProperties.ENTITY_ID, id);
+            notifyStateChangeListeners(sc);
+        }
+
         public void Draw(GameTime gameTime, SpriteBatch sb)
         {
             if (active)
