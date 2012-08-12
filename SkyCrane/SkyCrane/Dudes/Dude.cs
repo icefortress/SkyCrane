@@ -28,6 +28,11 @@ namespace SkyCrane.Dudes
             this.defaultTexture = defaultTexture;
         }
 
+        public override int GetFrameTime()
+        {
+            return 200;
+        }
+
         public virtual string getDefaultTexture()
         {
             return defaultTexture;

@@ -87,14 +87,20 @@ namespace SkyCrane.Engine
             id = next_id;
             next_id++;
 
-            worldPosBack= new Vector2(posX, posY);
+            worldPosBack = new Vector2(posX, posY);
 
             changeAnimation(frameWidth, textureName);
         }
 
+        public Entity(GameplayScreen g, int posX, int posY, int frameWidth, int frameTime, String textureName, float scale)
+            : this(g, posX, posY, frameWidth, textureName, scale)
+        {
+            this.frameTime = frameTime;
+        }
+
         public virtual int GetFrameTime()
         {
-            return 200;
+            return frameTime;
         }
 
         public void changeAnimation(int frameWidth, String textureName)
@@ -106,7 +112,7 @@ namespace SkyCrane.Engine
             {
                 animationFrames.Add(i);
             }
-            InitDrawable(chara, frameWidth, chara.Height, animationFrames, GetFrameTime(), Color.White, this.scale, true);
+            InitDrawable(chara, frameWidth, chara.Height, animationFrames, this.GetFrameTime(), Color.White, this.scale, true);
             active = true;
 
             currentFrame = 0;

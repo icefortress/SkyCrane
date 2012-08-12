@@ -208,11 +208,12 @@ namespace SkyCrane.Engine
                 int pos_x = s.intProperties[StateProperties.POSITION_X];
                 int pos_y = s.intProperties[StateProperties.POSITION_Y];
                 int frame_width = s.intProperties[StateProperties.FRAME_WIDTH];
+                int frame_time = s.intProperties[StateProperties.FRAME_TIME];
                 int draw_priority = s.intProperties[StateProperties.DRAW_PRIORITY];
                 String texture_name = s.stringProperties[StateProperties.SPRITE_NAME];
                 float scale = (float)s.doubleProperties[StateProperties.SCALE];
 
-                Entity e = new Entity(context, pos_x, pos_y, frame_width, texture_name, scale);
+                Entity e = new Entity(context, pos_x, pos_y, frame_width,frame_time, texture_name, scale);
                 e.id = entity;
                 
                 addEntity(draw_priority, e);

@@ -25,7 +25,7 @@ namespace SkyCrane.Engine
         }
 
         public Level(GameplayScreen g, String bgKey, String bmKey, int size_x, int size_y)
-            : base(g, 1280 / 2, 720 / 2, size_x, bgKey, LEVEL_SCALE)
+            : base(g, 1280 / 2, 720 / 2, size_x, 300, bgKey, LEVEL_SCALE)
         {
             this.background = g.textureDict["room2"];
             Texture2D bitmap = g.textureDict["room2-collision-map"];
