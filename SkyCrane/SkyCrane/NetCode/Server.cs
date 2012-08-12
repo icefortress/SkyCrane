@@ -34,6 +34,30 @@ namespace SkyCrane.NetCode
         {
             //RawClient c = new RawClient();
             RawServer s = new RawServer(9999);
+            while (true)
+            {
+                if (s.getCMD().Count > 0)
+                {
+                    foreach (Command c in s.getCMD())
+                    {
+                        Console.WriteLine(c.ct);
+                        Console.WriteLine(c.entity_id);
+                        Console.WriteLine(c.direction.X);
+                        Console.WriteLine(c.direction.Y);
+                        Console.WriteLine(c.position.X);
+                        Console.WriteLine(c.position.Y);
+                        Console.WriteLine("===========");
+                    }
+                }
+                List<StateChange> l = new List<StateChange>();
+                StateChange st = new StateChange();
+                st.type = StateChangeType.DELETE_ENTITY;
+                st.intProperties[StateProperties.FRAME_WIDTH] = 123;
+                st.stringProperties[StateProperties.SPRITE_NAME] = "I'm the Baconator";
+                l.Add(st);
+                s.broadcastSC(l);
+                Thread.Sleep(2000);
+            }
             //c.connect("127.0.0.1", 9999);
         }
 
@@ -107,18 +131,33 @@ namespace SkyCrane.NetCode
                         break;
 
                     case Packet.PacketType.SYNC:
-                        Console.WriteLine("Server - SYNC Reply from: " + connections[p.Dest].ID);
+                        if (connections.ContainsKey(p.Dest))
+                        {
+                            Console.WriteLine("Server - SYNC Reply from: " + connections[p.Dest].ID);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Server - ERROR Unregistered SYNC");
+                        }
                         break;
 
                     case Packet.PacketType.PING:
-                        Console.WriteLine("Server - Ping from connection: " + connections[p.Dest].ID);
-                        PingPacket ps = new PingPacket();
-                        ps.Dest = p.Dest;
-                        nw.commitPacket(ps); //ACK the ping
+                        if (connections.ContainsKey(p.Dest))
+                        {
+                            Console.WriteLine("Server - Ping from connection: " + connections[p.Dest].ID);
+                            PingPacket ps = new PingPacket();
+                            ps.Dest = p.Dest;
+                            nw.commitPacket(ps); //ACK the ping
+                        }
+                        else
+                        {
+                            Console.WriteLine("Server ERROR - Unregistered PING");
+                        }
                         break;
 
                     case Packet.PacketType.CMD:
                         //Actually handle this
+                        Console.WriteLine("Server - Got CMD from: " + connections[p.Dest].ID);
                         Command cmd = new Command(p.data);
                         lock (commandQ)
                             this.commandQ.Add(cmd);
@@ -133,7 +172,7 @@ namespace SkyCrane.NetCode
             lock (commandQ)
             {
                 ret = new List<Command>(commandQ);
-                ret.Clear();
+                //commandQ.Clear();
             }
             return ret;
         }
@@ -144,6 +183,7 @@ namespace SkyCrane.NetCode
             {
                 foreach (KeyValuePair<IPEndPoint, ConnectionID> d in connections)
                 {
+                    Console.WriteLine("Server - Sent StateChange to: " + d.Value.ID);
                     STCPacket p = new STCPacket(sc);
                     p.Dest = d.Key;
                     this.nw.commitPacket(p);
