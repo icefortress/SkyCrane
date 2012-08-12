@@ -17,23 +17,21 @@ namespace SkyCrane.Dudes
         Rectangle topRect;
         Rectangle bottomRect;
 
-        public bool facingLeft = true;
-        protected bool forceCheck = false;
-
-        protected String textureLeft;
-        protected String textureRight;
-
         private int health;
 
-        public Dude(GameplayScreen g, int posX, int posY, int frameWidth, String textureLeft, String textureRight, float scale) : base(g, posX, posY, frameWidth, textureLeft, scale)
-        {
-            this.textureLeft = textureLeft;
-            this.textureRight = textureRight;
+        private String defaultTexture;
 
+        public Dude(GameplayScreen g, int posX, int posY, int frameWidth, String defaultTexture, float scale)
+            : base(g, posX, posY, frameWidth, defaultTexture, scale)
+        {
             health = getMaxHealth();
+            this.defaultTexture = defaultTexture;
         }
 
-        public abstract String getDefaultTexture();
+        public override string getDefaultTexture()
+        {
+            return defaultTexture;
+        }
 
         public virtual int getMaxHealth()
         {
@@ -78,48 +76,6 @@ namespace SkyCrane.Dudes
         public virtual void HandleCollision(CollisionDirection cd, PhysicsAble entity)
         {
             velocity = Vector2.Zero;
-        }
-
-        public virtual void setSpriteFromVelocity()
-        {
-            if (forceCheck) forceCheck = false;
-
-            bool go_left = false;
-            bool go_right = false;
-            if (velocity.X == 0)
-            {
-                go_left = facingLeft;
-                go_right = !facingLeft;
-            }
-
-            if (velocity.X < 0 || go_left)
-            {
-                facingLeft = true;
-                StateChange sc = new StateChange();
-                sc.type = StateChangeType.CHANGE_SPRITE;
-                sc.intProperties.Add(StateProperties.ENTITY_ID, id);
-                sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
-                sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureLeft);
-
-                notifyStateChangeListeners(sc);
-            }
-            else if (velocity.X > 0 || go_right)
-            {
-                facingLeft = false;
-                StateChange sc = new StateChange();
-                sc.type = StateChangeType.CHANGE_SPRITE;
-                sc.intProperties.Add(StateProperties.ENTITY_ID, id);
-                sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
-                sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureRight);
-
-                notifyStateChangeListeners(sc);
-            }
-        }
-
-        public override void UpdateSprite(GameTime gameTime)
-        {
-            if ((velocity.X != 0 && velocity.X < 0 != facingLeft) || forceCheck) setSpriteFromVelocity();
-            base.UpdateSprite(gameTime);
         }
 
         public CollisionDirection CheckCollision(PhysicsAble entity)

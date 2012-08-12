@@ -5,7 +5,7 @@ using System.IO;
 namespace SkyCrane.NetCode
 {
     public enum StateChangeType { MOVED, CREATE_PLAYER_CHARACTER, SET_PLAYER, CREATE_ENTITY, DELETE_ENTITY, CHANGE_SPRITE, CHANGE_SCALE }
-    public enum StateProperties { ENTITY_ID, POSITION_X, POSITION_Y, SPRITE_NAME, ANIMATION_NAME, DRAW_PRIORITY, FRAME_WIDTH, SCALE}
+    public enum StateProperties { ENTITY_ID, POSITION_X, POSITION_Y, SPRITE_NAME, ANIMATION_NAME, DRAW_PRIORITY, FRAME_WIDTH, SCALE, FRAME_TIME}
 
     public class StateChange : Marshable
     {

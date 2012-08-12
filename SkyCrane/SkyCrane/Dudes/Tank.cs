@@ -22,11 +22,6 @@ namespace SkyCrane.Dudes
         {
         }
 
-        public override string getDefaultTexture()
-        {
-            return TEXTURE_LEFT;
-        }
-
         public override void HandleCollision(Engine.CollisionDirection cd, Engine.PhysicsAble entity)
         {
             if (entity is Enemy && attacking && !damageApplied)
