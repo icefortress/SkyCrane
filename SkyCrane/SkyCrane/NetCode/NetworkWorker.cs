@@ -27,7 +27,7 @@ namespace SkyCrane.NetCode
         public NetworkWorker(int port = 0)
             : base(port)
         {
-            Console.WriteLine("Started NW-Server on port: " + this.Client.LocalEndPoint);
+            //Console.WriteLine("Started NW-Server on port: " + this.Client.LocalEndPoint);
             this.rcvThread = new Thread(thread_do_recv);
             this.sendThread = new Thread(thread_do_send);
             rcvThread.Name = "Receive Thread ID: " + id;
@@ -43,7 +43,7 @@ namespace SkyCrane.NetCode
         public NetworkWorker(IPEndPoint endpt)
             : base(0)
         {
-            Console.WriteLine("Started NW-Client on port: " + this.Client.LocalEndPoint);
+            //Console.WriteLine("Started NW-Client on port: " + this.Client.LocalEndPoint);
             this.rcvThread = new Thread(thread_do_recv);
             this.sendThread = new Thread(thread_do_send);
             rcvThread.Name = "Receive Thread ID: " + id;
@@ -88,9 +88,9 @@ namespace SkyCrane.NetCode
             MemoryStream ms;
             while (this.go)
             {
-                Console.WriteLine("waiting..." + Thread.CurrentThread.Name);
+                //Console.WriteLine("waiting..." + Thread.CurrentThread.Name);
                 byte[] data = this.Receive(ref srv);
-                Console.WriteLine("NW-" + myID + " Recv: " + data.Length + " bytes");
+                //Console.WriteLine("NW-" + myID + " Recv: " + data.Length + " bytes");
                 Packet p = new Packet();
                 p.Dest = srv;
                 ms = new MemoryStream(data);
@@ -112,10 +112,10 @@ namespace SkyCrane.NetCode
                 this.sendSem.WaitOne(); //Get Semaphore
                 lock (this.buffer)
                 {
-                    Console.WriteLine("NW-" + myID + " Send");
+                    //Console.WriteLine("NW-" + myID + " Send");
                     Packet pkt = this.buffer.Dequeue();
                     int i = this.Send(pkt.data, pkt.data.Length, pkt.Dest);
-                    Console.WriteLine(i);
+                    //Console.WriteLine(i);
                 }
             }
         }

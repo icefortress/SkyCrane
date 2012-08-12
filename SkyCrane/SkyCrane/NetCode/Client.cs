@@ -156,6 +156,24 @@ namespace SkyCrane.NetCode
                                 case cState.TRYCONNECT:
                                     break;
                                 case cState.CONNECTED:
+                                    syncServer();
+                                    break;
+                                case cState.DISCONNECTED:
+                                default:
+                                    // This should not happen, die screaming!
+                                    Environment.Exit(1);
+                                    break;
+                            }
+
+                            break;
+                        case Packet.PacketType.PING:
+                            Console.WriteLine("PING received from the server");
+                            
+                            switch (curState)
+                            {
+                                case cState.TRYCONNECT:
+                                    break;
+                                case cState.CONNECTED:
                                     break;
                                 case cState.DISCONNECTED:
                                 default:
@@ -186,6 +204,13 @@ namespace SkyCrane.NetCode
             PingPacket pp = new PingPacket();
             pp.setDest(server);
             this.nw.commitPacket(pp);
+        }
+
+        private void syncServer()
+        {
+            SYNCPacket ss = new SYNCPacket();
+            ss.setDest(server);
+            this.nw.commitPacket(ss);
         }
 
         //OPERATORS

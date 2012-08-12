@@ -85,7 +85,7 @@ namespace SkyCrane.NetCode
                     }
                     continue;
                 }
-                Console.WriteLine(p.ptype);
+                //Console.WriteLine(p.ptype);
 
                 switch (p.ptype)
                 {
