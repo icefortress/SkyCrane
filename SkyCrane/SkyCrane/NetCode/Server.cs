@@ -32,33 +32,55 @@ namespace SkyCrane.NetCode
 
         public static void Main(string[] args)
         {
-            //RawClient c = new RawClient();
-            RawServer s = new RawServer(9999);
+            RawClient c = new RawClient();
+            //RawServer s = new RawServer(9999);
+            //while (true)
+            //{
+            //    if (s.getCMD().Count > 0)
+            //    {
+            //        foreach (Command c in s.getCMD())
+            //        {
+            //            Console.WriteLine(c.ct);
+            //            Console.WriteLine(c.entity_id);
+            //            Console.WriteLine(c.direction.X);
+            //            Console.WriteLine(c.direction.Y);
+            //            Console.WriteLine(c.position.X);
+            //            Console.WriteLine(c.position.Y);
+            //            Console.WriteLine("===========");
+            //        }
+            //    }
+            //    List<StateChange> l = new List<StateChange>();
+            //    StateChange st = new StateChange();
+            //    st.type = StateChangeType.DELETE_ENTITY;
+            //    st.intProperties[StateProperties.FRAME_WIDTH] = 123;
+            //    st.stringProperties[StateProperties.SPRITE_NAME] = "I'm the Baconator";
+            //    l.Add(st);
+            //    s.broadcastSC(l);
+            //    Thread.Sleep(2000);
+            //}
+            c.connect("192.168.0.26", 9999);
+
+            Command c1 = new Command();
+            c1.ct = CommandType.ATTACK;
+            c1.direction.X = 1.3F;
+
+            List<Command> clist = new List<Command>();
+
+            clist.Add(c1);
+
+            c.sendCMD(clist);
+
             while (true)
             {
-                if (s.getCMD().Count > 0)
+                Thread.Sleep(1000);
+                List<StateChange> sc = c.rcvUPD();
+                if (sc.Count > 0)
                 {
-                    foreach (Command c in s.getCMD())
-                    {
-                        Console.WriteLine(c.ct);
-                        Console.WriteLine(c.entity_id);
-                        Console.WriteLine(c.direction.X);
-                        Console.WriteLine(c.direction.Y);
-                        Console.WriteLine(c.position.X);
-                        Console.WriteLine(c.position.Y);
-                        Console.WriteLine("===========");
-                    }
+                    Console.WriteLine(sc[0].type);
+                    Console.WriteLine(sc[0].intProperties[StateProperties.FRAME_WIDTH]);
+                    Console.WriteLine(sc[0].stringProperties[StateProperties.SPRITE_NAME]);
                 }
-                List<StateChange> l = new List<StateChange>();
-                StateChange st = new StateChange();
-                st.type = StateChangeType.DELETE_ENTITY;
-                st.intProperties[StateProperties.FRAME_WIDTH] = 123;
-                st.stringProperties[StateProperties.SPRITE_NAME] = "I'm the Baconator";
-                l.Add(st);
-                s.broadcastSC(l);
-                Thread.Sleep(2000);
             }
-            //c.connect("127.0.0.1", 9999);
         }
 
         //public void exit()

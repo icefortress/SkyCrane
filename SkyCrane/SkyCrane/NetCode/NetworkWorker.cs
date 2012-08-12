@@ -125,7 +125,7 @@ namespace SkyCrane.NetCode
 
     public class Packet
     {
-        public enum PacketType { HANDSHAKE=0, CMD=1, STC=2, SYNC=3, PING=4 };
+        public enum PacketType { HANDSHAKE=0, CMD=1, STC=2, SYNC=3, PING=4, MSC=5 };
         public PacketType ptype;
         public IPEndPoint Dest = null;
         public byte[] data = new byte[200];
@@ -168,6 +168,17 @@ namespace SkyCrane.NetCode
         public STCPacket(StateChange s)
         {
             this.ptype = PacketType.STC;
+            this.addHeader(ptype);
+            this.addContent(s.getPacketData());
+            this.finalize();
+        }
+    }
+
+    public class MSCPacket : Packet
+    {
+        public MSCPacket(MenuState s)
+        {
+            this.ptype = PacketType.MSC;
             this.addHeader(ptype);
             this.addContent(s.getPacketData());
             this.finalize();

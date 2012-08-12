@@ -20,6 +20,9 @@ namespace SkyCrane.NetCode
         // Queue of state changes to be passed off the the UI
         private Queue<StateChange> buffer = new Queue<StateChange>();
 
+        // Queue of menu changes to be passed off to the menu
+        private Queue<MenuState> menuBuffer = new Queue<MenuState>();
+
         public RawClient()
         {
             System.Console.WriteLine("Client Started");
@@ -151,6 +154,32 @@ namespace SkyCrane.NetCode
                             }
 
                             break;
+                        case Packet.PacketType.MSC:
+                            Console.WriteLine("MSC received from the server");
+
+                            switch (curState)
+                            {
+                                case cState.TRYCONNECT:
+                                    break;
+                                case cState.CONNECTED:
+                                    // Marshall the state change packet into an object
+                                    MenuState newMSC = new MenuState(newPacket.data);
+
+                                    // Add the state change object to the buffer for the UI
+                                    lock (this.menuBuffer)
+                                    {
+                                        menuBuffer.Enqueue(newMSC);
+                                    }
+
+                                    break;
+                                case cState.DISCONNECTED:
+                                default:
+                                    // This should not happen, die screaming!
+                                    Environment.Exit(1);
+                                    break;
+                            }
+
+                            break;
                         case Packet.PacketType.SYNC:
                             Console.WriteLine("SYNC received from the server");
                             
@@ -230,19 +259,49 @@ namespace SkyCrane.NetCode
             }
         }
 
+        public void sendMSC(List<MenuState> mscs)
+        {
+            foreach (MenuState m in mscs)
+            {
+                // Create the MSC Packet
+                MSCPacket newMSC = new MSCPacket(m);
+                newMSC.Dest = server;
+
+                // Add the MSC packe to the network worker's send queue
+                this.nw.commitPacket(newMSC);
+            }
+        }
+
         // Called by the UI to acquire the latest state from the server
         public List<StateChange> rcvUPD()
         {
             List<StateChange> newStates = new List<StateChange>();
 
-            // Acquire a the buffer lock well emptying the buffer
-
+            // Acquire the buffer lock well emptying the buffer
             lock (this.buffer)
             {
                 // Iterate over the buffer of states that have been acquired from the server
                 while (buffer.Count > 0)
                 {
                     newStates.Add(buffer.Dequeue());
+                }
+            }
+
+            return newStates;
+        }
+
+        // Called by the Menu to acquire the latest menu state for char. selection
+        public List<MenuState> rcvMenuState()
+        {
+            List<MenuState> newStates = new List<MenuState>();
+
+            // Acquire the buffer lock well emptying the buffer
+            lock (this.menuBuffer)
+            {
+                // Iterate over the buffer of states that have been acquired from the server
+                while (menuBuffer.Count > 0)
+                {
+                    newStates.Add(menuBuffer.Dequeue());
                 }
             }
 
