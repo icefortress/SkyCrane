@@ -22,22 +22,29 @@ using System.Text;
 
 namespace SkyCrane
 {
-    class NetTest
+    public static class NetTest
     {
-        RawServer s;
-        RawClient c;
-        public NetTest(int port)
+        //RawServer s;
+        //RawClient c;
+        //public NetTest(int port)
+        //{
+        //    s = new RawServer(port);
+        //    c = new RawClient();
+        //    c.connect("127.0.0.1", port);
+        //}
+
+        public static void Main(string[] args)
         {
-            s = new RawServer(port);
-            c = new RawClient();
-            c.connect("127.0.0.1", port);
+            RawClient c = new RawClient();
+            RawServer s = new RawServer(9999);
+            c.connect("127.0.0.1", 9999);
         }
 
-        public void exit()
-        {
-            s.exit();
-            c.exit();
-        }
+        //public void exit()
+        //{
+        //    s.exit();
+        //    c.exit();
+        //}
     }
 
     class RawServer
@@ -68,13 +75,7 @@ namespace SkyCrane
                 if (nw.hasNext())
                 {
                     p = nw.getNext();
-
-                    Console.WriteLine(p.data.Length);
-                    StateChange t = StateChange.getStateData(p.data);
-                    foreach (var element in t.intProperties)
-                    {
-                        Console.WriteLine(element);
-                    }
+                    Console.WriteLine(p.ptype);
                 }
             }
         }
@@ -97,11 +98,17 @@ namespace SkyCrane
     {
         private static short ids = 0;
         public short ID;
+        private IPEndPoint endpt;
 
-        public static ConnectionID newConnectionID(){
-            ConnectionID c = new ConnectionID();
+        public static ConnectionID newConnectionID(IPEndPoint ep){
+            ConnectionID c = new ConnectionID(ep);
             c.ID = ids++;
             return c;
+        }
+
+        public ConnectionID(IPEndPoint ep)
+        {
+            this.endpt = ep;
         }
     }
 }

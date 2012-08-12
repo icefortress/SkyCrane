@@ -131,6 +131,5 @@ namespace SkyCrane
                 //t.exit();
             }
         }
-
     }
 }
