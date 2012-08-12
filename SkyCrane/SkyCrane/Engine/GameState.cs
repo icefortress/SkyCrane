@@ -11,6 +11,8 @@ namespace SkyCrane.Engine
     {
         public Level currentLevel;
         public Entity usersPlayer;
+        private int usersEntity = 0;
+
         public GameplayScreen context;
 
         public List<StateChange> changes = new List<StateChange>();
@@ -69,7 +71,7 @@ namespace SkyCrane.Engine
 
             // Add the new entity and create an appropriate state to accompany it
             addEntity(100, pc);
-            StateChange sc = Entity.createEntityStateChange(pc.id, posX, posY, pc.frameWidth, pc.getDefaultTexture(), pc.scale);
+            StateChange sc = Entity.createEntityStateChange(pc.id, posX, posY, pc.frameWidth, pc.getDefaultTexture(), pc.scale, 100);
             changes.Add(sc);
             return pc;
         }
@@ -83,7 +85,7 @@ namespace SkyCrane.Engine
             }
             addEntity(100, e);
 
-            StateChange sc = Entity.createEntityStateChange(e.id, posX, posY, e.frameWidth, e.getDefaultTexture(), e.scale);
+            StateChange sc = Entity.createEntityStateChange(e.id, posX, posY, e.frameWidth, e.getDefaultTexture(), e.scale, 100);
             changes.Add(sc);
 
             return e;
@@ -94,7 +96,7 @@ namespace SkyCrane.Engine
             Bullet b = new Bullet(context, new Vector2(posX, posY), velocity);
             addEntity(200, b);
 
-            StateChange sc = Entity.createEntityStateChange(b.id, posX, posY, Bullet.frameWidth, Bullet.textureName, b.scale);
+            StateChange sc = Entity.createEntityStateChange(b.id, posX, posY, Bullet.frameWidth, Bullet.textureName, b.scale, 200);
             changes.Add(sc);
         }
 
@@ -103,7 +105,16 @@ namespace SkyCrane.Engine
             MageAttack m = new MageAttack(context, new Vector2(posX, posY), velocity);
             addEntity(150, m);
 
-            StateChange sc = Entity.createEntityStateChange(m.id, posX, posY, MageAttack.frameWidth, MageAttack.textureName, m.scale);
+            StateChange sc = Entity.createEntityStateChange(m.id, posX, posY, MageAttack.frameWidth, MageAttack.textureName, m.scale, 150);
+            changes.Add(sc);
+        }
+
+        public void createRogueAttack(int posX, int posY, Vector2 velocity)
+        {
+            RealBullet m = new RealBullet(context, new Vector2(posX, posY), velocity);
+            addEntity(150, m);
+
+            StateChange sc = Entity.createEntityStateChange(m.id, posX, posY, RealBullet.frameWidth, RealBullet.textureName, m.scale, 150);
             changes.Add(sc);
         }
 
@@ -121,7 +132,7 @@ namespace SkyCrane.Engine
             // Keep track of one wall per player
             walls[entity_id] = d;
 
-            StateChange sc = Entity.createEntityStateChange(d.id, posX, posY, DoctorWall.frameWidth, DoctorWall.textureName, d.scale);
+            StateChange sc = Entity.createEntityStateChange(d.id, posX, posY, DoctorWall.frameWidth, DoctorWall.textureName, d.scale, 200);
             changes.Add(sc);
         }
 
@@ -162,7 +173,14 @@ namespace SkyCrane.Engine
         public void applyStateChange(StateChange s)
         {
             int entity = s.intProperties[StateProperties.ENTITY_ID];
-            if (!entities.ContainsKey(entity)) return; // Deal with ordering issues in a hacky way
+            if (s.type != StateChangeType.CREATE_ENTITY && !entities.ContainsKey(entity))
+            {
+                if (s.type == StateChangeType.SET_PLAYER) // Can't ignore this case, need to save the ID for when we get it
+                {
+                    usersEntity = entity;
+                }
+                return;
+            }
 
             if(s.type == StateChangeType.MOVED) {
                 int pos_x = s.intProperties[StateProperties.POSITION_X];
@@ -182,6 +200,11 @@ namespace SkyCrane.Engine
                 e.id = entity;
                 
                 addEntity(draw_priority, e);
+
+                if (e.id == usersEntity)
+                {
+                    usersPlayer = e;
+                }
             }
             else if (s.type == StateChangeType.DELETE_ENTITY)
             {

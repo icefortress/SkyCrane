@@ -177,6 +177,8 @@ namespace SkyCrane.Screens
             textureDict.Add("doctorwall", doctorwall);
             Texture2D doctorwallh = content.Load<Texture2D>("Sprites/Doctor_Wall_Horizontal");
             textureDict.Add("doctorwallh", doctorwallh);
+            Texture2D realbull = content.Load<Texture2D>("Sprites/TheRealBullet");
+            textureDict.Add("realbull", realbull);
 
 
             Level l = Level.generateLevel(this);
@@ -222,7 +224,7 @@ namespace SkyCrane.Screens
             playerEntityIds.Add(gameState.usersPlayer.id);
 
             // TODO: delete this
-            //secondPlayer = gameState.createPlayer(1280 / 2, 720 / 2 - 50, characterSelections[1]);
+            //secondPlayer = gameState.createPlayer(1280 / 2, 720 / 2 - 50, PlayerCharacter.Type.Tank);
 
             if (isMultiplayer)
             {
@@ -240,7 +242,7 @@ namespace SkyCrane.Screens
                     List<StateChange> l = new List<StateChange>();
                     l.Add(sc);
 
-                    //serverReference.signalSC(l, new ConnectionID());
+                    serverReference.signalSC(l, playerIdToConnectionHash[i]);
                 }
             }
 
@@ -264,7 +266,21 @@ namespace SkyCrane.Screens
             }
             else if (c.ct == CommandType.SHOOT)
             {
-                Vector2 velocity = c.direction * 8;
+                PlayerCharacter attacker = (PlayerCharacter)gameState.entities[c.entity_id];
+                Vector2 vel = c.direction;
+                if (vel == Vector2.Zero)
+                {
+                    if (attacker.facingLeft)
+                    {
+                        vel = new Vector2(-1, 0);
+                    }
+                    else
+                    {
+                        vel = new Vector2(1, 0);
+                    }
+                }
+
+                Vector2 velocity = vel * 8;
                 if (bulletExists)
                 {
                     PlayerCharacter shooter = (PlayerCharacter)gameState.entities[c.entity_id];
@@ -282,10 +298,23 @@ namespace SkyCrane.Screens
                 PlayerCharacter attacker = (PlayerCharacter)gameState.entities[c.entity_id];
                 bool success = attacker.startAttack(g);
 
+                Vector2 vel = c.direction;
+                if (vel == Vector2.Zero)
+                {
+                    if (attacker.facingLeft)
+                    {
+                        vel = new Vector2(-1, 0);
+                    }
+                    else
+                    {
+                        vel = new Vector2(1, 0);
+                    }
+                }
+
                 if (gameState.entities[c.entity_id] is Wizard)
                 {
                     Vector2 pos = c.position;
-                    gameState.createMageAttack((int)pos.X, (int)pos.Y, c.direction * 8);
+                    if (success) gameState.createMageAttack((int)pos.X, (int)pos.Y, vel * 5);
                 }
                 else if (gameState.entities[c.entity_id] is Doctor)
                 {
@@ -293,7 +322,6 @@ namespace SkyCrane.Screens
                     Vector2 offset;
 
                     Vector2 pos = c.position;
-                    Vector2 vel = c.direction;
 
                     if (Math.Abs(vel.X) > Math.Abs(vel.Y))
                     {
@@ -321,8 +349,14 @@ namespace SkyCrane.Screens
 
                     pos += offset;
 
-                    gameState.createDoctorWall(c.entity_id, (int)pos.X, (int)pos.Y, hor);
+                    if(success) gameState.createDoctorWall(c.entity_id, (int)pos.X, (int)pos.Y, hor);
                 }
+                else if (gameState.entities[c.entity_id] is Rogue)
+                {
+                    Vector2 pos = c.position + new Vector2(0, 15);
+                    if (success) gameState.createRogueAttack((int)pos.X, (int)pos.Y, vel * 8);
+                }
+
             }
         }
 
@@ -458,6 +492,11 @@ namespace SkyCrane.Screens
         {
             if (input == null)
                 throw new ArgumentNullException("input");
+
+            if (gameState.usersPlayer == null)
+            {
+                return;
+            }
 
             // Look up inputs for the active player profile.
 

@@ -32,7 +32,7 @@ namespace SkyCrane.Dudes
             return textureName;
         }
 
-        public override Vector2 getHitbox()
+        public override Vector2 GetPhysicsSize()
         {
             return HITBOX_SIZE;
         }
@@ -79,7 +79,7 @@ namespace SkyCrane.Dudes
 
                     // Do damage
                     Enemy e = (Enemy)entity;
-                    e.applyDamage(1);
+                    e.applyDamage(10);
 
                     // Bounce
                     lastHit = entity;
