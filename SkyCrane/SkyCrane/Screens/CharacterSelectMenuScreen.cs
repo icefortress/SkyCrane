@@ -27,7 +27,7 @@ namespace SkyCrane.Screens
     {
 
         // TODO: Pretend that id's are nicely handled all over the place until I actually handle them niceley later after sleep
-        // TODO: Prevent spoofing by ensuring that requests are coming from the right places
+        // TODO: Prevent spoofing to clients if necessary
 
         #region Fields
 
@@ -39,7 +39,8 @@ namespace SkyCrane.Screens
         bool[] playersConnected;
         int playerId;
         Queue<int> hostIds; // Ids the host can give away
-        Dictionary<ConnectionID, int> connectionToPlayerIdHash; // Connection id's the host can use
+        Dictionary<int, int> connectionToPlayerIdHash; // Connection id to player id mapping
+        Dictionary<int, ConnectionID> playerIdToConnectionHash; // Player id to connection id mapping
 
         // Textures used to draw characters and buttons
         Texture2D[] characters;
@@ -91,7 +92,8 @@ namespace SkyCrane.Screens
             {
                 playerId = 0;
                 hostIds = new Queue<int>(ProjectSkyCrane.MAX_PLAYERS - 1);
-                connectionToPlayerIdHash = new Dictionary<ConnectionID, int>(ProjectSkyCrane.MAX_PLAYERS - 1);
+                connectionToPlayerIdHash = new Dictionary<int, int>(ProjectSkyCrane.MAX_PLAYERS - 1);
+                playerIdToConnectionHash = new Dictionary<int, ConnectionID>(ProjectSkyCrane.MAX_PLAYERS - 1);
                 for (int i = 1; i < ProjectSkyCrane.MAX_PLAYERS; i += 1) // Serve up id's
                 {
                     hostIds.Enqueue(i);
@@ -150,11 +152,36 @@ namespace SkyCrane.Screens
         {
             if (!characterSelectionsLocked[playerId])
             {
+                if (multiplayer) // Only broadcast in multiplayer mode
+                {
+                    playersConnected[playerId] = false;
+                    if (host) // Broadcast disconnect of host to all players
+                    {
+                        HostBroadcastLocks();
+                    }
+                    else // Inform the host of a disconnect
+                    {
+                        MenuState disconnectPacket = new MenuState(MenuState.Type.Connect, playerId, (int)MenuState.ConnectionDetails.Disconnected);
+                        ((ProjectSkyCrane)ScreenManager.Game).RawClient.sendMSC(disconnectPacket);
+                    }
+                }
                 base.OnCancel(playerIndex);
             }
-            else
+            else // Unlock a character selection
             {
                 characterSelectionsLocked[playerId] = false;
+                if (multiplayer) // Only broadcast in multiplayer mode
+                {
+                    if (host) // Broadcast lock changes to all players
+                    {
+                        HostBroadcastLocks();
+                    }
+                    else // Inform the host of a lock change
+                    {
+                        MenuState unlockPacket = new MenuState(MenuState.Type.LockCharacter, playerId, (int)MenuState.LockCharacterDetails.Unlocked);
+                        ((ProjectSkyCrane)ScreenManager.Game).RawClient.sendMSC(unlockPacket);
+                    }
+                }
             }
             return;
         }
@@ -166,17 +193,33 @@ namespace SkyCrane.Screens
         {
             if (e.MenuAccept) // Handle character selection and game starting
             {
-                if (!characterSelectionsLocked[playerId])
+                if (!characterSelectionsLocked[playerId]) // Unlock a player
                 {
                     characterSelectionsLocked[playerId] = true;
+                    if (multiplayer) // Only broadcast in multiplayer mode
+                    {
+                        if (host) // Broadcast lock changes to all players
+                        {
+                            HostBroadcastLocks();
+                        }
+                        else // Inform the host of a lock change
+                        {
+                            MenuState lockPacket = new MenuState(MenuState.Type.LockCharacter, playerId, (int)MenuState.LockCharacterDetails.Locked);
+                            ((ProjectSkyCrane)ScreenManager.Game).RawClient.sendMSC(lockPacket);
+                        }
+                    }
                 }
                 else if (host && AllLocked())
                 {
+                    if (multiplayer) // Only broadcast in multiplayer mode
+                    {
+                        HostBroadcastGameStart();
+                    }
                     LoadingScreen.Load(ScreenManager, false, e.PlayerIndex, new GameplayScreen(host, multiplayer, NumConnectedPlayers(), playerId, characterSelections));
                 }
                 menuSelectSoundEffect.Play();
             }
-            else if (!characterSelectionsLocked[playerId] && e.ToggleDirection != 0) // Do some toggling
+            else if (!characterSelectionsLocked[playerId] && e.ToggleDirection != 0) // Do some toggling of character selections
             {
                 characterSelections[playerId] += e.ToggleDirection;
                 if (characterSelections[playerId] < 0)
@@ -188,7 +231,7 @@ namespace SkyCrane.Screens
                     characterSelections[playerId] = 0;
                 }
 
-                if (multiplayer)
+                if (multiplayer) // Only broadcast in multiplayer mode
                 {
                     if (host) // Broadcast sprite changes to all players
                     {
@@ -281,10 +324,10 @@ namespace SkyCrane.Screens
         /// <summary>
         /// Have the host broadcast which characters are and aren't locked.
         /// </summary>
-        private void HostBroadcastLocked()
+        private void HostBroadcastLocks()
         {
             MenuState lockedBroadcast = new MenuState(MenuState.Type.LockCharacter);
-            for (int i = 0; i < playersConnected.Length; i += 1) // Loop over and broadcast the sprites of all connected players
+            for (int i = 0; i < playersConnected.Length; i += 1) // Loop over and broadcast the locks of all connected players
             {
                 if (playersConnected[i])
                 {
@@ -302,6 +345,23 @@ namespace SkyCrane.Screens
             }
             return;
         }
+
+        /// <summary>
+        /// Have the host broadcast that the game has started.
+        /// </summary>
+        private void HostBroadcastGameStart()
+        {
+            MenuState startBroadcast = new MenuState(MenuState.Type.GameStart);
+            for (int i = 0; i < playersConnected.Length; i += 1) // Loop over and inform everyone the game is beginning
+            {
+                if (playersConnected[i])
+                {
+                    ((ProjectSkyCrane)ScreenManager.Game).RawServer.broadcastMSC(startBroadcast);
+                }
+            }
+            return;
+        }
+
 
         #endregion
 
@@ -325,43 +385,69 @@ namespace SkyCrane.Screens
                                 if (serverStates[i].Item2.EventDetail == (int)MenuState.ConnectionDetails.IdReqest) // Someone is requesting an id
                                 {
                                     int newId;
-                                    if (connectionToPlayerIdHash.ContainsKey(serverStates[i].Item1)) // We've already seen this player and they haven't disconnected, resend their current id
+                                    if (connectionToPlayerIdHash.ContainsKey(serverStates[i].Item1.ID)) // We've already seen this player and they haven't disconnected, resend their current id
                                     {
-                                        newId = connectionToPlayerIdHash[serverStates[i].Item1];
+                                        newId = connectionToPlayerIdHash[serverStates[i].Item1.ID];
                                     }
                                     else // Send the player a new id
                                     {
                                         newId = hostIds.Dequeue();
                                         playersConnected[newId] = true;
-                                        connectionToPlayerIdHash.Add(serverStates[i].Item1, newId);
+                                        connectionToPlayerIdHash.Add(serverStates[i].Item1.ID, newId);
+                                        playerIdToConnectionHash.Add(newId, serverStates[i].Item1);
                                     }
                                     MenuState connectResponse = new MenuState(MenuState.Type.Connect, newId, (int)MenuState.ConnectionDetails.IdReqest); // Inform connector of their Id
                                     ((ProjectSkyCrane)ScreenManager.Game).RawServer.signalMSC(connectResponse, serverStates[i].Item1);
                                     HostBroadcastConnected();
                                     HostBroadcastSprites();
-                                    HostBroadcastLocked();
+                                    HostBroadcastLocks();
                                 }
                                 else if (serverStates[i].Item2.EventDetail == (int)MenuState.ConnectionDetails.Disconnected) // Someone is disconnecting
                                 {
-                                    // TODO: Handle disonnects properly
-                                    HostBroadcastConnected();
+                                    if (connectionToPlayerIdHash.ContainsKey(serverStates[i].Item1.ID)) // This is a known player based on their connection
+                                    {
+                                        int requestingId = connectionToPlayerIdHash[serverStates[i].Item1.ID];
+                                        if (requestingId == serverStates[i].Item2.PlayerId) // Prevent spoofing and sillyness
+                                        {
+                                            playersConnected[requestingId] = false;
+                                            connectionToPlayerIdHash.Remove(serverStates[i].Item1.ID); // Remove connections from both hashes
+                                            playerIdToConnectionHash.Remove(requestingId);
+                                            hostIds.Enqueue(requestingId); // Allow the id to be re-used
+                                            HostBroadcastConnected();
+                                        }
+                                    }
                                 }
                                 break;
                             case MenuState.Type.SelectCharacter:
-                                if (connectionToPlayerIdHash.ContainsKey(serverStates[i].Item1)) // We've already seen this player and they haven't disconnected, resend their current id
+                                if (connectionToPlayerIdHash.ContainsKey(serverStates[i].Item1.ID)) // This is a known player based on their connection
                                 {
-                                    int requestingId = connectionToPlayerIdHash[serverStates[i].Item1];
+                                    int requestingId = connectionToPlayerIdHash[serverStates[i].Item1.ID];
                                     if (requestingId == serverStates[i].Item2.PlayerId) // Prevent spoofing and sillyness
                                     {
-                                        characterSelections[serverStates[i].Item2.PlayerId] = (PlayerCharacter.Type)serverStates[i].Item2.EventDetail;
+                                        characterSelections[requestingId] = (PlayerCharacter.Type)serverStates[i].Item2.EventDetail;
+                                        HostBroadcastSprites();
                                     }
-                                    HostBroadcastSprites();
                                 }
                                 break;
                             case MenuState.Type.LockCharacter:
-                                //if (serverStates[i].Item2.EventDetail == 
-                                //characterSelectionsLocked[serverStates[i].Item2.PlayerId] = (PlayerCharacter.Type)serverStates[i].Item2.EventDetail;
-                                throw new NotImplementedException();
+                                if (connectionToPlayerIdHash.ContainsKey(serverStates[i].Item1.ID)) // Check for a known player based on connection
+                                {
+                                    int requestingId = connectionToPlayerIdHash[serverStates[i].Item1.ID];
+                                    if (requestingId == serverStates[i].Item2.PlayerId) // Prevent spoofing and sillyness
+                                    {
+                                        if (serverStates[i].Item2.EventDetail == (int)MenuState.LockCharacterDetails.Locked) // Locking a character in
+                                        {
+                                            characterSelectionsLocked[requestingId] = true;
+                                        }
+                                        else if (serverStates[i].Item2.EventDetail == (int)MenuState.LockCharacterDetails.Unlocked) // Unlocking a character
+                                        {
+                                            characterSelectionsLocked[requestingId] = false;
+                                        }
+                                        HostBroadcastLocks();
+                                    }
+                                }
+                                break;
+                            case MenuState.Type.GameStart: // Don't do anything in this case, it's clearly a silly request
                                 break;
                             default:
                                 throw new ArgumentException();
@@ -387,12 +473,24 @@ namespace SkyCrane.Screens
                                 else if (clientStates[i].EventDetail == (int)MenuState.ConnectionDetails.Disconnected) // Note down that a player is no longer in the session
                                 {
                                     playersConnected[clientStates[i].PlayerId] = false;
+                                    // TODO: Handle the server disconnecting
                                 }
                                 break;
                             case MenuState.Type.SelectCharacter: // Handle character selection
                                 characterSelections[clientStates[i].PlayerId] = (PlayerCharacter.Type)clientStates[i].EventDetail;
                                 break;
-                            case MenuState.Type.LockCharacter:
+                            case MenuState.Type.LockCharacter: // Handle character locking
+                                if (clientStates[i].EventDetail == (int)MenuState.LockCharacterDetails.Locked)
+                                {
+                                    characterSelectionsLocked[clientStates[i].PlayerId] = true;
+                                }
+                                else if (clientStates[i].EventDetail == (int)MenuState.LockCharacterDetails.Unlocked)
+                                {
+                                    characterSelectionsLocked[clientStates[i].PlayerId] = false;
+                                }
+                                break;
+                            case MenuState.Type.GameStart:
+                                LoadingScreen.Load(ScreenManager, false, null, new GameplayScreen(host, multiplayer, NumConnectedPlayers(), playerId, characterSelections));
                                 break;
                             default:
                                 throw new ArgumentException();
