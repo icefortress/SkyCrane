@@ -17,7 +17,7 @@ namespace SkyCrane.Dudes
         /// </summary>
         public enum Type
         {
-            Goblin,
+            Goblin = 0,
             Skeleton
         }
 
