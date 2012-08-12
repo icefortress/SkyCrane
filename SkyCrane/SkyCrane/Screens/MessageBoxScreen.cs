@@ -106,11 +106,14 @@ namespace SkyCrane.Screens
             // controlling player, the InputState helper returns to us which player
             // actually provided the input. We pass that through to our Accepted and
             // Cancelled events, so they can tell which player triggered them.
+
             if (input.IsMenuSelect(ControllingPlayer, out playerIndex))
             {
                 // Raise the accepted event, then exit the message box.
                 if (Accepted != null)
-                    Accepted(this, new PlayerInputEventArgs(playerIndex, 0));
+                {
+                    Accepted(this, new PlayerInputEventArgs(playerIndex, true));
+                }
 
                 ExitScreen();
             }
@@ -118,7 +121,9 @@ namespace SkyCrane.Screens
             {
                 // Raise the cancelled event, then exit the message box.
                 if (Cancelled != null)
-                    Cancelled(this, new PlayerInputEventArgs(playerIndex, 0));
+                {
+                    Cancelled(this, new PlayerInputEventArgs(playerIndex, false, true));
+                }
 
                 ExitScreen();
             }

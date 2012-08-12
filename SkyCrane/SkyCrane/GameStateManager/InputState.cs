@@ -22,9 +22,6 @@ namespace SkyCrane.GameStateManager
     /// </summary>
     public class InputState
     {
-
-        public const int MAX_INPUTS = 4;
-
         public readonly KeyboardState[] currentKeyboardStates;
         public readonly KeyboardState[] lastKeyboardStates;
         public readonly GamePadState[] currentGamePadStates;
@@ -55,11 +52,11 @@ namespace SkyCrane.GameStateManager
         /// </summary>
         public InputState()
         {
-            currentKeyboardStates = new KeyboardState[MAX_INPUTS];
-            currentGamePadStates = new GamePadState[MAX_INPUTS];
-            lastKeyboardStates = new KeyboardState[MAX_INPUTS];
-            lastGamePadStates = new GamePadState[MAX_INPUTS];
-            gamePadWasConnected = new bool[MAX_INPUTS];
+            currentKeyboardStates = new KeyboardState[ProjectSkyCrane.MAX_PLAYERS];
+            currentGamePadStates = new GamePadState[ProjectSkyCrane.MAX_PLAYERS];
+            lastKeyboardStates = new KeyboardState[ProjectSkyCrane.MAX_PLAYERS];
+            lastGamePadStates = new GamePadState[ProjectSkyCrane.MAX_PLAYERS];
+            gamePadWasConnected = new bool[ProjectSkyCrane.MAX_PLAYERS];
             return;
         }
 
@@ -68,7 +65,7 @@ namespace SkyCrane.GameStateManager
         /// </summary>
         public void Update()
         {
-            for (int i = 0; i < MAX_INPUTS; i++)
+            for (int i = 0; i < ProjectSkyCrane.MAX_PLAYERS; i++)
             {
                 lastKeyboardStates[i] = currentKeyboardStates[i];
                 lastGamePadStates[i] = currentGamePadStates[i];
