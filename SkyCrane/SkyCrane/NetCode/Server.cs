@@ -99,6 +99,7 @@ namespace SkyCrane.NetCode
         //Connection state
         Dictionary<IPEndPoint, ConnectionID> connections = new Dictionary<IPEndPoint, ConnectionID>();
         List<Command> commandQ = new List<Command>();
+        Queue<Tuple<ConnectionID, MenuState>> mscQ = new Queue<Tuple<ConnectionID, MenuState>>();
 
         public RawServer(int port)
         {
@@ -184,6 +185,15 @@ namespace SkyCrane.NetCode
                         lock (commandQ)
                             this.commandQ.Add(cmd);
                         break;
+                    case Packet.PacketType.MSC:
+                        //Actually handle this
+                        Console.WriteLine("Server - Got MSC from: " + connections[p.Dest].ID);
+                        MenuState msc = new MenuState(p.data);
+                        ConnectionID cid = new ConnectionID(p.Dest);
+                        Tuple<ConnectionID, MenuState> newMQ = new Tuple<ConnectionID, MenuState>(cid, msc);
+                        lock (mscQ)
+                            this.mscQ.Enqueue(newMQ);
+                        break;
                 }
             }
         }
@@ -196,6 +206,21 @@ namespace SkyCrane.NetCode
                 ret = new List<Command>(commandQ);
                 //commandQ.Clear();
             }
+            return ret;
+        }
+
+        public List<Tuple<ConnectionID, MenuState>> getMSC()
+        {
+            List<Tuple<ConnectionID, MenuState>> ret = new List<Tuple<ConnectionID, MenuState>>();
+
+            lock (mscQ)
+            {
+                while (mscQ.Count > 0)
+                {
+                    ret.Add(mscQ.Dequeue());
+                }
+            }
+
             return ret;
         }
 
@@ -219,6 +244,31 @@ namespace SkyCrane.NetCode
             {
                 STCPacket p = new STCPacket(sc);
                 p.Dest = cid.endpt;
+                nw.commitPacket(p);
+            }
+        }
+
+        public void broadcastMSC(List<MenuState> list)
+        {
+            foreach (MenuState msc in list)
+            {
+                foreach (KeyValuePair<IPEndPoint, ConnectionID> d in connections)
+                {
+                    Console.WriteLine("Server - Sent MenuState to: " + d.Value.ID);
+                    MSCPacket p = new MSCPacket(msc);
+                    p.Dest = d.Key;
+                    this.nw.commitPacket(p);
+                }
+            }
+        }
+
+        public void signalMSC(List<MenuState> list, ConnectionID cid)
+        {
+            foreach (MenuState msc in list)
+            {
+                MSCPacket p = new MSCPacket(msc);
+                p.Dest = cid.endpt;
+                nw.commitPacket(p);
             }
         }
     }
