@@ -35,6 +35,7 @@ namespace SkyCrane.NetCode
             // Create the thread
             clientThread = new Thread(this.ClientstartFunc);
             clientThread.Name = "mainClientThread";
+            clientThread.IsBackground = true;
 
             clientThread.Start();
         }
