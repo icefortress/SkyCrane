@@ -117,8 +117,8 @@ namespace SkyCrane.Screens
 
             gameFont = content.Load<SpriteFont>("Fonts/gamefont");
 
-            Texture2D testLevel = content.Load<Texture2D>("Levels/room3");
-            Texture2D testMap = content.Load<Texture2D>("Levels/room3-collision_map");
+            Texture2D testLevel = content.Load<Texture2D>("Sprites/Level");
+            Texture2D testMap = content.Load<Texture2D>("Sprites/Level_CollisionMap_scaleDown");
             textureDict.Add("room2", testLevel);
             textureDict.Add("room2-collision-map", testMap);
 
@@ -340,31 +340,18 @@ namespace SkyCrane.Screens
                     bool hor = false;
                     Vector2 offset;
 
-                    Vector2 pos = c.position;
+                    Doctor d = (Doctor)gameState.entities[c.entity_id];
 
-                    if (Math.Abs(vel.X) > Math.Abs(vel.Y))
+                    Vector2 pos = c.position;
+                    if (!d.facingLeft)
                     {
-                        if (vel.X > 0)
-                        {
-                            offset = new Vector2(80, 0);
-                        }
-                        else
-                        {
-                            offset = new Vector2(-80, 0);
-                        }
+                        offset = new Vector2(80, 0);
                     }
                     else
                     {
-                        hor = true;
-                        if (vel.Y > 0)
-                        {
-                            offset = new Vector2(0, 80);
-                        }
-                        else
-                        {
-                            offset = new Vector2(0, -80);
-                        }
+                        offset = new Vector2(-80, 0);
                     }
+
 
                     pos += offset;
 

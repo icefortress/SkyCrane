@@ -29,6 +29,8 @@ namespace SkyCrane.Dudes
 
         public override void HandleCollision(CollisionDirection cd, PhysicsAble entity)
         {
+            if (entity is DoctorWall) return;
+
             // Die if you hit a wall
             if (entity is Level)
             {
@@ -40,6 +42,10 @@ namespace SkyCrane.Dudes
                 Enemy e = (Enemy)entity;
                 e.applyDamage(1);
                 destroy();
+            }
+            else
+            {
+                base.HandleCollision(cd, entity);
             }
         }
     }
