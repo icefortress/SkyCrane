@@ -103,11 +103,6 @@ namespace SkyCrane
 
         public CollisionDirection CheckCollision(PhysicsAble entity)
         {
-            if (entity is Bullet)
-            {
-                Console.WriteLine("test");
-            }
-
             // Assuming for now position and bounds defined in pixel space, this should be easy to switch out if needed
             Vector2 position = entity.GetPhysicsPosition() + entity.GetPhysicsVelocity();
             Vector2 size = entity.GetPhysicsSize();

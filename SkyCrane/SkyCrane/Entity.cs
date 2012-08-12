@@ -27,13 +27,16 @@ namespace SkyCrane
 
             set
             {
-                StateChange sc = new StateChange();
-                sc.type = StateChangeType.MOVED;
-                sc.intProperties.Add(StateProperties.ENTITY_ID, id);
-                sc.intProperties.Add(StateProperties.POSITION_X, (int)value.X);
-                sc.intProperties.Add(StateProperties.POSITION_Y, (int)value.Y);
+                if (value != worldPosBack)
+                {
+                    StateChange sc = new StateChange();
+                    sc.type = StateChangeType.MOVED;
+                    sc.intProperties.Add(StateProperties.ENTITY_ID, id);
+                    sc.intProperties.Add(StateProperties.POSITION_X, (int)value.X);
+                    sc.intProperties.Add(StateProperties.POSITION_Y, (int)value.Y);
 
-                notifyStateChangeListeners(sc);
+                    notifyStateChangeListeners(sc);
+                }
             }
         }
         public Vector2 drawingPosition;

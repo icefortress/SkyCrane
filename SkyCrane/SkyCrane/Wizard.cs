@@ -26,5 +26,14 @@ namespace SkyCrane
         {
             return TEXTURE_LEFT;
         }
+
+        public override void HandleCollision(CollisionDirection cd, PhysicsAble entity)
+        {
+            if (entity is Bullet)
+            {
+                Console.WriteLine("Wizard hit bullet");
+            }
+            base.HandleCollision(cd, entity);
+        }
     }
 }

@@ -11,7 +11,8 @@ namespace SkyCrane
 
     public abstract class PlayerCharacter : AttackingDude
     {
-        public static Vector2 HITBOX_SIZE = new Vector2(45, 20);
+        public static Vector2 HITBOX_SIZE = new Vector2(45, 45);
+        Bullet bulletRef = null;
 
         public PlayerCharacter(GameplayScreen g, int posX, int posY, int frameWidth, int attackFrameWidth,
             String textureLeft, String textureRight, String textureAttackLeft, String textureAttackRight) :
@@ -27,12 +28,19 @@ namespace SkyCrane
             return HITBOX_SIZE;
         }
 
+        public void fireBullet(Vector2 velocity)
+        {
+            if (bulletRef == null) return;
+            bulletRef.refire(this, velocity);
+            bulletRef = null;
+        }
+
         public override void HandleCollision(CollisionDirection cd, PhysicsAble entity)
         {
             if (entity is Bullet)
             {
-                // Catch the bullet
-                Console.WriteLine("Hit the bullet");
+                bulletRef = (Bullet)entity;
+                bulletRef.attach(this);
             }
             else if (entity is Enemy)
             {

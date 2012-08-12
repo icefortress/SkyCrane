@@ -44,7 +44,10 @@ namespace SkyCrane.Screens
         public int numPlayers;
         public Dictionary<int, int> serverIDLookup = new Dictionary<int, int>();
 
+        public PlayerCharacter secondPlayer = null;
+
         bool goodtogo = false;
+        public bool bulletExists = false;
 
         List<Command> commandBuffer = new List<Command>();
         public Dictionary<String, Texture2D> textureDict = new Dictionary<String, Texture2D>();
@@ -170,6 +173,9 @@ namespace SkyCrane.Screens
         {
             gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, "wizard");
 
+            // TODO: delete this
+            secondPlayer = gameState.createPlayer(1280 / 2, 720 / 2 - 50, "tank");
+
             if (isMultiplayer)
             {
                 // Create players and broadcast to the clients
@@ -184,7 +190,7 @@ namespace SkyCrane.Screens
             // Get the players from the server and send them each a notification of who the fuck theyare
 
             // TODO: add an enemy for testing
-            gameState.createEnemy(1280 / 2, 720 / 2 + 200, 45, "skeleton");
+            //gameState.createEnemy(1280 / 2, 720 / 2 + 200, 45, "skeleton");
 
             goodtogo = true;
 
@@ -244,10 +250,18 @@ namespace SkyCrane.Screens
                     }
                     else if (c.ct == CommandType.SHOOT)
                     {
-                        Vector2 pos = c.position;
                         Vector2 velocity = c.direction * 8;
-
-                        gameState.createBullet((int)pos.X, (int)pos.Y, velocity);
+                        if (bulletExists)
+                        {
+                            PlayerCharacter shooter = (PlayerCharacter)gameState.entities[c.entity_id];
+                            shooter.fireBullet(velocity);
+                        }
+                        else
+                        {
+                            Vector2 pos = c.position;
+                            gameState.createBullet((int)pos.X, (int)pos.Y, velocity);
+                            bulletExists = true;
+                        }
                     }
                     else if (c.ct == CommandType.ATTACK)
                     {
@@ -277,6 +291,7 @@ namespace SkyCrane.Screens
                 // Iterate over the physicsAbles to see if they are colliding with eachther
                 foreach (Entity e in gameState.entities.Values)
                 {
+                    //if (e.velocity == Vector2.Zero) continue; // Things not moving won't check if they collide
                     if (!(e is PhysicsAble)) continue;
                     PhysicsAble p = (PhysicsAble) e;
 
@@ -371,6 +386,44 @@ namespace SkyCrane.Screens
             }
             else
             {
+                /* ===== COPY PASTE PLAYER 2 ====== */
+
+                // Otherwise move the player position.
+                Vector2 p2movement = Vector2.Zero;
+
+                if (keyboardState.IsKeyDown(Keys.A))
+                    p2movement.X--;
+
+                if (keyboardState.IsKeyDown(Keys.D))
+                    p2movement.X++;
+
+                if (keyboardState.IsKeyDown(Keys.W))
+                    p2movement.Y--;
+
+                if (keyboardState.IsKeyDown(Keys.S))
+                    p2movement.Y++;
+
+                if (p2movement.Length() > 1)
+                    p2movement.Normalize();
+
+                if (keyboardState.IsKeyDown(Keys.T))
+                {
+                    Command c = new Command();
+                    c.entity_id = secondPlayer.id;
+                    c.direction = p2movement;
+                    c.ct = CommandType.SHOOT;
+                    c.position = secondPlayer.worldPosition;
+                    commandBuffer.Add(c);
+                }
+
+                Command c3 = new Command();
+                c3.entity_id = secondPlayer.id;
+                c3.direction = p2movement;
+                c3.ct = CommandType.MOVE;
+                commandBuffer.Add(c3);
+
+                /* ===== COPY PASTE PLAYER 2 ====== */
+
                 // Otherwise move the player position.
                 Vector2 movement = Vector2.Zero;
 
