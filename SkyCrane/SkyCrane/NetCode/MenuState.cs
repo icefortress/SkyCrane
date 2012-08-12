@@ -32,6 +32,11 @@ namespace SkyCrane.NetCode
             /// </summary>
             LockCharacter,
 
+            /// <summary>
+            /// The host has started the game.
+            /// </summary>
+            GameStart
+
         }
 
         /// <summary>
