@@ -35,9 +35,9 @@ namespace SkyCrane
 
         public static void Main(string[] args)
         {
-            RawClient c = new RawClient();
+            //RawClient c = new RawClient();
             RawServer s = new RawServer(9999);
-            c.connect("127.0.0.1", 9999);
+            //c.connect("127.0.0.1", 9999);
         }
 
         //public void exit()
@@ -52,6 +52,10 @@ namespace SkyCrane
         private Thread serverThread;
         private bool go = true;
         private NetworkWorker nw;
+
+        //Connection state
+        Dictionary<IPEndPoint, ConnectionID> connections = new Dictionary<IPEndPoint, ConnectionID>();
+        List<Command> commandQ = new List<Command>();
 
         public RawServer(int port)
         {
@@ -74,13 +78,55 @@ namespace SkyCrane
             while (this.go)
             {
                 p = nw.getNext();
+                if (p == null)
+                {
+                    //Sanity stuff
+                    continue;
+                }
                 Console.WriteLine(p.ptype);
+
+                switch (p.ptype)
+                {
+                    case Packet.PacketType.HANDSHAKE:
+                        if (!connections.ContainsKey(p.Dest))
+                        {
+                            Console.WriteLine("New connection from: " + p.Dest);
+                            connections[p.Dest] = new ConnectionID(p.Dest);
+                            Console.WriteLine("Added Connection: " + connections[p.Dest].ID);
+                            nw.commitPacket(p);
+                        }
+                        break;
+
+                    case Packet.PacketType.STC:
+                        Console.WriteLine("Receivd State Change from client... who do they think they are?");
+                        Environment.Exit(1);
+                        break;
+
+                    case Packet.PacketType.SYNC:
+                        break;
+
+                    case Packet.PacketType.PING:
+                        break;
+
+                    case Packet.PacketType.CMD:
+                        //Actually handle this
+                        Command cmd = new Command(p.data);
+                        lock(commandQ)
+                            this.commandQ.Add(cmd);
+                        break;
+                }
             }
         }
 
         public List<Command> getCMD()
         {
-            return new List<Command>();
+            List<Command> ret;
+            lock (commandQ)
+            {
+                ret = new List<Command>(commandQ);
+                ret.Clear();
+            }
+            return ret;
         }
 
         public void broadcastSC(List<StateChange> list)
@@ -89,13 +135,12 @@ namespace SkyCrane
 
         public void signalSC(List<StateChange> list, ConnectionID cid)
         {
-
         }
     }
 
     public class ConnectionID
     {
-        private static short ids = 0;
+        private static short ids = 1;
         public short ID;
         private IPEndPoint endpt;
 
