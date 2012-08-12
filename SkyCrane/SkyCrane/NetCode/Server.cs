@@ -189,10 +189,13 @@ namespace SkyCrane.NetCode
                         //Actually handle this
                         Console.WriteLine("Server - Got MSC from: " + connections[p.Dest].ID);
                         MenuState msc = new MenuState(p.data);
-                        ConnectionID cid = new ConnectionID(p.Dest);
-                        Tuple<ConnectionID, MenuState> newMQ = new Tuple<ConnectionID, MenuState>(cid, msc);
-                        lock (mscQ)
-                            this.mscQ.Enqueue(newMQ);
+                        if (connections.ContainsKey(p.Dest))
+                        {
+                            ConnectionID cid = connections[p.Dest];
+                            Tuple<ConnectionID, MenuState> newMQ = new Tuple<ConnectionID, MenuState>(cid, msc);
+                            lock (mscQ)
+                                this.mscQ.Enqueue(newMQ);
+                        }
                         break;
                 }
             }
@@ -287,7 +290,7 @@ namespace SkyCrane.NetCode
 
     public class ConnectionID
     {
-        private static short ids = 1;
+        private static short ids = 0;
         public short ID;
         public IPEndPoint endpt;
         public long lastSYNC = -1;
@@ -296,7 +299,6 @@ namespace SkyCrane.NetCode
         {
             ID = ids++;
             this.endpt = ep;
-            return;
         }
     }
 }
