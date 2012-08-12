@@ -97,8 +97,8 @@ namespace SkyCrane.Screens
         public override void LoadContent()
         {
             ContentManager content = ScreenManager.Game.Content;
-            characters = new Texture2D[] { content.Load<Texture2D>("Sprites/Wizard"),
-                content.Load<Texture2D>("Sprites/PinkWizard") };
+            characters = new Texture2D[] { content.Load<Texture2D>("Sprites/Tank"),
+                content.Load<Texture2D>("Sprites/Wizard"), content.Load<Texture2D>("Sprites/Rogue") };
             aButtonTextured2D = content.Load<Texture2D>("XBox Buttons/button_a");
             bButtonTextured2D = content.Load<Texture2D>("XBox Buttons/button_b");
             dPadLeftTexture2D = content.Load<Texture2D>("XBox Buttons/dpad_left");
