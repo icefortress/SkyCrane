@@ -34,6 +34,7 @@ namespace SkyCrane.NetCode
         {
             serverThread = new Thread(runThis);
             serverThread.Name = "Main Server";
+            serverThread.Priority = ThreadPriority.AboveNormal;
             serverThread.IsBackground = true;
 
             System.Console.WriteLine("Starting Server");
@@ -160,6 +161,7 @@ namespace SkyCrane.NetCode
 
         public void broadcastSC(List<StateChange> list)
         {
+            //Console.WriteLine("Sending # of SCs: {0}", list.Count);
             foreach (StateChange sc in list)
             {
                 foreach (KeyValuePair<IPEndPoint, ConnectionID> d in connections)

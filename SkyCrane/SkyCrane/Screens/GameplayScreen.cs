@@ -139,7 +139,12 @@ namespace SkyCrane.Screens
             Texture2D roguer = content.Load<Texture2D>("Sprites/Rogue_Animated_Right");
             Texture2D rogueal = content.Load<Texture2D>("Sprites/Rogue_Attack");
             Texture2D roguear = content.Load<Texture2D>("Sprites/Rogue_Attack_Right");
-            
+
+            textureDict.Add("jarcatl", content.Load<Texture2D>("Sprites/Jar_Cat_Animated"));
+            textureDict.Add("jarcatr", content.Load<Texture2D>("Sprites/Jar_Cat_Animated_Right"));
+            textureDict.Add("jarcatal", content.Load<Texture2D>("Sprites/Jar_Cat_Attack_Right"));
+            textureDict.Add("jarcatar", content.Load<Texture2D>("Sprites/Jar_Cat_Attack"));
+
             textureDict.Add("tankl", tankl);
             textureDict.Add("tankr", tankr);
             textureDict.Add("tankal", tankal);
@@ -468,6 +473,9 @@ namespace SkyCrane.Screens
                 
                 // Send our input to the server
                 clientReference.sendCMD(commandBuffer);
+
+                Console.WriteLine(commandBuffer.Count);
+
                 commandBuffer.Clear();
 
                 // Flush our gamestatemanager changes, we don't trust ourselves
@@ -620,17 +628,22 @@ namespace SkyCrane.Screens
 
                 if (keyboardState.IsKeyDown(Keys.R) && canCreate && isServer)
                 {
-                    gameState.createEnemy(1280 / 2, 720 / 2 + 200, "goblin");
+                    gameState.createEnemy(1280 / 2, 720 / 2 + 200, Enemy.Type.Goblin);
                     canCreate = false;
                 } else if (keyboardState.IsKeyUp(Keys.R)) {
                     canCreate = true;
                 }
 
-                Command c2 = new Command();
-                c2.entity_id = gameState.usersPlayer.id;
-                c2.direction = movement;
-                c2.ct = CommandType.MOVE;
-                commandBuffer.Add(c2);
+                //if (movement != Vector2.Zero || gameState.isMoving)
+                //{
+                        Command c2 = new Command();
+                        c2.entity_id = gameState.usersPlayer.id;
+                        c2.direction = movement;
+                        c2.ct = CommandType.MOVE;
+                        commandBuffer.Add(c2);
+                        gameState.isMoving = false;
+                //}
+                
             }
         }
 

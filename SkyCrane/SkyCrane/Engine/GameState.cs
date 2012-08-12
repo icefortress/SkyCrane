@@ -23,6 +23,8 @@ namespace SkyCrane.Engine
         public List<int> healthBarWaiters = new List<int>();
         public Dictionary<int, HealthBar> healthBars = new Dictionary<int, HealthBar>();
 
+        public bool isMoving = false;
+
         public GameState(GameplayScreen g)
         {
             context = g;
@@ -59,7 +61,8 @@ namespace SkyCrane.Engine
             switch (type) // Create a new character based on the type
             {
                 case PlayerCharacter.Type.Doctor:
-                    pc = new Doctor(context, posX, posY);
+                    //pc = new Doctor(context, posX, posY);
+                    pc = new JarCat(context, posX, posY);
                     break;
                 case PlayerCharacter.Type.Rogue:
                     pc = new Rogue(context, posX, posY);
@@ -104,16 +107,17 @@ namespace SkyCrane.Engine
             addEntity(300, h, h.id);
         }
 
-        public Enemy createEnemy(int posX, int posY, String type)
+        public Enemy createEnemy(int posX, int posY, Enemy.Type type)
         {
             Enemy e = null;
-            if (type == "skeleton")
+            switch (type)
             {
-                e = new Skeleton(context, posX, posY);
-            }
-            else if (type == "goblin")
-            {
-                e = new Goblin(context, posX, posY);
+                case Enemy.Type.Goblin: // Create a smelly goblin
+                    e = new Goblin(context, posX, posY);
+                    break;
+                case Enemy.Type.Skeleton: // Create a scary skeleton
+                    e = new Skeleton(context, posX, posY);
+                    break;
             }
             addEntity(100, e, e.id);
 
@@ -242,6 +246,11 @@ namespace SkyCrane.Engine
             }
             else if (s.type == StateChangeType.MOVED)
             {
+                if (entity == usersEntity)
+                {
+                    isMoving = true;
+                }
+
                 int pos_x = s.intProperties[StateProperties.POSITION_X];
                 int pos_y = s.intProperties[StateProperties.POSITION_Y];
                 entities[entity].worldPosBack = new Vector2(pos_x, pos_y); // do a change without triggering a statechange

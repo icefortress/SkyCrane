@@ -62,14 +62,6 @@ namespace SkyCrane.Dudes
             {
                 velocity = Vector2.Zero;
             }
-            else if (entity is Enemy)
-            {
-                if (((Enemy)entity).attacking)
-                {
-                    Console.WriteLine("Hit by enemy!");
-                    velocity = entity.GetPhysicsVelocity() * 2;
-                }
-            }
 
         }
 

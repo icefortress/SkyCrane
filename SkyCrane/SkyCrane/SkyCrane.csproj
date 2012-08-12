@@ -79,12 +79,14 @@
   <ItemGroup>
     <Compile Include="Dudes\CrossbowBolt.cs" />
     <Compile Include="Dudes\Goblin.cs" />
+    <Compile Include="Dudes\JarCat.cs" />
     <Compile Include="Dudes\OrientalDude.cs" />
     <Compile Include="Dudes\RealBullet.cs" />
     <Compile Include="Dudes\Rogue.cs" />
     <Compile Include="Engine\AIable.cs" />
     <Compile Include="Dudes\AttackingDude.cs" />
     <Compile Include="Engine\HealthBar.cs" />
+    <Compile Include="Engine\SpawnList.cs" />
     <Compile Include="NetCode\MenuState.cs" />
     <Compile Include="NetCode\Client.cs" />
     <Compile Include="Dudes\Doctor.cs" />

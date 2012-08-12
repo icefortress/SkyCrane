@@ -12,7 +12,16 @@ namespace SkyCrane.Dudes
     public abstract class Enemy : AttackingDude, AIable
     {
 
-        public static Vector2 HITBOX_SIZE = new Vector2(45, 20);
+        /// <summary>
+        /// The possible types of enemies.
+        /// </summary>
+        public enum Type
+        {
+            Goblin,
+            Skeleton
+        }
+
+        public static Vector2 HITBOX_SIZE = new Vector2(45, 45);
         public static float SCALE = 2;
 
         public Enemy(GameplayScreen g, int posX, int posY, int frameWidth, int attackFrameWidth,
@@ -30,13 +39,7 @@ namespace SkyCrane.Dudes
 
         public override void HandleCollision(CollisionDirection cd, PhysicsAble entity)
         {
-            if (entity is MageAttack)
-            {
-            }
-            else if (entity is Enemy)
-            {
-            }
-            else
+            if (entity is Level)
             {
                 velocity = Vector2.Zero;
             }
