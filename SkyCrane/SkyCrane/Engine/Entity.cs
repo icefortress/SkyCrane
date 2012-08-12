@@ -93,9 +93,18 @@ namespace SkyCrane.Engine
         }
 
         public Entity(GameplayScreen g, int posX, int posY, int frameWidth, int frameTime, String textureName, float scale)
-            : this(g, posX, posY, frameWidth, textureName, scale)
         {
+            this.context = g;
+
+            this.scaleBack = scale;
+
+            id = next_id;
+            next_id++;
+
+            worldPosBack = new Vector2(posX, posY);
             this.frameTime = frameTime;
+
+            changeAnimation(frameWidth, textureName);
         }
 
         public virtual int GetFrameTime()
@@ -112,6 +121,7 @@ namespace SkyCrane.Engine
             {
                 animationFrames.Add(i);
             }
+
             InitDrawable(chara, frameWidth, chara.Height, animationFrames, this.GetFrameTime(), Color.White, this.scale, true);
             active = true;
 
@@ -160,7 +170,7 @@ namespace SkyCrane.Engine
 
             // If the elapsed time is larger than the frame time
             // we need to switch frames
-            if (elapsedTime > frameTime)
+            if (elapsedTime > GetFrameTime())
             {
                 // Move to the next frame
                 currentFrame++;
@@ -174,11 +184,18 @@ namespace SkyCrane.Engine
                         active = false;
                 }
 
+                //Console.WriteLine(this.spriteStrip.Name + ": " + this.GetFrameTime());
+
                 // Reset the elapsed time to zero
                 elapsedTime = 0;
             }
 
             int drawFrame = animationFrames[currentFrame];
+            if (this.GetFrameTime() == 100)
+            {
+                Console.WriteLine("Current frame: " + drawFrame);
+            }
+
 
             // Grab the correct frame in the image strip by multiplying the currentFrame index by the frame width
             sourceRect = new Rectangle(drawFrame * frameWidth, 0, frameWidth, frameHeight);

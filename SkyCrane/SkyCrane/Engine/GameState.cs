@@ -103,7 +103,7 @@ namespace SkyCrane.Engine
             CrossbowBolt b = new CrossbowBolt(context, new Vector2(posX, posY), velocity);
             addEntity(200, b);
 
-            StateChange sc = StateChangeFactory.createEntityStateChange(b.id, posX, posY, Bullet.frameWidth, b.GetFrameTime(), Bullet.textureName, b.scale, 200);
+            StateChange sc = StateChangeFactory.createEntityStateChange(b.id, posX, posY, CrossbowBolt.frameWidth, b.GetFrameTime(), CrossbowBolt.textureName, b.scale, 200);
             changes.Add(sc);
         }
 
@@ -213,7 +213,7 @@ namespace SkyCrane.Engine
                 String texture_name = s.stringProperties[StateProperties.SPRITE_NAME];
                 float scale = (float)s.doubleProperties[StateProperties.SCALE];
 
-                Entity e = new Entity(context, pos_x, pos_y, frame_width,frame_time, texture_name, scale);
+                Entity e = new Entity(context, pos_x, pos_y, frame_width, frame_time, texture_name, scale);
                 e.id = entity;
                 
                 addEntity(draw_priority, e);
