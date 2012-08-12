@@ -73,6 +73,9 @@ namespace SkyCrane.Engine
                 case PlayerCharacter.Type.Wizard:
                     pc = new Wizard(context, posX, posY);
                     break;
+                case PlayerCharacter.Type.JarCat:
+                    pc = new JarCat(context, posX, posY);
+                    break;
                 default:
                     throw new ArgumentException();
             }
