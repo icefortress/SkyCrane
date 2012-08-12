@@ -496,25 +496,32 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Sprites\Jar_Cat_Animated.png">
-      <Name>Jar_Cat_Animated</Name>
+    <Compile Include="Sprites\JarCat_Animated.png">
+      <Name>JarCat_Animated</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Sprites\Jar_Cat_Animated_Right.png">
-      <Name>Jar_Cat_Animated_Right</Name>
+    <Compile Include="Sprites\JarCat_Animated_Right.png">
+      <Name>JarCat_Animated_Right</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Sprites\Jar_Cat_Attack.png">
-      <Name>Jar_Cat_Attack</Name>
+    <Compile Include="Sprites\JarCat_Attack.png">
+      <Name>JarCat_Attack</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Sprites\Jar_Cat_Attack_Right.png">
-      <Name>Jar_Cat_Attack_Right</Name>
+    <Compile Include="Sprites\JarCat_Attack_Right.png">
+      <Name>JarCat_Attack_Right</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Sprites\JarCat.png">
+      <Name>JarCat</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

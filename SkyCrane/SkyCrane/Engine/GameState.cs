@@ -61,8 +61,7 @@ namespace SkyCrane.Engine
             switch (type) // Create a new character based on the type
             {
                 case PlayerCharacter.Type.Doctor:
-                    //pc = new Doctor(context, posX, posY);
-                    pc = new JarCat(context, posX, posY);
+                    pc = new Doctor(context, posX, posY);
                     break;
                 case PlayerCharacter.Type.Rogue:
                     pc = new Rogue(context, posX, posY);
@@ -72,6 +71,9 @@ namespace SkyCrane.Engine
                     break;
                 case PlayerCharacter.Type.Wizard:
                     pc = new Wizard(context, posX, posY);
+                    break;
+                case PlayerCharacter.Type.JarCat:
+                    pc = new JarCat(context, posX, posY);
                     break;
                 default:
                     throw new ArgumentException();

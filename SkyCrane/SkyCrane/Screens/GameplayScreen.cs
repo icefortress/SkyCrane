@@ -74,6 +74,9 @@ namespace SkyCrane.Screens
         Song backGroundSong;
         SoundEffect pauseSoundEffect;
 
+        // 
+        
+
         #endregion
 
         #region Initialization
@@ -140,10 +143,10 @@ namespace SkyCrane.Screens
             Texture2D rogueal = content.Load<Texture2D>("Sprites/Rogue_Attack");
             Texture2D roguear = content.Load<Texture2D>("Sprites/Rogue_Attack_Right");
 
-            textureDict.Add("jarcatl", content.Load<Texture2D>("Sprites/Jar_Cat_Animated"));
-            textureDict.Add("jarcatr", content.Load<Texture2D>("Sprites/Jar_Cat_Animated_Right"));
-            textureDict.Add("jarcatal", content.Load<Texture2D>("Sprites/Jar_Cat_Attack_Right"));
-            textureDict.Add("jarcatar", content.Load<Texture2D>("Sprites/Jar_Cat_Attack"));
+            textureDict.Add("jarcatl", content.Load<Texture2D>("Sprites/JarCat_Animated"));
+            textureDict.Add("jarcatr", content.Load<Texture2D>("Sprites/JarCat_Animated_Right"));
+            textureDict.Add("jarcatal", content.Load<Texture2D>("Sprites/JarCat_Attack_Right"));
+            textureDict.Add("jarcatar", content.Load<Texture2D>("Sprites/JarCat_Attack"));
 
             textureDict.Add("tankl", tankl);
             textureDict.Add("tankr", tankr);

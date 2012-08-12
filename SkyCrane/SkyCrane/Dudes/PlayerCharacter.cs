@@ -22,7 +22,8 @@ namespace SkyCrane.Dudes
             Doctor = 0,
             Rogue,
             Tank,
-            Wizard
+            Wizard,
+            JarCat
         }
 
         public static Vector2 HITBOX_SIZE = new Vector2(45, 45);
