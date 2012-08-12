@@ -388,11 +388,6 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Sprites\Doctor_Wall.png">
-      <Name>Doctor_Wall</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Sprites\Rogue.png">
@@ -417,6 +412,18 @@
     </Compile>
     <Compile Include="Sprites\Rogue_Attack_Right.png">
       <Name>Rogue_Attack_Right</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Sprites\Doctor_Wall.png">
+      <Name>Doctor_Wall</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Sprites\Doctor_Wall_Horizontal.png">
+      <Name>Doctor_Wall_Horizontal</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

@@ -148,6 +148,8 @@ namespace SkyCrane.Screens
             textureDict.Add("wand", mageAttack);
             Texture2D doctorwall = content.Load<Texture2D>("Sprites/Doctor_Wall");
             textureDict.Add("doctorwall", doctorwall);
+            Texture2D doctorwallh = content.Load<Texture2D>("Sprites/Doctor_Wall_Horizontal");
+            textureDict.Add("doctorwallh", doctorwallh);
 
 
             Level l = Level.generateLevel(this);
