@@ -44,7 +44,10 @@ namespace SkyCrane.Screens
         public int numPlayers;
         public Dictionary<int, int> serverIDLookup = new Dictionary<int, int>();
 
+        public PlayerCharacter secondPlayer = null;
+
         bool goodtogo = false;
+        public bool bulletExists = false;
 
         List<Command> commandBuffer = new List<Command>();
         public Dictionary<String, Texture2D> textureDict = new Dictionary<String, Texture2D>();
@@ -92,17 +95,44 @@ namespace SkyCrane.Screens
 
             Texture2D testLevel = content.Load<Texture2D>("Levels/room3");
             Texture2D testMap = content.Load<Texture2D>("Levels/room3-collision_map");
+            textureDict.Add("room2", testLevel);
+            textureDict.Add("room2-collision-map", testMap);
+
+            // Load characters
             Texture2D tankl = content.Load<Texture2D>("Sprites/Tank_Animated");
             Texture2D tankr = content.Load<Texture2D>("Sprites/Tank_Animated_Right");
             Texture2D tankal = content.Load<Texture2D>("Sprites/Tank_Attack");
             Texture2D tankar = content.Load<Texture2D>("Sprites/Tank_Attack_Right");
+
+            Texture2D wizardl = content.Load<Texture2D>("Sprites/Wizard_Animated");
+            Texture2D wizardr = content.Load<Texture2D>("Sprites/Wizard_Animated_Right");
+            Texture2D wizardal = content.Load<Texture2D>("Sprites/Wizard_Attack");
+            Texture2D wizardar = content.Load<Texture2D>("Sprites/Wizard_Attack_Right");
             
-            textureDict.Add("room2", testLevel);
-            textureDict.Add("room2-collision-map", testMap);
             textureDict.Add("tankl", tankl);
             textureDict.Add("tankr", tankr);
             textureDict.Add("tankal", tankal);
             textureDict.Add("tankar", tankar);
+            textureDict.Add("wizardl", wizardl);
+            textureDict.Add("wizardr", wizardr);
+            textureDict.Add("wizardal", wizardal);
+            textureDict.Add("wizardar", wizardar);
+
+            // Load enemies
+            Texture2D skeletonl = content.Load<Texture2D>("Sprites/Skeleton_Animated");
+            Texture2D skeletonr = content.Load<Texture2D>("Sprites/Skeleton_Animated_Right");
+            Texture2D skeletonal = content.Load<Texture2D>("Sprites/Skeleton_Attack");
+            Texture2D skeletonar = content.Load<Texture2D>("Sprites/Skeleton_Attack");
+
+            textureDict.Add("skeletonl", skeletonl);
+            textureDict.Add("skeletonr", skeletonr);
+            textureDict.Add("skeletonal", skeletonal);
+            textureDict.Add("skeletonar", skeletonar);
+
+            // Load thingamabobs
+            Texture2D bullet = content.Load<Texture2D>("Sprites/Charge_Flying");
+            textureDict.Add("bullet", bullet);
+
 
             Level l = Level.generateLevel(this);
             gameState.currentLevel = l;
@@ -115,10 +145,10 @@ namespace SkyCrane.Screens
             aiAbles.Add(e);*/
 
             // Some test music
-            MediaPlayer.Stop();
+            /*MediaPlayer.Stop();
             Song bgMusic = content.Load<Song>("Music/Nero - Doomsday");
             MediaPlayer.Volume = 0.3f;
-            MediaPlayer.Play(bgMusic);
+            MediaPlayer.Play(bgMusic);*/
 
             // once the load has finished, we use ResetElapsedTime to tell the game's
             // timing mechanism that we have just finished a very long frame, and that
@@ -141,7 +171,10 @@ namespace SkyCrane.Screens
 
         public void serverStartGame()
         {
-            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, 45, "tankl", "tankr", "tankal", "tankar");
+            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, "wizard");
+
+            // TODO: delete this
+            secondPlayer = gameState.createPlayer(1280 / 2, 720 / 2 - 50, "tank");
 
             if (isMultiplayer)
             {
@@ -149,12 +182,15 @@ namespace SkyCrane.Screens
                 List<int> playerIds = new List<int>();
                 for (int i = 1; i < numPlayers; i++)
                 {
-                    PlayerCharacter pc = gameState.createPlayer(1280 / 2 + 20 * i, 720 / 2 + 50, 45, "tankl", "tankr", "tankal", "tankar");
+                    PlayerCharacter pc = gameState.createPlayer(1280 / 2 + 20 * i, 720 / 2 + 50, "tank");
                     playerIds.Add(pc.id);
                 }
             }
 
             // Get the players from the server and send them each a notification of who the fuck theyare
+
+            // TODO: add an enemy for testing
+            //gameState.createEnemy(1280 / 2, 720 / 2 + 200, 45, "skeleton");
 
             goodtogo = true;
 
@@ -214,10 +250,18 @@ namespace SkyCrane.Screens
                     }
                     else if (c.ct == CommandType.SHOOT)
                     {
-                        Vector2 pos = c.position;
                         Vector2 velocity = c.direction * 8;
-
-                        gameState.createBullet((int)pos.X, (int)pos.Y, velocity);
+                        if (bulletExists)
+                        {
+                            PlayerCharacter shooter = (PlayerCharacter)gameState.entities[c.entity_id];
+                            shooter.fireBullet(velocity);
+                        }
+                        else
+                        {
+                            Vector2 pos = c.position;
+                            gameState.createBullet((int)pos.X, (int)pos.Y, velocity);
+                            bulletExists = true;
+                        }
                     }
                     else if (c.ct == CommandType.ATTACK)
                     {
@@ -247,6 +291,7 @@ namespace SkyCrane.Screens
                 // Iterate over the physicsAbles to see if they are colliding with eachther
                 foreach (Entity e in gameState.entities.Values)
                 {
+                    //if (e.velocity == Vector2.Zero) continue; // Things not moving won't check if they collide
                     if (!(e is PhysicsAble)) continue;
                     PhysicsAble p = (PhysicsAble) e;
 
@@ -341,6 +386,44 @@ namespace SkyCrane.Screens
             }
             else
             {
+                /* ===== COPY PASTE PLAYER 2 ====== */
+
+                // Otherwise move the player position.
+                Vector2 p2movement = Vector2.Zero;
+
+                if (keyboardState.IsKeyDown(Keys.A))
+                    p2movement.X--;
+
+                if (keyboardState.IsKeyDown(Keys.D))
+                    p2movement.X++;
+
+                if (keyboardState.IsKeyDown(Keys.W))
+                    p2movement.Y--;
+
+                if (keyboardState.IsKeyDown(Keys.S))
+                    p2movement.Y++;
+
+                if (p2movement.Length() > 1)
+                    p2movement.Normalize();
+
+                if (keyboardState.IsKeyDown(Keys.T))
+                {
+                    Command c = new Command();
+                    c.entity_id = secondPlayer.id;
+                    c.direction = p2movement;
+                    c.ct = CommandType.SHOOT;
+                    c.position = secondPlayer.worldPosition;
+                    commandBuffer.Add(c);
+                }
+
+                Command c3 = new Command();
+                c3.entity_id = secondPlayer.id;
+                c3.direction = p2movement;
+                c3.ct = CommandType.MOVE;
+                commandBuffer.Add(c3);
+
+                /* ===== COPY PASTE PLAYER 2 ====== */
+
                 // Otherwise move the player position.
                 Vector2 movement = Vector2.Zero;
 

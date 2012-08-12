@@ -112,9 +112,12 @@
     <Compile Include="Screens\OptionsMenuScreen.cs" />
     <Compile Include="Screens\PauseMenuScreen.cs" />
     <Compile Include="Screens\PlayerIndexEventArgs.cs" />
+    <Compile Include="Skeleton.cs" />
     <Compile Include="StateChange.cs" />
     <Compile Include="StateChangeListener.cs" />
     <Compile Include="Server.cs" />
+    <Compile Include="Tank.cs" />
+    <Compile Include="Wizard.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

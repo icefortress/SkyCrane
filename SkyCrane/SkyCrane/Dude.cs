@@ -26,14 +26,19 @@ namespace SkyCrane.Screens
         {
             this.textureLeft = textureLeft;
             this.textureRight = textureRight;
+
+            physicsSize = getHitbox();
         }
+
+        public abstract Vector2 getHitbox();
+        public abstract String getDefaultTexture();
 
         public void UpdatePhysics()
         {
             size = GetPhysicsSize();
 
             worldBounds = new Rectangle((int)(worldPosition.X - size.X / 2),
-                (int)(worldPosition.X - size.Y / 2),
+                (int)(worldPosition.Y - size.Y / 2),
                 (int)size.X, (int)size.Y);
 
             leftRect = new Rectangle(worldBounds.X, worldBounds.Y, worldBounds.Width / 2, worldBounds.Height);
@@ -106,8 +111,15 @@ namespace SkyCrane.Screens
 
         public CollisionDirection CheckCollision(PhysicsAble entity)
         {
+            Entity e = this;
+
             Vector2 position = entity.GetPhysicsPosition() + entity.GetPhysicsVelocity();
             Vector2 entitySize = entity.GetPhysicsSize();
+
+            if (entitySize == Vector2.Zero)
+            {
+                return CollisionDirection.NONE;
+            }
 
             int half_x_bounds = (int)entitySize.X / 2;
             int half_y_bounds = (int)entitySize.Y / 2;

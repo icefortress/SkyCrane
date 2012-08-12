@@ -9,35 +9,55 @@ using SkyCrane.Screens;
 namespace SkyCrane
 {
 
-    public class PlayerCharacter : AttackingDude
+    public abstract class PlayerCharacter : AttackingDude
     {
-        public static Vector2 HITBOX_SIZE = new Vector2(45, 20);
+        public static Vector2 HITBOX_SIZE = new Vector2(45, 45);
+        Bullet bulletRef = null;
 
-        public static StateChange createPlayerStateChange(int posX, int posY, int frameWidth, String textureName, String animationName)
-        {
-            StateChange sc = new StateChange();
-            sc.type = StateChangeType.CREATE_PLAYER_CHARACTER;
-            sc.intProperties.Add(StateProperties.POSITION_X, posX);
-            sc.intProperties.Add(StateProperties.POSITION_Y, posY);
-            sc.intProperties.Add(StateProperties.FRAME_WIDTH, frameWidth);
-            sc.stringProperties.Add(StateProperties.SPRITE_NAME, textureName);
-            sc.stringProperties.Add(StateProperties.ANIMATION_NAME, animationName);
-
-            return sc;
-        }
-
-        public PlayerCharacter(GameplayScreen g, int posX, int posY, int frameWidth,
+        public PlayerCharacter(GameplayScreen g, int posX, int posY, int frameWidth, int attackFrameWidth,
             String textureLeft, String textureRight, String textureAttackLeft, String textureAttackRight) :
-            base(g, posX, posY, frameWidth, textureLeft, textureRight, textureAttackLeft, textureAttackRight)
+            base(g, posX, posY, frameWidth, attackFrameWidth, textureLeft, textureRight, textureAttackLeft, textureAttackRight)
         {
             scale = 2;
 
             physicsSize = HITBOX_SIZE;
         }
 
+        public override Vector2 getHitbox()
+        {
+            return HITBOX_SIZE;
+        }
+
+        public void fireBullet(Vector2 velocity)
+        {
+            if (bulletRef == null) return;
+            bulletRef.refire(this, velocity);
+            bulletRef = null;
+        }
+
         public override void HandleCollision(CollisionDirection cd, PhysicsAble entity)
         {
-            velocity = Vector2.Zero;
+            if (entity is Bullet)
+            {
+                bulletRef = (Bullet)entity;
+                bulletRef.attach(this);
+            }
+            else if (entity is Enemy)
+            {
+                if (attacking)
+                {
+                    Console.WriteLine("Hit enemy!");
+                }
+                else
+                {
+                    Console.WriteLine("Enemy hit player!");
+                }
+            }
+            else if (entity is Level)
+            {
+                velocity = Vector2.Zero;
+            }
+
         }
 
     }

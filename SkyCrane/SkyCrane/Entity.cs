@@ -27,29 +27,21 @@ namespace SkyCrane
 
             set
             {
-                StateChange sc = new StateChange();
-                sc.type = StateChangeType.MOVED;
-                sc.intProperties.Add(StateProperties.ENTITY_ID, id);
-                sc.intProperties.Add(StateProperties.POSITION_X, (int)value.X);
-                sc.intProperties.Add(StateProperties.POSITION_Y, (int)value.Y);
+                if (value != worldPosBack)
+                {
+                    StateChange sc = new StateChange();
+                    sc.type = StateChangeType.MOVED;
+                    sc.intProperties.Add(StateProperties.ENTITY_ID, id);
+                    sc.intProperties.Add(StateProperties.POSITION_X, (int)value.X);
+                    sc.intProperties.Add(StateProperties.POSITION_Y, (int)value.Y);
 
-                notifyStateChangeListeners(sc);
+                    notifyStateChangeListeners(sc);
+                }
             }
         }
         public Vector2 drawingPosition;
 
-        protected Vector2 velocityBack;
-        public Vector2 velocity
-        {
-            get { return velocityBack; }
-            set { setVelocity(value); }
-        }
-
-        // This can be overriden to do things like change animation on velocity change
-        public virtual void setVelocity(Vector2 val)
-        {
-            velocityBack = val;
-        }
+        public Vector2 velocity;
 
         public Vector2 size; // This is the sprite size, not necessarily the physical form
 
@@ -59,7 +51,7 @@ namespace SkyCrane
 
         // Drawable components
         public Texture2D spriteStrip;
-        public float scale;
+        public float scale = 1;
         public int frameTime;
         public List<int> animationFrames;
         int elapsedTime;
