@@ -10,14 +10,14 @@ namespace SkyCrane.Screens
     class Bullet : Dude
     {
         public static String textureName = "bullet";
-        public new static int frameWidth = 30;
-        public static Vector2 HITBOX_SIZE = new Vector2(45, 20);
+        public new static int frameWidth = 20;
+        public static Vector2 HITBOX_SIZE = new Vector2(30, 30);
 
         public Bullet(GameplayScreen g, Vector2 position, Vector2 velocity) :
-            base (g, (int)position.X, (int)position.Y, frameWidth, textureName, textureName)
+            base(g, (int)position.X, (int)position.Y, frameWidth, textureName, textureName)
         {
-            this.worldPosBack = position; // Set position without sending update
             this.velocity = velocity;
+            this.scale = 1;
         }
 
         public override string getDefaultTexture()

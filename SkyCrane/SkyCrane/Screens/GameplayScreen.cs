@@ -126,6 +126,10 @@ namespace SkyCrane.Screens
             textureDict.Add("skeletonal", skeletonal);
             textureDict.Add("skeletonar", skeletonar);
 
+            // Load thingamabobs
+            Texture2D bullet = content.Load<Texture2D>("Sprites/Charge_Flying");
+            textureDict.Add("bullet", bullet);
+
 
             Level l = Level.generateLevel(this);
             gameState.currentLevel = l;

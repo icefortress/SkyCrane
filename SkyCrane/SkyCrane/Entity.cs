@@ -48,7 +48,7 @@ namespace SkyCrane
 
         // Drawable components
         public Texture2D spriteStrip;
-        public float scale;
+        public float scale = 1;
         public int frameTime;
         public List<int> animationFrames;
         int elapsedTime;

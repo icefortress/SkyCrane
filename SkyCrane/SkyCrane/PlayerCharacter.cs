@@ -29,7 +29,27 @@ namespace SkyCrane
 
         public override void HandleCollision(CollisionDirection cd, PhysicsAble entity)
         {
-            velocity = Vector2.Zero;
+            if (entity is Bullet)
+            {
+                // Catch the bullet
+                Console.WriteLine("Hit the bullet");
+            }
+            else if (entity is Enemy)
+            {
+                if (attacking)
+                {
+                    Console.WriteLine("Hit enemy!");
+                }
+                else
+                {
+                    Console.WriteLine("Enemy hit player!");
+                }
+            }
+            else if (entity is Level)
+            {
+                velocity = Vector2.Zero;
+            }
+
         }
 
     }

@@ -9,7 +9,7 @@ namespace SkyCrane
 {
     public abstract class AttackingDude : Dude
     {
-        bool attacking = false;
+        protected bool attacking = false;
         String textureAttackLeft;
         String textureAttackRight;
 
