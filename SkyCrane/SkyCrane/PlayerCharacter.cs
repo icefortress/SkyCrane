@@ -22,7 +22,10 @@ namespace SkyCrane
             physicsSize = HITBOX_SIZE;
         }
 
-        public abstract String getDefaultTexture();
+        public override Vector2 getHitbox()
+        {
+            return HITBOX_SIZE;
+        }
 
         public override void HandleCollision(CollisionDirection cd, PhysicsAble entity)
         {

@@ -10,7 +10,7 @@ namespace SkyCrane
     public class GameState : StateChangeListener
     {
         public Level currentLevel;
-        public Entity usersPlayer = null;
+        public Entity usersPlayer;
         public GameplayScreen context;
 
         public List<StateChange> changes = new List<StateChange>();
@@ -29,8 +29,9 @@ namespace SkyCrane
         public void commitChanges()
         {
             foreach(StateChange c in changes) {
-                // Skip entity creation, these are recreating local objects elsewhere
-                if (c.type == StateChangeType.CREATE_ENTITY || c.type == StateChangeType.CREATE_PLAYER_CHARACTER)
+                // Skip entity creation, this won't create fully functional entities!
+                if (c.type == StateChangeType.CREATE_ENTITY ||
+                    c.type == StateChangeType.CREATE_PLAYER_CHARACTER)
                 {
                     continue;
                 }
@@ -43,7 +44,7 @@ namespace SkyCrane
         public SortedDictionary<int, List<Entity>> drawLists = new SortedDictionary<int, List<Entity>>();
 
         // Should be called by the server to create a player entity in the current game state
-        public PlayerCharacter createPlayer(int posX, int posY, int frameWidth, String type)
+        public PlayerCharacter createPlayer(int posX, int posY, String type)
         {
             PlayerCharacter pc = null;
             if (type == "tank")
@@ -60,6 +61,21 @@ namespace SkyCrane
             changes.Add(sc);
 
             return pc;
+        }
+
+        public Enemy createEnemy(int posX, int posY, int frameWidth, String type)
+        {
+            Enemy e = null;
+            if (type == "skeleton")
+            {
+                e = new Skeleton(context, posX, posY);
+            }
+            addEntity(100, e);
+
+            StateChange sc = Entity.createEntityStateChange(e.id, posX, posY, e.frameWidth, e.getDefaultTexture());
+            changes.Add(sc);
+
+            return e;
         }
 
         public void createBullet(int posX, int posY, Vector2 velocity)

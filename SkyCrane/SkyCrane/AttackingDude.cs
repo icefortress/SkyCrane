@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 
 namespace SkyCrane
 {
-    public class AttackingDude : Dude
+    public abstract class AttackingDude : Dude
     {
         bool attacking = false;
         String textureAttackLeft;

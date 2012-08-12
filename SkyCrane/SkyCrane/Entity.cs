@@ -38,18 +38,7 @@ namespace SkyCrane
         }
         public Vector2 drawingPosition;
 
-        protected Vector2 velocityBack;
-        public Vector2 velocity
-        {
-            get { return velocityBack; }
-            set { setVelocity(value); }
-        }
-
-        // This can be overriden to do things like change animation on velocity change
-        public virtual void setVelocity(Vector2 val)
-        {
-            velocityBack = val;
-        }
+        public Vector2 velocity;
 
         public Vector2 size; // This is the sprite size, not necessarily the physical form
 

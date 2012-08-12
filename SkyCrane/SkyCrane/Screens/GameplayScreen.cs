@@ -92,6 +92,8 @@ namespace SkyCrane.Screens
 
             Texture2D testLevel = content.Load<Texture2D>("Levels/room3");
             Texture2D testMap = content.Load<Texture2D>("Levels/room3-collision_map");
+            textureDict.Add("room2", testLevel);
+            textureDict.Add("room2-collision-map", testMap);
 
             // Load characters
             Texture2D tankl = content.Load<Texture2D>("Sprites/Tank_Animated");
@@ -104,9 +106,6 @@ namespace SkyCrane.Screens
             Texture2D wizardal = content.Load<Texture2D>("Sprites/Wizard_Attack");
             Texture2D wizardar = content.Load<Texture2D>("Sprites/Wizard_Attack_Right");
             
-            
-            textureDict.Add("room2", testLevel);
-            textureDict.Add("room2-collision-map", testMap);
             textureDict.Add("tankl", tankl);
             textureDict.Add("tankr", tankr);
             textureDict.Add("tankal", tankal);
@@ -115,6 +114,18 @@ namespace SkyCrane.Screens
             textureDict.Add("wizardr", wizardr);
             textureDict.Add("wizardal", wizardal);
             textureDict.Add("wizardar", wizardar);
+
+            // Load enemies
+            Texture2D skeletonl = content.Load<Texture2D>("Sprites/Skeleton_Animated");
+            Texture2D skeletonr = content.Load<Texture2D>("Sprites/Skeleton_Animated_Right");
+            Texture2D skeletonal = content.Load<Texture2D>("Sprites/Skeleton_Attack");
+            Texture2D skeletonar = content.Load<Texture2D>("Sprites/Skeleton_Attack");
+
+            textureDict.Add("skeletonl", skeletonl);
+            textureDict.Add("skeletonr", skeletonr);
+            textureDict.Add("skeletonal", skeletonal);
+            textureDict.Add("skeletonar", skeletonar);
+
 
             Level l = Level.generateLevel(this);
             gameState.currentLevel = l;
@@ -127,10 +138,10 @@ namespace SkyCrane.Screens
             aiAbles.Add(e);*/
 
             // Some test music
-            MediaPlayer.Stop();
+            /*MediaPlayer.Stop();
             Song bgMusic = content.Load<Song>("Music/Nero - Doomsday");
             MediaPlayer.Volume = 0.3f;
-            MediaPlayer.Play(bgMusic);
+            MediaPlayer.Play(bgMusic);*/
 
             // once the load has finished, we use ResetElapsedTime to tell the game's
             // timing mechanism that we have just finished a very long frame, and that
@@ -153,7 +164,7 @@ namespace SkyCrane.Screens
 
         public void serverStartGame()
         {
-            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, 45, "wizard");
+            gameState.usersPlayer = gameState.createPlayer(1280 / 2, 720 / 2 + 50, "wizard");
 
             if (isMultiplayer)
             {
@@ -161,12 +172,15 @@ namespace SkyCrane.Screens
                 List<int> playerIds = new List<int>();
                 for (int i = 1; i < numPlayers; i++)
                 {
-                    PlayerCharacter pc = gameState.createPlayer(1280 / 2 + 20 * i, 720 / 2 + 50, 45, "tank");
+                    PlayerCharacter pc = gameState.createPlayer(1280 / 2 + 20 * i, 720 / 2 + 50, "tank");
                     playerIds.Add(pc.id);
                 }
             }
 
             // Get the players from the server and send them each a notification of who the fuck theyare
+
+            // TODO: add an enemy for testing
+            gameState.createEnemy(1280 / 2, 720 / 2 + 200, 45, "skeleton");
 
             goodtogo = true;
 
