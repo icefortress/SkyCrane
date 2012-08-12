@@ -30,13 +30,7 @@ namespace SkyCrane.Dudes
 
         public override void HandleCollision(CollisionDirection cd, PhysicsAble entity)
         {
-            if (entity is MageAttack)
-            {
-            }
-            else if (entity is Enemy)
-            {
-            }
-            else
+            if (entity is Level)
             {
                 velocity = Vector2.Zero;
             }
