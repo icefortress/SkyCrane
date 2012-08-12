@@ -107,16 +107,17 @@ namespace SkyCrane.Engine
             addEntity(300, h, h.id);
         }
 
-        public Enemy createEnemy(int posX, int posY, String type)
+        public Enemy createEnemy(int posX, int posY, Enemy.Type type)
         {
             Enemy e = null;
-            if (type == "skeleton")
+            switch (type)
             {
-                e = new Skeleton(context, posX, posY);
-            }
-            else if (type == "goblin")
-            {
-                e = new Goblin(context, posX, posY);
+                case Enemy.Type.Goblin: // Create a smelly goblin
+                    e = new Goblin(context, posX, posY);
+                    break;
+                case Enemy.Type.Skeleton: // Create a scary skeleton
+                    e = new Skeleton(context, posX, posY);
+                    break;
             }
             addEntity(100, e, e.id);
 

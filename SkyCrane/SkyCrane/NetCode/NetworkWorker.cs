@@ -101,7 +101,10 @@ namespace SkyCrane.NetCode
                 lock (readBuffer)
                 {
                     readBuffer.Enqueue(p);
-                    //Console.WriteLine("ReadBuffer {0}:" + Thread.CurrentThread.Name, readBuffer.Count);
+                    //if (readBuffer.Count > 50)
+                    //{
+                    //    Console.WriteLine("ReadBuffer falling behind {0}:" + Thread.CurrentThread.Name, readBuffer.Count);
+                    //}
                 }
                 this.nextSem.Release();
             }
@@ -120,6 +123,10 @@ namespace SkyCrane.NetCode
                     //Console.WriteLine("--> {0}", (byte)pkt.data[0]);
                     int i = this.Send(pkt.data, pkt.data.Length, pkt.Dest);
                     //Console.WriteLine(i);
+                    //if (buffer.Count > 50)
+                    //{
+                    //    Console.WriteLine("Buffer falling behind {0}:" + Thread.CurrentThread.Name, buffer.Count);
+                    //}
                 }
             }
         }

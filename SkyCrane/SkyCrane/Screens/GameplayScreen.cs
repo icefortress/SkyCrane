@@ -628,7 +628,7 @@ namespace SkyCrane.Screens
 
                 if (keyboardState.IsKeyDown(Keys.R) && canCreate && isServer)
                 {
-                    gameState.createEnemy(1280 / 2, 720 / 2 + 200, "skeleton");
+                    gameState.createEnemy(1280 / 2, 720 / 2 + 200, Enemy.Type.Goblin);
                     canCreate = false;
                 } else if (keyboardState.IsKeyUp(Keys.R)) {
                     canCreate = true;
