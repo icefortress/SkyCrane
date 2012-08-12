@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SkyCrane.Screens;
+using Microsoft.Xna.Framework;
+using SkyCrane.Engine;
 
 namespace SkyCrane.Dudes
 {
-    class JarCat : PlayerCharacter
+    class JarCat : PlayerCharacter, AIable
     {
         public static String TEXTURE_LEFT = "jarcatl";
         public static String TEXTURE_RIGHT = "jarcatr";
@@ -18,12 +20,23 @@ namespace SkyCrane.Dudes
 
         public override int getAttackLength()
         {
-            return 300;
+            return 1000;
         }
 
         public override int getAttackCooldown()
         {
-            return 400;
+            return 1000;
+        }
+
+        // Hack to change velocity
+        public void UpdateAI(GameTime gameTime) {
+            TimeSpan diff = gameTime.TotalGameTime.Subtract(lastAttack);
+            if (diff.Seconds * 1000 + diff.Milliseconds <= getAttackCooldown())
+            {
+                velocity = Vector2.Zero;
+            }
+
+            base.UpdateSprite(gameTime);
         }
 
         public JarCat(GameplayScreen g, int posX, int posY) :
