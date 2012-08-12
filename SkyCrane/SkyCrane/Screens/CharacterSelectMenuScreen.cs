@@ -215,7 +215,7 @@ namespace SkyCrane.Screens
                     {
                         HostBroadcastGameStart();
                     }
-                    LoadingScreen.Load(ScreenManager, false, e.PlayerIndex, new GameplayScreen(host, multiplayer, NumConnectedPlayers(), playerId, characterSelections));
+                    LoadingScreen.Load(ScreenManager, false, e.PlayerIndex, new GameplayScreen(host, multiplayer, NumConnectedPlayers(), playerId, characterSelections, playerIdToConnectionHash));
                 }
                 menuSelectSoundEffect.Play();
             }
@@ -490,7 +490,7 @@ namespace SkyCrane.Screens
                                 }
                                 break;
                             case MenuState.Type.GameStart:
-                                LoadingScreen.Load(ScreenManager, false, null, new GameplayScreen(host, multiplayer, NumConnectedPlayers(), playerId, characterSelections));
+                                LoadingScreen.Load(ScreenManager, false, null, new GameplayScreen(host, multiplayer, NumConnectedPlayers(), playerId, characterSelections, null));
                                 break;
                             default:
                                 throw new ArgumentException();
