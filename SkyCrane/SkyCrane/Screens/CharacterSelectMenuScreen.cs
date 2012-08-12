@@ -113,9 +113,9 @@ namespace SkyCrane.Screens
         /// </summary>
         public override void LoadContent()
         {
-            if (!host && playerId < 0)
+            if (!host && playerId < 0) // If we're not the host, ask for an id
             {
-                MenuState connectPacket = new MenuState(MenuState.Type.Connect);
+                MenuState connectPacket = new MenuState(MenuState.Type.Connect, 0, (int)MenuState.ConnectionDetails.IdReqest);
                 ((ProjectSkyCrane)ScreenManager.Game).RawClient.sendMSC(connectPacket);
                 playerId = -1;
             }
@@ -187,7 +187,15 @@ namespace SkyCrane.Screens
                     characterSelections[playerId] = 0;
                 }
 
-                // TODO: Send a packet to the server from here
+                if (host) // Broadcast sprite changes to all players
+                {
+                    HostBroadcastSprites();
+                }
+                else // Inform the host of a sprite change
+                {
+                    MenuState spritePacket = new MenuState(MenuState.Type.SelectCharacter, playerId, (int)characterSelections[playerId]);
+                    ((ProjectSkyCrane)ScreenManager.Game).RawClient.sendMSC(spritePacket);
+                }
 
                 menuScrollSoundEffect.Play();
             }
@@ -226,6 +234,71 @@ namespace SkyCrane.Screens
             return numPlayers;
         }
 
+        /// <summary>
+        /// Have the host broadcast which players are and aren't connected.
+        /// </summary>
+        private void HostBroadcastConnected()
+        {
+            MenuState connectBroadcast = new MenuState(MenuState.Type.Connect);
+            for (int i = 0; i < playersConnected.Length; i += 1)
+            {
+                connectBroadcast.PlayerId = i;
+                if (playersConnected[i]) // Broadcast 1 to show connected
+                {
+                    connectBroadcast.EventDetail = (int)MenuState.ConnectionDetails.Connected;
+                }
+                else // Broadcast -1 to show not connected
+                {
+                    connectBroadcast.EventDetail = (int)MenuState.ConnectionDetails.Disconnected;
+                }
+                ((ProjectSkyCrane)ScreenManager.Game).RawServer.broadcastMSC(connectBroadcast);
+            }
+            return;
+        }
+
+        /// <summary>
+        /// Have the host broadcast which characters are and aren't connected.
+        /// </summary>
+        private void HostBroadcastSprites()
+        {
+            MenuState spriteBroadcast = new MenuState(MenuState.Type.SelectCharacter);
+            for (int i = 0; i < playersConnected.Length; i += 1) // Loop over and broadcast the sprites of all connected players
+            {
+                if (playersConnected[i])
+                {
+                    spriteBroadcast.PlayerId = i;
+                    spriteBroadcast.EventDetail = (int)characterSelections[i];
+                    ((ProjectSkyCrane)ScreenManager.Game).RawServer.broadcastMSC(spriteBroadcast);
+                }                
+            }
+            return;
+        }
+
+        /// <summary>
+        /// Have the host broadcast which characters are and aren't locked.
+        /// </summary>
+        private void HostBroadcastLocked()
+        {
+            MenuState lockedBroadcast = new MenuState(MenuState.Type.LockCharacter);
+            for (int i = 0; i < playersConnected.Length; i += 1) // Loop over and broadcast the sprites of all connected players
+            {
+                if (playersConnected[i])
+                {
+                    lockedBroadcast.PlayerId = i;
+                    if (characterSelectionsLocked[i])
+                    {
+                        lockedBroadcast.EventDetail = (int)MenuState.LockCharacterDetails.Locked;
+                    }
+                    else
+                    {
+                        lockedBroadcast.EventDetail = (int)MenuState.LockCharacterDetails.Unlocked;
+                    }
+                    ((ProjectSkyCrane)ScreenManager.Game).RawServer.broadcastMSC(lockedBroadcast);
+                }
+            }
+            return;
+        }
+
         #endregion
 
         #region Draw and Update
@@ -244,34 +317,38 @@ namespace SkyCrane.Screens
                     {
                         switch (serverStates[i].Item2.MenuType)
                         {
-                            case MenuState.Type.Connect:
-                                int newId;
-                                if (connectionToPlayerIdHash.ContainsKey(serverStates[i].Item1)) // We've already seen this player and they haven't disconnected, resend their current id
+                            case MenuState.Type.Connect: // Deal with connection and disconnections from the server
+                                if (serverStates[i].Item2.EventDetail == (int)MenuState.ConnectionDetails.IdReqest) // Someone is requesting an id
                                 {
-                                    newId = connectionToPlayerIdHash[serverStates[i].Item1];
+                                    int newId;
+                                    if (connectionToPlayerIdHash.ContainsKey(serverStates[i].Item1)) // We've already seen this player and they haven't disconnected, resend their current id
+                                    {
+                                        newId = connectionToPlayerIdHash[serverStates[i].Item1];
+                                    }
+                                    else // Send the player a new id
+                                    {
+                                        newId = hostIds.Dequeue();
+                                        playersConnected[newId] = true;
+                                        connectionToPlayerIdHash.Add(serverStates[i].Item1, newId);
+                                    }
+                                    MenuState connectResponse = new MenuState(MenuState.Type.Connect, newId, (int)MenuState.ConnectionDetails.IdReqest); // Inform connector of their Id
+                                    ((ProjectSkyCrane)ScreenManager.Game).RawServer.signalMSC(connectResponse, serverStates[i].Item1);
+                                    HostBroadcastConnected();
+                                    HostBroadcastSprites();
+                                    HostBroadcastLocked();
                                 }
-                                else // Send the player a new id
+                                else if (serverStates[i].Item2.EventDetail == (int)MenuState.ConnectionDetails.Disconnected) // Someone is disconnecting
                                 {
-                                    newId = hostIds.Dequeue();
-                                    playersConnected[newId] = true;
+                                    // TODO: Handle disonnects properly
+                                    HostBroadcastConnected();
                                 }
-                                MenuState connectResponse = new MenuState(MenuState.Type.Connect, newId, 0); // Inform connector of their Id
-                                ((ProjectSkyCrane)ScreenManager.Game).RawServer.signalMSC(connectResponse, serverStates[i].Item1);
-                                connectResponse.EventDetail = 1; // Inform everyone a player has connected
-                                ((ProjectSkyCrane)ScreenManager.Game).RawServer.broadcastMSC(connectResponse);
                                 break;
                             case MenuState.Type.SelectCharacter:
-                                throw new NotImplementedException();
-                            //break;
+                                HostBroadcastSprites();
+                                break;
                             case MenuState.Type.LockCharacter:
                                 throw new NotImplementedException();
-                            //break;
-                            case MenuState.Type.UnlockCharacter:
-                                throw new NotImplementedException();
-                            //break;
-                            case MenuState.Type.Disconnect:
-                                throw new NotImplementedException();
-                            //break;
+                                break;
                             default:
                                 throw new ArgumentException();
                         }
@@ -284,29 +361,25 @@ namespace SkyCrane.Screens
                     {
                         switch (clientStates[i].MenuType)
                         {
-                            case MenuState.Type.Connect:
-                                if (clientStates[i].EventDetail == 0) // Assign our own player id
+                            case MenuState.Type.Connect: // Handle connection events
+                                if (clientStates[i].EventDetail == (int)MenuState.ConnectionDetails.Connected) // Assign our own player id
                                 {
-                                    playersConnected[0] = true; // Obviously the host is connected
                                     playerId = clientStates[i].PlayerId;
                                 }
-                                else if (clientStates[i].EventDetail == 1) // Assign a connected player
+                                else if (clientStates[i].EventDetail == (int)MenuState.ConnectionDetails.Connected) // Assign a connected player
                                 {
                                     playersConnected[clientStates[i].PlayerId] = true;
                                 }
+                                else if (clientStates[i].EventDetail == (int)MenuState.ConnectionDetails.Disconnected) // Note down that a player is no longer in the session
+                                {
+                                    playersConnected[clientStates[i].PlayerId] = false;
+                                }
                                 break;
-                            case MenuState.Type.SelectCharacter:
-                                throw new NotImplementedException();
-                            //break;
+                            case MenuState.Type.SelectCharacter: // Handle character selection
+                                characterSelections[clientStates[i].PlayerId] = (PlayerCharacter.Type)clientStates[i].EventDetail;
+                                break;
                             case MenuState.Type.LockCharacter:
-                                throw new NotImplementedException();
-                            //break;
-                            case MenuState.Type.UnlockCharacter:
-                                throw new NotImplementedException();
-                            //break;
-                            case MenuState.Type.Disconnect:
-                                throw new NotImplementedException();
-                            //break;
+                                break;
                             default:
                                 throw new ArgumentException();
                         }
