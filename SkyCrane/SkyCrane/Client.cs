@@ -16,11 +16,12 @@ namespace SkyCrane
         private NetworkWorker nw;
         private IPEndPoint server;
         private bool go = true;
-        public enum cState { DISCONNECTED, CONNECTED, TRYCONNECT,SEND,RECV,SYNC };
+        public enum cState { DISCONNECTED, CONNECTED, TRYCONNECT, SEND, RECV, SYNC };
         cState curState = cState.DISCONNECTED;
 
-        //Bounded buffer for producer consumer
-        private Queue<byte[]> buffer = new Queue<byte[]>();
+        // Queue of state changes to be passed off the the UI
+        private Queue<StateChange> buffer = new Queue<StateChange>();
+        // Lock protecting the buffer queue
 
         public RawClient()
         {
@@ -30,7 +31,7 @@ namespace SkyCrane
             clientThread.Name = "mainClientThread";
             clientThread.Start();
         }
-         
+
         public bool connect(string host, int port)
         {
             this.server = new IPEndPoint(IPAddress.Parse(host), port);
@@ -76,9 +77,10 @@ namespace SkyCrane
             stcp.setDest(server);
             sp.setDest(server);
             hs.setDest(server);
-                this.nw.commitPacket(sp);
-                this.nw.commitPacket(stcp);
-                this.nw.commitPacket(hs);
+
+            this.nw.commitPacket(sp);
+            this.nw.commitPacket(stcp);
+            this.nw.commitPacket(hs);
             return true;
         }
 
@@ -87,9 +89,19 @@ namespace SkyCrane
         {
         }
 
+        // Called by the UI to acquire the latest state from the server
         public List<StateChange> rcvUPD()
         {
-            return new List<StateChange>();
+            List<StateChange> newStates = new List<StateChange>();
+
+            // TODO: Acquire a the buffer lock well emptying the buffer
+            // Iterate over the buffer of states that have been acquired from the server
+            while (buffer.Count > 0)
+            {
+                newStates.Add(buffer.Dequeue());
+            }
+
+            return newStates;
         }
     }
 }

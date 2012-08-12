@@ -13,6 +13,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using SkyCrane.GameStateManager;
+using Microsoft.Xna.Framework.Audio;
 #endregion
 
 namespace SkyCrane.Screens
@@ -26,14 +27,21 @@ namespace SkyCrane.Screens
 
         #region Fields
 
+        // Message variables
         bool includeUsageText;
         string message;
         string baseMessage;
+        const string okText = "Ok: [ENTER] or";
+        const string cancelText = "Cancel: [ESC] or";
+
+        // Buttons and textures
         Texture2D gradientTexture;
         Texture2D aButtonTexture;
         Texture2D bButtonTexture;
-        const string okText = "Ok: [ENTER] or";
-        const string cancelText = "Cancel: [ESC] or";
+
+        // Sound effecs
+        SoundEffect okSoundEffect;
+        SoundEffect cancelSoundEffect;
 
         #endregion
 
@@ -83,9 +91,16 @@ namespace SkyCrane.Screens
         public override void LoadContent()
         {
             ContentManager content = ScreenManager.Game.Content;
+
+            // Load textures
             gradientTexture = content.Load<Texture2D>("Menus/gradient");
             aButtonTexture = content.Load<Texture2D>("XBox Buttons/button_a");
             bButtonTexture = content.Load<Texture2D>("XBox Buttons/button_b");
+
+            // Load sounds
+            okSoundEffect = content.Load<SoundEffect>("SoundFX/menu_select");
+            cancelSoundEffect = content.Load<SoundEffect>("SoundFX/menu_cancel");
+
             return;
         }
 
@@ -109,16 +124,20 @@ namespace SkyCrane.Screens
 
             if (input.IsMenuSelect(ControllingPlayer, out playerIndex))
             {
+                okSoundEffect.Play();
+
                 // Raise the accepted event, then exit the message box.
                 if (Accepted != null)
                 {
                     Accepted(this, new PlayerInputEventArgs(playerIndex, true));
                 }
-
+                
                 ExitScreen();
             }
             else if (input.IsMenuCancel(ControllingPlayer, out playerIndex))
             {
+                cancelSoundEffect.Play();
+
                 // Raise the cancelled event, then exit the message box.
                 if (Cancelled != null)
                 {

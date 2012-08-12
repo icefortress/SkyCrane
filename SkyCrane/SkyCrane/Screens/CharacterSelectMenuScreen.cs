@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using Microsoft.Xna.Framework.Audio;
 #endregion
 
 namespace SkyCrane.Screens
@@ -142,8 +143,9 @@ namespace SkyCrane.Screens
                 {
                     LoadingScreen.Load(ScreenManager, false, e.PlayerIndex, new GameplayScreen(host, multiplayer, numPlayers));
                 }
+                menuSelectSoundEffect.Play();
             }
-            else if (!characterSelectionsLocked[playerNumber]) // Do some toggling
+            else if (!characterSelectionsLocked[playerNumber] && e.ToggleDirection != 0) // Do some toggling
             {
                 characterSelections[playerNumber] += e.ToggleDirection;
                 if (characterSelections[playerNumber] < 0)
@@ -154,6 +156,7 @@ namespace SkyCrane.Screens
                 {
                     characterSelections[playerNumber] = 0;
                 }
+                menuScrollSoundEffect.Play();
             }
 
             return;

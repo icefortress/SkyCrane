@@ -10,6 +10,7 @@
 #region Using Statements
 using Microsoft.Xna.Framework;
 using System.Text;
+using Microsoft.Xna.Framework.Audio;
 #endregion
 
 namespace SkyCrane.Screens
@@ -21,10 +22,12 @@ namespace SkyCrane.Screens
     {
         #region Initialization
 
-        bool host;
+        // Menu entries
         MenuEntry hostAddressMenuEntry;
         MenuEntry hostPortMenuEntry;
 
+        // Hosting, address and port information
+        bool host;
         string lastAddress = "";
         static StringBuilder hostAddress = new StringBuilder(); // Host's address (IP or hostname)
         const int MAX_ADDRESS_LENGTH = 32;
@@ -33,6 +36,9 @@ namespace SkyCrane.Screens
         const int MAX_PORT_LENGTH = 5;
         const int MIN_PORT = 1;
         const int MAX_PORT = 65535;
+
+        // Typing sound effects
+        SoundEffect typingSoundEffect;
 
         /// <summary>
         /// Constructor fills in the menu contents.
@@ -73,6 +79,15 @@ namespace SkyCrane.Screens
         }
 
         /// <summary>
+        /// Load some content
+        /// </summary>
+        public override void LoadContent()
+        {
+            typingSoundEffect = ScreenManager.Game.Content.Load<SoundEffect>("SoundFX/typing");
+            base.LoadContent();
+        }
+
+        /// <summary>
         /// Fills in the latest values for the options screen menu text.
         /// </summary>
         void SetMenuEntryText()
@@ -106,20 +121,24 @@ namespace SkyCrane.Screens
             bool resetText = false;
             if (e.KeysTyped != string.Empty && hostAddress.Length < MAX_ADDRESS_LENGTH) // Add a character
             {
+                typingSoundEffect.Play();
                 hostAddress.Append(e.KeysTyped);
                 resetText = true;
             }
             if (e.TypingBackspace && hostAddress.Length > 0) // Remove a character
             {
+                typingSoundEffect.Play();
                 hostAddress.Remove(hostAddress.Length - 1, 1);
                 resetText = true;
             }
             if (e.TypingAccepted) // User has entered a value
             {
+                menuSelectSoundEffect.Play();
                 lastAddress = hostAddress.ToString();
             }
             else if (e.TypingCancelled) // User has cancelled their input
             {
+                menuCancelSoundEffect.Play();
                 hostAddress.Clear();
                 hostAddress.Append(lastAddress);
                 resetText = true;
@@ -157,18 +176,25 @@ namespace SkyCrane.Screens
                         resetText = true;
                     }
                 }
+                if (resetText) // If at least a key was found, type it
+                {
+                    typingSoundEffect.Play();
+                }
             }
             if (e.TypingBackspace && hostPort.Length > 0) // Remove a character
             {
+                typingSoundEffect.Play();
                 hostPort.Remove(hostPort.Length - 1, 1);
                 resetText = true;
             }
             if (e.TypingAccepted) // User has entered a value
             {
+                menuSelectSoundEffect.Play();
                 lastPort = hostPort.ToString();
             }
             else if (e.TypingCancelled) // User has cancelled their input
             {
+                menuCancelSoundEffect.Play();
                 hostPort.Clear();
                 hostPort.Append(lastPort);
                 resetText = true;
