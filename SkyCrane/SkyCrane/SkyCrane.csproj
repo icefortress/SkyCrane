@@ -84,6 +84,7 @@
     <Compile Include="AttackingDude.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="Client.cs" />
+    <Compile Include="Doctor.cs" />
     <Compile Include="MageAttack.cs" />
     <Compile Include="Enemy.cs" />
     <Compile Include="Entity.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="Dude.cs" />
     <Compile Include="Bullet.cs" />
     <Compile Include="Screens\CharacterSelectMenuScreen.cs" />
+    <Compile Include="Screens\DoctorWall.cs" />
     <Compile Include="Screens\HostSettingsMenuScreen.cs" />
     <Compile Include="Screens\MultiplayerMenuScreen.cs" />
     <Compile Include="Screens\ResolutionsMenuScreen.cs" />

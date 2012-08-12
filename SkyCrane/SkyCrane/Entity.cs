@@ -57,6 +57,7 @@ namespace SkyCrane
         int elapsedTime;
         int currentFrame;
         Color color;
+        protected float rotation = 0;
 
         Rectangle sourceRect = new Rectangle();
         Rectangle destinationRect = new Rectangle();
@@ -191,7 +192,7 @@ namespace SkyCrane
             if (active)
             {
                 UpdateSprite(gameTime);
-                sb.Draw(spriteStrip, destinationRect, sourceRect, color);
+                sb.Draw(spriteStrip, destinationRect, sourceRect, color, rotation, Vector2.Zero, SpriteEffects.None, 0);
             }
         }
     }
