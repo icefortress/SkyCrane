@@ -114,6 +114,7 @@ namespace SkyCrane.NetCode
                 {
                     //Console.WriteLine("NW-" + myID + " Send");
                     Packet pkt = this.buffer.Dequeue();
+                    //Console.WriteLine("--> {0}", (byte)pkt.data[0]);
                     int i = this.Send(pkt.data, pkt.data.Length, pkt.Dest);
                     //Console.WriteLine(i);
                 }
@@ -123,7 +124,7 @@ namespace SkyCrane.NetCode
 
     public class Packet
     {
-        public enum PacketType { HANDSHAKE, CMD, STC, SYNC, PING };
+        public enum PacketType { HANDSHAKE=0, CMD=1, STC=2, SYNC=3, PING=4 };
         public PacketType ptype;
         public IPEndPoint Dest = null;
         public byte[] data = new byte[200];

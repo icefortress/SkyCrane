@@ -32,9 +32,9 @@ namespace SkyCrane.NetCode
 
         public static void Main(string[] args)
         {
-            RawClient c = new RawClient();
+            //RawClient c = new RawClient();
             RawServer s = new RawServer(9999);
-            c.connect("127.0.0.1", 9999);
+            //c.connect("127.0.0.1", 9999);
         }
 
         //public void exit()
@@ -92,24 +92,29 @@ namespace SkyCrane.NetCode
                     case Packet.PacketType.HANDSHAKE:
                         if (!connections.ContainsKey(p.Dest))
                         {
-                            Console.WriteLine("New connection from: " + p.Dest);
+                            Console.WriteLine("Server - New connection from: " + p.Dest);
                             connections[p.Dest] = new ConnectionID(p.Dest);
-                            Console.WriteLine("Added Connection: " + connections[p.Dest].ID);
-                            nw.commitPacket(p);
+                            Console.WriteLine("Server - Added Connection: " + connections[p.Dest].ID);
+                            HandshakePacket hs = new HandshakePacket();
+                            hs.Dest = p.Dest;
+                            nw.commitPacket(hs);
                         }
                         break;
 
                     case Packet.PacketType.STC:
-                        Console.WriteLine("Receivd State Change from client... who do they think they are?");
+                        Console.WriteLine("Server - Receivd State Change from client... who do they think they are?");
                         Environment.Exit(1);
                         break;
 
                     case Packet.PacketType.SYNC:
+                        Console.WriteLine("Server - SYNC Reply from: " + connections[p.Dest].ID);
                         break;
 
                     case Packet.PacketType.PING:
-                        Console.WriteLine("Ping from connection: " + connections[p.Dest].ID);
-                        nw.commitPacket(p); //ACK the ping
+                        Console.WriteLine("Server - Ping from connection: " + connections[p.Dest].ID);
+                        PingPacket ps = new PingPacket();
+                        ps.Dest = p.Dest;
+                        nw.commitPacket(ps); //ACK the ping
                         break;
 
                     case Packet.PacketType.CMD:
