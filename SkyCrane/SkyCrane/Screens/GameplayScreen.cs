@@ -118,18 +118,17 @@ namespace SkyCrane.Screens
             minMinEnemiesSpawn = 1;
             maxMaxEnemiesSpawn = 4 * numPlayers;
             minMaxEnemiesSpawn = numPlayers;
-            maxSpawnInterval = TimeSpan.FromSeconds(45.0);
-            minSpawnInterval = TimeSpan.FromSeconds(25.0);
+            maxSpawnInterval = TimeSpan.FromSeconds(30.0);
+            minSpawnInterval = TimeSpan.FromSeconds(20.0);
             currentSpawnInterval = maxSpawnInterval;
             currentMaxEnemiesSpawn = minMaxEnemiesSpawn;
             currentMinEnemiesSpawn = minMinEnemiesSpawn;
             nextEnemySpawnTime = DateTime.Now;
             spawnRandom = new Random();
-            spawnMinX = 200;
-            spawnMaxX = 400;
-            spawnMinY = 200;
-            spawnMaxY = 400;
-
+            spawnMinX = 275;
+            spawnMaxX = 1500;
+            spawnMinY = 600;
+            spawnMaxY = 1250;
 
             // Set the game state
             gameState = new GameState(this);
