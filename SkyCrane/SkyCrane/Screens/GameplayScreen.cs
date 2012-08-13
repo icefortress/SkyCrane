@@ -118,18 +118,17 @@ namespace SkyCrane.Screens
             minMinEnemiesSpawn = 1;
             maxMaxEnemiesSpawn = 4 * numPlayers;
             minMaxEnemiesSpawn = numPlayers;
-            maxSpawnInterval = TimeSpan.FromSeconds(45.0);
-            minSpawnInterval = TimeSpan.FromSeconds(25.0);
+            maxSpawnInterval = TimeSpan.FromSeconds(30.0);
+            minSpawnInterval = TimeSpan.FromSeconds(20.0);
             currentSpawnInterval = maxSpawnInterval;
             currentMaxEnemiesSpawn = minMaxEnemiesSpawn;
             currentMinEnemiesSpawn = minMinEnemiesSpawn;
             nextEnemySpawnTime = DateTime.Now;
             spawnRandom = new Random();
-            spawnMinX = 200;
-            spawnMaxX = 400;
-            spawnMinY = 200;
-            spawnMaxY = 400;
-
+            spawnMinX = 275;
+            spawnMaxX = 1500;
+            spawnMinY = 600;
+            spawnMaxY = 1250;
 
             // Set the game state
             gameState = new GameState(this);
@@ -653,7 +652,7 @@ namespace SkyCrane.Screens
                 if (movement.Length() > 1)
                     movement.Normalize();
 
-                if (keyboardState.IsKeyDown(Keys.P) && attackButtonOK)
+                if ((keyboardState.IsKeyDown(Keys.Z) || gamePadState.Triggers.Right > 0.5) && attackButtonOK)
                 {
                     Command c = new Command();
                     c.entity_id = gameState.usersPlayer.id;
@@ -663,11 +662,13 @@ namespace SkyCrane.Screens
                     commandBuffer.Add(c);
                     //Console.WriteLine("Shoot");
                     attackButtonOK = false;
-                } else if (keyboardState.IsKeyUp(Keys.P)) {
+                }
+                else if (keyboardState.IsKeyUp(Keys.Z) || gamePadState.Triggers.Right < 0.5)
+                {
                     attackButtonOK = true;
                 }
 
-                if (keyboardState.IsKeyDown(Keys.X) && attackButtonOK)
+                if ((keyboardState.IsKeyDown(Keys.X) || gamePadState.Triggers.Left > 0.5) && attackButtonOK)
                 {
                     Command c = new Command();
                     c.entity_id = gameState.usersPlayer.id;
@@ -677,7 +678,7 @@ namespace SkyCrane.Screens
                     commandBuffer.Add(c);
                     attackButtonOK = false;
                 }
-                else if (keyboardState.IsKeyUp(Keys.X))
+                else if (keyboardState.IsKeyUp(Keys.X) || gamePadState.Triggers.Left < 0.5)
                 {
                     attackButtonOK = true;
                 }
