@@ -245,7 +245,7 @@ namespace SkyCrane.Screens
 
             // Set up the background music
             MediaPlayer.Stop();
-            backGroundSong = content.Load<Song>("Music/Nero - Doomsday");
+            backGroundSong = content.Load<Song>("Music/soundtrack");
             MediaPlayer.Play(backGroundSong);
 
             // Set up any generic sound effects that will be needed

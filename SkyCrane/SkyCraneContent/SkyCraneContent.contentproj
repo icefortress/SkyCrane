@@ -165,11 +165,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Music\Nero - Doomsday.mp3">
-      <Name>Nero - Doomsday</Name>
-      <Importer>Mp3Importer</Importer>
-      <Processor>SongProcessor</Processor>
-    </Compile>
+    <Content Include="Music\soundtrack.wav">
+      <Name>soundtrack</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Levels\filback.png">
