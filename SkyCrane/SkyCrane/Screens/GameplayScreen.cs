@@ -251,6 +251,7 @@ namespace SkyCrane.Screens
 
             // Set up the background music
             MediaPlayer.Stop();
+            MediaPlayer.IsRepeating = true;
             backGroundSong = content.Load<Song>("Music/soundtrack");
             MediaPlayer.Play(backGroundSong);
 
