@@ -591,7 +591,7 @@ namespace SkyCrane.Screens
                 if (movement.Length() > 1)
                     movement.Normalize();
 
-                if (keyboardState.IsKeyDown(Keys.P) && attackButtonOK)
+                if ((keyboardState.IsKeyDown(Keys.Z) || gamePadState.Triggers.Right > 0.5) && attackButtonOK)
                 {
                     Command c = new Command();
                     c.entity_id = gameState.usersPlayer.id;
@@ -601,11 +601,13 @@ namespace SkyCrane.Screens
                     commandBuffer.Add(c);
                     //Console.WriteLine("Shoot");
                     attackButtonOK = false;
-                } else if (keyboardState.IsKeyUp(Keys.P)) {
+                }
+                else if (keyboardState.IsKeyUp(Keys.Z) || gamePadState.Triggers.Right < 0.5)
+                {
                     attackButtonOK = true;
                 }
 
-                if (keyboardState.IsKeyDown(Keys.X) && attackButtonOK)
+                if ((keyboardState.IsKeyDown(Keys.X) || gamePadState.Triggers.Left > 0.5) && attackButtonOK)
                 {
                     Command c = new Command();
                     c.entity_id = gameState.usersPlayer.id;
@@ -615,7 +617,7 @@ namespace SkyCrane.Screens
                     commandBuffer.Add(c);
                     attackButtonOK = false;
                 }
-                else if (keyboardState.IsKeyUp(Keys.X))
+                else if (keyboardState.IsKeyUp(Keys.X) || gamePadState.Triggers.Left < 0.5)
                 {
                     attackButtonOK = true;
                 }
