@@ -46,6 +46,7 @@ namespace SkyCrane.Dudes
             // Check if ready to attack again
             TimeSpan diff = gameTime.TotalGameTime.Subtract(lastAttack);
             if(diff.Seconds * 1000 + diff.Milliseconds >= getAttackCooldown()) {
+                
                 lastAttack = gameTime.TotalGameTime;
                 attacking = true;
                 forceCheck = true;
