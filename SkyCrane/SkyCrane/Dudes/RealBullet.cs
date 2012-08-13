@@ -13,7 +13,7 @@ namespace SkyCrane.Dudes
         public static String textureName = "realbull";
         public new static int frameWidth = 10;
         public static Vector2 HITBOX_SIZE = new Vector2(10, 10);
-        public static float SCALE = 0.5F;
+        public static float SCALE = 0.75F;
 
         public RealBullet(GameplayScreen g, Vector2 position, Vector2 velocity) :
             base(g, (int)position.X, (int)position.Y, frameWidth, textureName, SCALE)
