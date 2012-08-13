@@ -16,8 +16,8 @@ namespace SkyCrane.Dudes
         public static String TEXTURE_ATTACK_LEFT = "goblinal";
         public static String TEXTURE_ATTACK_RIGHT = "goblinar";
 
-        public static int FRAME_WIDTH = 45;
-        public static int ATK_FRAME_WIDTH = 45;
+        public static int FRAME_WIDTH = 90;
+        public static int ATK_FRAME_WIDTH = 90;
         
         public Goblin(GameplayScreen g, int posX, int posY) :
             base(g, posX, posY, FRAME_WIDTH, ATK_FRAME_WIDTH,

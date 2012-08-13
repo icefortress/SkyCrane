@@ -12,7 +12,7 @@ namespace SkyCrane.Dudes
 
     public abstract class PlayerCharacter : AttackingDude
     {
-        public static float SCALE = 2;
+        public static float SCALE = 1;
 
         /// <summary>
         /// The types of possible player characters.
@@ -31,7 +31,7 @@ namespace SkyCrane.Dudes
 
         public PlayerCharacter(GameplayScreen g, int posX, int posY, int frameWidth, int attackFrameWidth,
             String textureLeft, String textureRight, String textureAttackLeft, String textureAttackRight) :
-            base(g, posX, posY, frameWidth, attackFrameWidth, textureLeft, textureRight, textureAttackLeft, textureAttackRight, 2)
+            base(g, posX, posY, frameWidth, attackFrameWidth, textureLeft, textureRight, textureAttackLeft, textureAttackRight, SCALE)
         {
         }
 

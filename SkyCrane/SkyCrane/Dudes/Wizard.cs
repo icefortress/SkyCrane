@@ -13,8 +13,8 @@ namespace SkyCrane.Dudes
         public static String TEXTURE_ATTACK_LEFT = "wizardal";
         public static String TEXTURE_ATTACK_RIGHT = "wizardar";
 
-        public static int FRAME_WIDTH = 45;
-        public static int ATK_FRAME_WIDTH = 45;
+        public static int FRAME_WIDTH = 90;
+        public static int ATK_FRAME_WIDTH = 90;
         
         public Wizard(GameplayScreen g, int posX, int posY) :
             base(g, posX, posY, FRAME_WIDTH, ATK_FRAME_WIDTH,

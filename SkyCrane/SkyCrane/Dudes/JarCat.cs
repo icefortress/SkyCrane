@@ -15,8 +15,8 @@ namespace SkyCrane.Dudes
         public static String TEXTURE_ATTACK_LEFT = "jarcatal";
         public static String TEXTURE_ATTACK_RIGHT = "jarcatar";
 
-        public static int FRAME_WIDTH = 45;
-        public static int ATK_FRAME_WIDTH = 45;
+        public static int FRAME_WIDTH = 90;
+        public static int ATK_FRAME_WIDTH = 90;
 
         public override int getAttackLength()
         {

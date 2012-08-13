@@ -13,8 +13,8 @@ namespace SkyCrane.Dudes
         public static String TEXTURE_ATTACK_LEFT = "rogueal";
         public static String TEXTURE_ATTACK_RIGHT = "roguear";
 
-        public static int FRAME_WIDTH = 45;
-        public static int ATK_FRAME_WIDTH = 42;
+        public static int FRAME_WIDTH = 90;
+        public static int ATK_FRAME_WIDTH = 84;
 
         public Rogue(GameplayScreen g, int posX, int posY) :
             base(g, posX, posY, FRAME_WIDTH, ATK_FRAME_WIDTH,
