@@ -17,7 +17,7 @@ namespace SkyCrane.Dudes
         /// </summary>
         public enum Type
         {
-            Goblin,
+            Goblin = 0,
             Skeleton
         }
 
@@ -42,6 +42,10 @@ namespace SkyCrane.Dudes
             if (entity is Level)
             {
                 velocity = Vector2.Zero;
+            }
+            else
+            {
+                base.HandleCollision(cd, entity);
             }
             
         }

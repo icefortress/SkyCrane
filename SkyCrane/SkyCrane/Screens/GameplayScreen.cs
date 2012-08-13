@@ -74,8 +74,22 @@ namespace SkyCrane.Screens
         Song backGroundSong;
         SoundEffect pauseSoundEffect;
 
-        // 
-        
+        // Host variables for spawning enemies
+        int maxMinEnemiesSpawn; // Upper bound on minimum enemy spawn amount
+        int minMinEnemiesSpawn; // Lower bound on minimum enemy spawn amount
+        int maxMaxEnemiesSpawn; // Upper bound on maximum enemy spawn amount
+        int minMaxEnemiesSpawn; // Lower bound on maximum enemy  spawn amount
+        TimeSpan maxSpawnInterval; // Upper bound on enemy spawn time
+        TimeSpan minSpawnInterval; // Lower bound on enemy spawn time
+        int currentMaxEnemiesSpawn; // Current max amount of enemies allowed to spawn
+        int currentMinEnemiesSpawn; // Current min amount of enemies allowed to spawn
+        TimeSpan currentSpawnInterval; // Current interval between enemy spawns
+        DateTime nextEnemySpawnTime; // The next time to spawn enemies
+        int spawnMaxX; // Upper bound on spawn X coordinate
+        int spawnMinX; // Lower bound on spawn X coordinate
+        int spawnMaxY; // Upper bound on spawn Y coordinate
+        int spawnMinY; // Lower bound on spawn Y coordinate
+        Random spawnRandom; // Random generator used for spawning enemies
 
         #endregion
 
@@ -87,15 +101,36 @@ namespace SkyCrane.Screens
         public GameplayScreen(bool isServer, bool isMultiplayer, int numPlayers, int playerId,
             PlayerCharacter.Type[] characterSelections, Dictionary<int, ConnectionID> playerIdToConnectionHash)
         {
+
+            // Set up server, multiplayer and character information
             this.isServer = isServer;
             this.isMultiplayer = isMultiplayer;
             this.numPlayers = numPlayers;
             this.characterSelections = characterSelections;
             this.playerIdToConnectionHash = playerIdToConnectionHash;
 
+            // Set the screen transition times
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
 
+            // Set up the spawning rates and times
+            maxMinEnemiesSpawn = 3 * numPlayers;
+            minMinEnemiesSpawn = 1;
+            maxMaxEnemiesSpawn = 4 * numPlayers;
+            minMaxEnemiesSpawn = numPlayers;
+            maxSpawnInterval = TimeSpan.FromSeconds(30.0);
+            minSpawnInterval = TimeSpan.FromSeconds(20.0);
+            currentSpawnInterval = maxSpawnInterval;
+            currentMaxEnemiesSpawn = minMaxEnemiesSpawn;
+            currentMinEnemiesSpawn = minMinEnemiesSpawn;
+            nextEnemySpawnTime = DateTime.Now;
+            spawnRandom = new Random();
+            spawnMinX = 275;
+            spawnMaxX = 1500;
+            spawnMinY = 600;
+            spawnMaxY = 1250;
+
+            // Set the game state
             gameState = new GameState(this);
 
             return;
@@ -117,8 +152,8 @@ namespace SkyCrane.Screens
 
             gameFont = content.Load<SpriteFont>("Fonts/gamefont");
 
-            Texture2D testLevel = content.Load<Texture2D>("Levels/room3");
-            Texture2D testMap = content.Load<Texture2D>("Levels/room3-collision_map");
+            Texture2D testLevel = content.Load<Texture2D>("Sprites/Level");
+            Texture2D testMap = content.Load<Texture2D>("Sprites/Level_CollisionMap_scaleDown");
             textureDict.Add("room2", testLevel);
             textureDict.Add("room2-collision-map", testMap);
 
@@ -340,31 +375,18 @@ namespace SkyCrane.Screens
                     bool hor = false;
                     Vector2 offset;
 
-                    Vector2 pos = c.position;
+                    Doctor d = (Doctor)gameState.entities[c.entity_id];
 
-                    if (Math.Abs(vel.X) > Math.Abs(vel.Y))
+                    Vector2 pos = c.position;
+                    if (!d.facingLeft)
                     {
-                        if (vel.X > 0)
-                        {
-                            offset = new Vector2(80, 0);
-                        }
-                        else
-                        {
-                            offset = new Vector2(-80, 0);
-                        }
+                        offset = new Vector2(80, 0);
                     }
                     else
                     {
-                        hor = true;
-                        if (vel.Y > 0)
-                        {
-                            offset = new Vector2(0, 80);
-                        }
-                        else
-                        {
-                            offset = new Vector2(0, -80);
-                        }
+                        offset = new Vector2(-80, 0);
                     }
+
 
                     pos += offset;
 
@@ -411,6 +433,31 @@ namespace SkyCrane.Screens
 
             if (isServer)
             {
+                if (DateTime.Now > nextEnemySpawnTime) // Spawn new enemies
+                {
+                    int numEnemies = spawnRandom.Next(currentMinEnemiesSpawn, currentMaxEnemiesSpawn + 1);
+
+                    for (int i = 0; i < numEnemies; i += 1)
+                    {
+                        gameState.createEnemy(spawnRandom.Next(spawnMinX, spawnMaxX + 1),
+                            spawnRandom.Next(spawnMinY, spawnMaxY + 1),
+                            (Enemy.Type)spawnRandom.Next((int)Enemy.Type.Goblin, (int)Enemy.Type.Skeleton + 1));
+                    }
+
+                    if (currentMinEnemiesSpawn < maxMinEnemiesSpawn) // Increase min enemies
+                    {
+                        currentMinEnemiesSpawn += 1;
+                    }
+                    if (currentMaxEnemiesSpawn < maxMaxEnemiesSpawn) // Increase max enemies
+                    {
+                        currentMaxEnemiesSpawn += 1;
+                    }
+                    nextEnemySpawnTime += currentSpawnInterval;
+                    if (currentSpawnInterval > minSpawnInterval) // Reduce spawn interval
+                    {
+                        currentSpawnInterval -= TimeSpan.FromSeconds(1.0);
+                    }
+                }
 
                 // Apply own commands, and client's commands
                 foreach (Command c in commandBuffer)
@@ -500,14 +547,15 @@ namespace SkyCrane.Screens
 
             // Gradually fade in or out depending on whether we are covered by the pause screen.
             if (coveredByOtherScreen)
-                pauseAlpha = Math.Min(pauseAlpha + 1f / 32, 1);
-            else
-                pauseAlpha = Math.Max(pauseAlpha - 1f / 32, 0);
-
-            if (IsActive)
             {
-                
+                pauseAlpha = Math.Min(pauseAlpha + 1f / 32, 1);
             }
+            else
+            {
+                pauseAlpha = Math.Max(pauseAlpha - 1f / 32, 0);
+            }
+
+            return;
         }
 
 
@@ -604,7 +652,7 @@ namespace SkyCrane.Screens
                 if (movement.Length() > 1)
                     movement.Normalize();
 
-                if (keyboardState.IsKeyDown(Keys.P) && attackButtonOK)
+                if ((keyboardState.IsKeyDown(Keys.Z) || gamePadState.Triggers.Right > 0.5) && attackButtonOK)
                 {
                     Command c = new Command();
                     c.entity_id = gameState.usersPlayer.id;
@@ -614,11 +662,13 @@ namespace SkyCrane.Screens
                     commandBuffer.Add(c);
                     //Console.WriteLine("Shoot");
                     attackButtonOK = false;
-                } else if (keyboardState.IsKeyUp(Keys.P)) {
+                }
+                else if (keyboardState.IsKeyUp(Keys.Z) || gamePadState.Triggers.Right < 0.5)
+                {
                     attackButtonOK = true;
                 }
 
-                if (keyboardState.IsKeyDown(Keys.X) && attackButtonOK)
+                if ((keyboardState.IsKeyDown(Keys.X) || gamePadState.Triggers.Left > 0.5) && attackButtonOK)
                 {
                     Command c = new Command();
                     c.entity_id = gameState.usersPlayer.id;
@@ -628,7 +678,7 @@ namespace SkyCrane.Screens
                     commandBuffer.Add(c);
                     attackButtonOK = false;
                 }
-                else if (keyboardState.IsKeyUp(Keys.X))
+                else if (keyboardState.IsKeyUp(Keys.X) || gamePadState.Triggers.Left < 0.5)
                 {
                     attackButtonOK = true;
                 }

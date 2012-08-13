@@ -89,7 +89,10 @@ namespace SkyCrane.Dudes
 
         public virtual void HandleCollision(CollisionDirection cd, PhysicsAble entity)
         {
-            velocity = Vector2.Zero;
+            if (entity is Level || entity is DoctorWall)
+            {
+                velocity = Vector2.Zero;
+            }
         }
 
         public CollisionDirection CheckCollision(PhysicsAble entity)

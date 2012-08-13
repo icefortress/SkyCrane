@@ -69,6 +69,10 @@ namespace SkyCrane.Dudes
             {
                 velocity = Vector2.Zero;
             }
+            else
+            {
+                base.HandleCollision(cd, entity);
+            }
 
         }
 

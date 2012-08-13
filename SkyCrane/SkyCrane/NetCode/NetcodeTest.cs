@@ -12,10 +12,10 @@ namespace SkyCrane.NetCode
         public static RawClient c1 = new RawClient();
         public static RawClient c2 = new RawClient();
         public static RawClient c3 = new RawClient();
+        public static RawServer s = new RawServer(9999);
         //Netcode testing suite... or just a template
         public static void Main(string[] args)
         {
-            RawServer s = new RawServer(9999);
             //while (true)
             //{
             //    if (s.getCMD().Count > 0)
@@ -61,7 +61,7 @@ namespace SkyCrane.NetCode
                 c1.sendCMD(l);
                 c2.sendCMD(l);
                 c3.sendCMD(l);
-                //Thread.Sleep(100);
+                Thread.Sleep(10);
             }
         }
 
@@ -71,6 +71,7 @@ namespace SkyCrane.NetCode
             Console.WriteLine("Ping for 2: {0}", c1.getPing());
             Console.WriteLine("Ping for 3: {0}", c2.getPing());
             Console.WriteLine("Ping for 4: {0}", c3.getPing());
+            Console.WriteLine("Ping for 4: {0}", s.getStats().rcvdPkts);
         }
 
         //public void exit()

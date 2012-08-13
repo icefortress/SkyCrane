@@ -183,7 +183,7 @@ namespace SkyCrane.Engine
             }
 
             DoctorWall d = new DoctorWall(context, new Vector2(posX, posY), horizontal);
-            addEntity(200, d, d.id);
+            addEntity(3, d, d.id);
 
             // Keep track of one wall per player
             walls[entity_id] = d;

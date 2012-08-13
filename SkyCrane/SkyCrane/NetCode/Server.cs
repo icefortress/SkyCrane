@@ -25,6 +25,8 @@ namespace SkyCrane.NetCode
         private bool go = true;
         private NetworkWorker nw;
 
+        private ServerStats globalStats = new ServerStats();
+
         //Connection state
         Dictionary<IPEndPoint, ConnectionID> connections = new Dictionary<IPEndPoint, ConnectionID>();
         List<Command> commandQ = new List<Command>();
@@ -129,7 +131,13 @@ namespace SkyCrane.NetCode
                         }
                         break;
                 }
+                this.globalStats.rcvdPkts++;
             }
+        }
+
+        public ServerStats getStats() 
+        {
+            return this.globalStats;
         }
 
         public List<Command> getCMD()
@@ -233,5 +241,12 @@ namespace SkyCrane.NetCode
             ID = ids++;
             this.endpt = ep;
         }
+    }
+
+    public class ServerStats 
+    {
+        public long rcvdPkts = 0;
+        public long sentPkts = 0;
+        public long pktsProcessed = 0;
     }
 }
