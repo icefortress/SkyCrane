@@ -15,8 +15,8 @@ namespace SkyCrane.Dudes
         public static String TEXTURE_ATTACK_LEFT = "skeletonal";
         public static String TEXTURE_ATTACK_RIGHT = "skeletonar";
 
-        public static int FRAME_WIDTH = 45;
-        public static int ATK_FRAME_WIDTH = 45;
+        public static int FRAME_WIDTH = 90;
+        public static int ATK_FRAME_WIDTH = 90;
         
         public Skeleton(GameplayScreen g, int posX, int posY) :
             base(g, posX, posY, FRAME_WIDTH, ATK_FRAME_WIDTH,
