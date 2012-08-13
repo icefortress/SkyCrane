@@ -13,8 +13,8 @@ namespace SkyCrane.Dudes
         public static String TEXTURE_ATTACK_LEFT = "doctoral";
         public static String TEXTURE_ATTACK_RIGHT = "doctorar";
 
-        public static int FRAME_WIDTH = 45;
-        public static int ATK_FRAME_WIDTH = 45;
+        public static int FRAME_WIDTH = 90;
+        public static int ATK_FRAME_WIDTH = 90;
 
         public Doctor(GameplayScreen g, int posX, int posY) :
             base(g, posX, posY, FRAME_WIDTH, ATK_FRAME_WIDTH,

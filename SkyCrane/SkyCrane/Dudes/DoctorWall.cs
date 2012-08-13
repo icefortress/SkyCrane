@@ -14,10 +14,10 @@ namespace SkyCrane.Dudes
 
         public static String textureName = "doctorwall";
         public static String textureNameH = "doctorwallh";
-        public new static int frameWidth = 45;
+        public new static int frameWidth = 90;
         public static Vector2 HITBOX_VERT = new Vector2(45, 255);
         public static Vector2 HITBOX_HORZ = new Vector2(255, 45);
-        public static float SCALE = 1;
+        public static float SCALE = 0.5f;
 
         bool horizontal = false;
 

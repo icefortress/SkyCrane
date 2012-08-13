@@ -125,8 +125,8 @@ namespace SkyCrane.Screens
             currentMinEnemiesSpawn = minMinEnemiesSpawn;
             nextEnemySpawnTime = DateTime.Now;
             spawnRandom = new Random();
-            spawnMinX = 275;
-            spawnMaxX = 1500;
+            spawnMinX = 300;
+            spawnMaxX = 1550;
             spawnMinY = 600;
             spawnMaxY = 1250;
 
@@ -439,8 +439,11 @@ namespace SkyCrane.Screens
 
                     for (int i = 0; i < numEnemies; i += 1)
                     {
-                        gameState.createEnemy(spawnRandom.Next(spawnMinX, spawnMaxX + 1),
-                            spawnRandom.Next(spawnMinY, spawnMaxY + 1),
+                        Vector2 spawnCoordinates = gameState.currentLevel.scaleAbsoluteCoordinates(
+                            new Vector2(spawnRandom.Next(spawnMinX, spawnMaxX + 1),
+                            spawnRandom.Next(spawnMinY, spawnMaxY + 1)));
+                            
+                        gameState.createEnemy((int)spawnCoordinates.X, (int)spawnCoordinates.Y,
                             (Enemy.Type)spawnRandom.Next((int)Enemy.Type.Goblin, (int)Enemy.Type.Skeleton + 1));
                     }
 

@@ -71,6 +71,14 @@ namespace SkyCrane.Engine
         {
         }
 
+        public Vector2 scaleAbsoluteCoordinates(Vector2 unscaledCoordinates)
+        {
+            float half_scaled_bg_w = levelSize.X / 2;
+            float half_scaled_bg_h = levelSize.Y / 2;
+            Vector2 levelPosition = this.worldPosition - new Vector2(half_scaled_bg_w, half_scaled_bg_h); // getting this in terms of top-left coordinate, so we can get player's position in the world
+            return levelPosition + unscaledCoordinates;
+        }
+
         /* Computes the view position (centred) in world coordinates that things should be drawn off of based on player position
          * This is necessary to deal with the edges of the world */
         public Vector2 getViewPosition(Entity c)

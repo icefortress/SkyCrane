@@ -108,7 +108,7 @@ namespace SkyCrane.Engine
             healthBars.Add(e.id, h);
             addEntity(300, h, h.id);
         }
-
+         
         public Enemy createEnemy(int posX, int posY, Enemy.Type type)
         {
             Enemy e = null;
