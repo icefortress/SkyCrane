@@ -73,6 +73,12 @@ namespace SkyCrane.Screens
         // Sound and music variables
         Song backGroundSong;
         SoundEffect pauseSoundEffect;
+        SoundEffect doctorAttackSoundEffect;
+        SoundEffect rogueAttackSoundEffect;
+        SoundEffect tankAttackSoundEffect;
+        SoundEffect wizardAttackSoundEffect;
+        SoundEffect goblinAttackSoundEffect;
+        SoundEffect skeletonAttackSoundEffect;
 
         // Host variables for spawning enemies
         int maxMinEnemiesSpawn; // Upper bound on minimum enemy spawn amount
@@ -250,6 +256,12 @@ namespace SkyCrane.Screens
 
             // Set up any generic sound effects that will be needed
             pauseSoundEffect = content.Load<SoundEffect>("SoundFX/menu_cancel");
+            doctorAttackSoundEffect = content.Load<SoundEffect>("SoundFX/doctor");
+            rogueAttackSoundEffect = content.Load<SoundEffect>("SoundFX/rogue");
+            tankAttackSoundEffect = content.Load<SoundEffect>("SoundFX/tank");
+            wizardAttackSoundEffect = content.Load<SoundEffect>("SoundFX/wizard");
+            goblinAttackSoundEffect = content.Load<SoundEffect>("SoundFX/goblin");
+            skeletonAttackSoundEffect = content.Load<SoundEffect>("SoundFX/skeleton");
 
             // once the load has finished, we use ResetElapsedTime to tell the game's
             // timing mechanism that we have just finished a very long frame, and that
@@ -257,7 +269,6 @@ namespace SkyCrane.Screens
             ScreenManager.Game.ResetElapsedTime();
             return;
         }
-
 
         /// <summary>
         /// Unload graphics content used by the game.
@@ -267,8 +278,40 @@ namespace SkyCrane.Screens
             content.Unload();
         }
 
-
         #endregion
+
+        /// <summary>
+        /// Play an attack sound.
+        /// </summary>
+        /// <param name="attacker">The attacker making a noise.</param>
+        public void PlayAttackSound(AttackingDude attacker)
+        {
+            if (attacker is Doctor)
+            {
+                doctorAttackSoundEffect.Play();
+            }
+            else if (attacker is Rogue)
+            {
+                rogueAttackSoundEffect.Play();
+            }
+            else if (attacker is Tank)
+            {
+                tankAttackSoundEffect.Play();
+            }
+            else if (attacker is Wizard)
+            {
+                wizardAttackSoundEffect.Play();
+            }
+            else if (attacker is Goblin)
+            {
+                goblinAttackSoundEffect.Play();
+            }
+            else if (attacker is Skeleton)
+            {
+                skeletonAttackSoundEffect.Play();
+            }
+            return;
+        }
 
         public void serverStartGame()
         {
