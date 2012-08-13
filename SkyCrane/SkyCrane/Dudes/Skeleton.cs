@@ -69,7 +69,13 @@ namespace SkyCrane.Dudes
         {
             if (entity is PlayerCharacter)
             {
+
                 PlayerCharacter pc = (PlayerCharacter)entity;
+
+                if (pc is Tank && pc.attacking)
+                {
+                    return;
+                }
 
                 pc.applyDamage(1);
                 pc.velocity = velocity * 2;
